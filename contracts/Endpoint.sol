@@ -1,26 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.19;
 
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 
-contract Endpoint {
+contract Endpoint is Ownable {
     struct Config {
         IFullCheckpoint checkpoint;
     }
 
     Config private _config;
-
-    uint256 private _initialized;
-
-    function initializer(Config calldata config) external {
-        require(_initialized == 0, "already initialized");
-        require(
-            config.checkpoint != IFullCheckpoint(address(0)),
-            "invalid checkpoint"
-        );
-        _config = config;
-        _initialized = 1;
-    }
 
     function send() external {}
 
@@ -29,6 +18,18 @@ contract Endpoint {
     function validateTransactionProof() external {}
 
     function getConfig() external view returns (Config memory) {
+        require(
+            _config.checkpoint != IFullCheckpoint(address(0)),
+            "no checkpoint"
+        );
         return _config;
+    }
+
+    function setConfig(Config calldata config) external onlyOwner {
+        require(
+            config.checkpoint != IFullCheckpoint(address(0)),
+            "invalid checkpoint"
+        );
+        _config = config;
     }
 }
