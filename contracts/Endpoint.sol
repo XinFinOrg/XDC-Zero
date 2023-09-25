@@ -36,7 +36,7 @@ contract Endpoint is Ownable {
     function validateTransactionProof(
         TransactionProof calldata txProof
     ) external {
-        IFullCheckpoint checkpoint = _config.checkpoint;
+        IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 root = checkpoint.getReceiptHash(txProof.blockhash);
         bytes32 leaf = getLeaf(txProof);
         require(MerkleProof.verify(txProof.proof, root, leaf), "invalid proof");
@@ -45,7 +45,7 @@ contract Endpoint is Ownable {
         _payloads[txProof.txHash] = payload;
     }
 
-    function getConfig() external view returns (Config memory) {
+    function getConfig() public view returns (Config memory) {
         require(
             _config.checkpoint != IFullCheckpoint(address(0)),
             "no checkpoint"
