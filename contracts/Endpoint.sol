@@ -27,11 +27,22 @@ contract Endpoint is Ownable {
 
     Config private _config;
 
+    // txHash => payload
     mapping(bytes => bytes) private _payloads;
 
-    function send() external {}
+    event Packet(bytes payload);
 
-    function receivePayload() external returns (bytes memory) {}
+    event PacketReceived(bytes payload);
+
+    function send(bytes calldata payload) external {
+        emit Packet(payload);
+    }
+
+    function getPayload(
+        bytes calldata txHash
+    ) external view returns (bytes memory) {
+        return _payloads[txHash];
+    }
 
     function validateTransactionProof(
         TransactionProof calldata txProof
@@ -43,6 +54,7 @@ contract Endpoint is Ownable {
         // TODO
         bytes memory payload = txProof.logs[0];
         _payloads[txProof.txHash] = payload;
+        emit PacketReceived(payload);
     }
 
     function getConfig() public view returns (Config memory) {
