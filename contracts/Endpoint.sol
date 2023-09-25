@@ -23,8 +23,6 @@ contract Endpoint is Ownable {
         bytes txHash;
         address contractAddress;
         uint256 gasUsed;
-        //paylaod
-        bytes payload;
     }
 
     Config private _config;
@@ -42,7 +40,9 @@ contract Endpoint is Ownable {
         bytes32 root = checkpoint.getReceiptHash(txProof.blockhash);
         bytes32 leaf = getLeaf(txProof);
         require(MerkleProof.verify(txProof.proof, root, leaf), "invalid proof");
-        _payloads[txProof.txHash] = txProof.payload;
+        // TODO
+        bytes memory payload = txProof.logs[0];
+        _payloads[txProof.txHash] = payload;
     }
 
     function getConfig() external view returns (Config memory) {
