@@ -55,6 +55,8 @@ contract Endpoint is Ownable {
             keys
         )[0];
 
+        require(receiptRlp.length > 0, "invalid proof");
+
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
         bytes memory payload = receipt.logs[0];
