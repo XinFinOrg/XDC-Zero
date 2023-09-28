@@ -2,7 +2,7 @@
 pragma solidity =0.8.19;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPEncode} from "./libraries/RLPEncode.sol";
 
@@ -43,14 +43,19 @@ contract Endpoint is Ownable {
 
     function validateTransactionProof(
         bytes calldata receiptRlp,
-        bytes32[] calldata proof,
+        bytes[] calldata proof,
         bytes32 blockHash
     ) external {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
-  
-        //TODO
-        // require(MerkleProof.verify(proof, receiptRoot, receiptRlp), "invalid proof");
+
+        bytes[] memory keys = new bytes[](1);
+        keys[0] = receiptRlp;
+        require(
+            MerklePatricia
+            .VerifyEthereumProof(receiptRoot, proof, keys)[0].length > 0,
+            "invalid proof"
+        );
 
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
