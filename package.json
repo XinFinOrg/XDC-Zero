@@ -26,6 +26,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@polytope-labs/solidity-merkle-trees": "^0.2.0"
+    "@polytope-labs/solidity-merkle-trees": "^0.2.1"
   }
 }
