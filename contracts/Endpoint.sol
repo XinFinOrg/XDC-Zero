@@ -11,10 +11,7 @@ contract Endpoint is Ownable {
         IFullCheckpoint checkpoint;
     }
 
-    struct TransactionProof {
-        bytes32 blockhash;
-        bytes32[] proof;
-        //receipt
+    struct Receipt {
         bytes postState;
         uint256 status;
         uint256 cumulativeGasUsed;
@@ -45,15 +42,18 @@ contract Endpoint is Ownable {
     }
 
     function validateTransactionProof(
-        TransactionProof calldata txProof
+        bytes calldata leaf,
+        bytes32[] calldata proof,
+        bytes32 blockHash
     ) external {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
-        bytes32 root = checkpoint.getReceiptHash(txProof.blockhash);
-        bytes32 leaf = getLeaf(txProof);
-        require(MerkleProof.verify(txProof.proof, root, leaf), "invalid proof");
+        bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
+        require(MerkleProof.verify(proof, receiptRoot, leaf), "invalid proof");
+
+        Receipt memory receipt = getReceipt(leaf);
         // TODO
-        bytes memory payload = txProof.logs[0];
-        _payloads[txProof.txHash] = payload;
+        bytes memory payload = receipt.logs[0];
+        _payloads[receipt.txHash] = payload;
         emit PacketReceived(payload);
     }
 
@@ -73,30 +73,7 @@ contract Endpoint is Ownable {
         _config = config;
     }
 
-    function getLeaf(
-        TransactionProof memory txProof
-    ) public pure returns (bytes32) {
-        bytes[] memory encodedParts = new bytes[](8);
-
-        encodedParts[0] = RLPEncode.encodeBytes(txProof.postState);
-        encodedParts[1] = RLPEncode.encodeUint(txProof.status);
-        encodedParts[2] = RLPEncode.encodeUint(txProof.cumulativeGasUsed);
-        encodedParts[3] = RLPEncode.encodeBytes(txProof.bloom);
-        encodedParts[4] = RLPEncode.encodeList(txProof.logs);
-        encodedParts[5] = RLPEncode.encodeBytes(txProof.txHash);
-        encodedParts[6] = RLPEncode.encodeAddress(txProof.contractAddress);
-        encodedParts[7] = RLPEncode.encodeUint(txProof.gasUsed);
-
-        return bytesToBytes32(RLPEncode.encodeList(encodedParts));
-    }
-
-    function bytesToBytes32(bytes memory input) public pure returns (bytes32) {
-        require(input.length <= 32, "Input too long");
-
-        bytes32 output;
-        assembly {
-            output := mload(add(input, 32))
-        }
-        return output;
+    function getReceipt(bytes leaf) public pure returns (Receipt memory) {
+        return new Receipt();
     }
 }
