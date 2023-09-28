@@ -76,6 +76,7 @@ contract Endpoint is Ownable {
     function getReceipt(
         bytes calldata leaf
     ) public pure returns (Receipt memory) {
+        //TODO
         return
             Receipt({
                 postState: RLPEncode.encodeBytes(leaf),
