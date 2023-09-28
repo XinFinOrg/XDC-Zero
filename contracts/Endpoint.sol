@@ -42,20 +42,18 @@ contract Endpoint is Ownable {
     }
 
     function validateTransactionProof(
-        bytes calldata receiptRlp,
+        bytes[] memory keys,
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
 
-        bytes[] memory keys = new bytes[](1);
-        keys[0] = receiptRlp;
-        require(
-            MerklePatricia
-            .VerifyEthereumProof(receiptRoot, proof, keys)[0].length > 0,
-            "invalid proof"
-        );
+        bytes memory receiptRlp = MerklePatricia.VerifyEthereumProof(
+            receiptRoot,
+            proof,
+            keys
+        )[0];
 
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
@@ -82,7 +80,7 @@ contract Endpoint is Ownable {
 
     //TODO
     function getReceipt(
-        bytes calldata receiptRlp
+        bytes memory receiptRlp
     ) public pure returns (Receipt memory) {
         return
             Receipt({
