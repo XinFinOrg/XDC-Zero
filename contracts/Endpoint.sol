@@ -46,6 +46,7 @@ contract Endpoint is Ownable {
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
+        require(keys.length == 1, "invalid keys length");
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
 
