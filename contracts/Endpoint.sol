@@ -4,9 +4,12 @@ pragma solidity =0.8.19;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
-import {RLPEncode} from "./libraries/RLPEncode.sol";
+import {RLPReader} from "./libraries/RLPReader.sol";
 
 contract Endpoint is Ownable {
+    using RLPReader for bytes;
+    using RLPReader for RLPReader.RLPItem;
+
     struct Config {
         IFullCheckpoint checkpoint;
     }
@@ -82,16 +85,17 @@ contract Endpoint is Ownable {
     function getReceipt(
         bytes memory receiptRlp
     ) public pure returns (Receipt memory) {
-        return
-            Receipt({
-                postState: new bytes(1),
-                status: 1,
-                cumulativeGasUsed: 0,
-                bloom: new bytes(256),
-                logs: new bytes[](1),
-                txHash: new bytes(32),
-                contractAddress: address(0),
-                gasUsed: 0
-            });
+        RLPReader.RLPItem[] memory items = receiptRlp.toRlpItem().toList();
+
+        Receipt memory receipt;
+        receipt.postState = items[0].toBytes();
+        receipt.status = items[1].toUint();
+        receipt.cumulativeGasUsed = uint64(items[2].toUint());
+        receipt.bloom = items[3].toBytes();
+  
+        receipt.txHash = items[5].toBytes();
+        receipt.contractAddress = items[6].toAddress();
+        receipt.gasUsed = uint64(items[7].toUint());
+        return receipt;
     }
 }
