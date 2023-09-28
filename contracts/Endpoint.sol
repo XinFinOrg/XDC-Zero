@@ -42,15 +42,16 @@ contract Endpoint is Ownable {
     }
 
     function validateTransactionProof(
-        bytes calldata leaf,
+        bytes calldata receiptRlp,
         bytes32[] calldata proof,
         bytes32 blockHash
     ) external {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
+        bytes32 leaf = keccak256(receiptRlp);
         require(MerkleProof.verify(proof, receiptRoot, leaf), "invalid proof");
 
-        Receipt memory receipt = getReceipt(leaf);
+        Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
         bytes memory payload = receipt.logs[0];
         _payloads[receipt.txHash] = payload;
