@@ -9,6 +9,7 @@ import {RLPReader} from "./libraries/RLPReader.sol";
 contract Endpoint is Ownable {
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
+    using MerklePatricia for bytes32;
 
     struct Config {
         IFullCheckpoint checkpoint;
@@ -53,8 +54,8 @@ contract Endpoint is Ownable {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
 
-        bytes memory receiptRlp = MerklePatricia
-        .VerifyEthereumProof(receiptRoot, proof, keys)[0].value;
+        bytes memory receiptRlp = receiptRoot
+        .VerifyEthereumProof(proof, keys)[0].value;
 
         require(receiptRlp.length > 0, "invalid proof");
 
@@ -92,7 +93,7 @@ contract Endpoint is Ownable {
         receipt.status = items[1].toUint();
         receipt.cumulativeGasUsed = uint64(items[2].toUint());
         receipt.bloom = items[3].toBytes();
-  
+
         receipt.txHash = items[5].toBytes();
         receipt.contractAddress = items[6].toAddress();
         receipt.gasUsed = uint64(items[7].toUint());
