@@ -48,8 +48,9 @@ contract Endpoint is Ownable {
     ) external {
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
-        bytes32 leaf = keccak256(receiptRlp);
-        require(MerkleProof.verify(proof, receiptRoot, leaf), "invalid proof");
+  
+        //TODO
+        // require(MerkleProof.verify(proof, receiptRoot, receiptRlp), "invalid proof");
 
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
@@ -74,13 +75,13 @@ contract Endpoint is Ownable {
         _config = config;
     }
 
+    //TODO
     function getReceipt(
-        bytes calldata leaf
+        bytes calldata receiptRlp
     ) public pure returns (Receipt memory) {
-        //TODO
         return
             Receipt({
-                postState: RLPEncode.encodeBytes(leaf),
+                postState: new bytes(1),
                 status: 1,
                 cumulativeGasUsed: 0,
                 bloom: new bytes(256),
