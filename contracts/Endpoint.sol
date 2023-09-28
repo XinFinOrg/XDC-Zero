@@ -73,7 +73,19 @@ contract Endpoint is Ownable {
         _config = config;
     }
 
-    function getReceipt(bytes leaf) public pure returns (Receipt memory) {
-        return new Receipt();
+    function getReceipt(
+        bytes calldata leaf
+    ) public pure returns (Receipt memory) {
+        return
+            Receipt({
+                postState: RLPEncode.encodeBytes(leaf),
+                status: 1,
+                cumulativeGasUsed: 0,
+                bloom: new bytes(256),
+                logs: new bytes[](1),
+                txHash: new bytes(32),
+                contractAddress: address(0),
+                gasUsed: 0
+            });
     }
 }
