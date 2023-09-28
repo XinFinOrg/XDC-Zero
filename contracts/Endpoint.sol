@@ -46,14 +46,15 @@ contract Endpoint is Ownable {
     }
 
     function validateTransactionProof(
-        bytes[] memory keys,
+        bytes memory key,
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
-        require(keys.length == 1, "invalid keys length");
         IFullCheckpoint checkpoint = getConfig().checkpoint;
         bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
 
+        bytes[] memory keys = new bytes[](1);
+        keys[0] = key;
         bytes memory receiptRlp = receiptRoot
         .VerifyEthereumProof(proof, keys)[0].value;
 
