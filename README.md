@@ -1,6 +1,6 @@
-# XDC ZERO: Cross-Chain System 
+# XDC ZERO: Advanced Cross-Chain System 
 
-Elevate blockchain interoperability , ensuring seamless data transmission and validation across diverse chains.
+Achieve unparalleled blockchain interoperability with XDC ZERO, ensuring frictionless data transmission and rigorous validation across a multitude of chains.
 
 ## Table of Contents
 
@@ -9,29 +9,32 @@ Elevate blockchain interoperability , ensuring seamless data transmission and va
 - [Relayer](/relayer/)
 - [Frontend](/frontend/)
 
-
 ## Key Components
 
 ### Oracle
 
-The Oracle is the backbone of our architecture, facilitating the secure transfer of vital data, especially block headers, between source and target blockchains. Through the utilization of CSC contracts, the system not only ensures robust data transmission but also preserves essential block header information on the target blockchain. This dual-functionality upholds the integrity and consistency of data across chains.
+Acting as the architectural keystone, the Oracle ensures the safe transfer of pivotal data, notably block headers, bridging source and target blockchains. Utilizing CSC contracts, the system guarantees not just steadfast data transfer but also the safeguarding of crucial block header details on the destination blockchain. Such functionalities affirm the data's integrity and coherence throughout chains.
 
 ### Relayer
 
-Our Relayer service is the bridge ensuring transactional accuracy. Its primary responsibility is to fetch payload data from the source chain's Endpoint contract and forward it to the target chain's Endpoint contract. Through this, the XDC ZERO system guarantees the accurate and secure transfer of transaction data, enhancing the efficiency of cross-chain interactions.
+The Relayer functions as the essential conduit for transactional precision. Its core duty is to extract payload data from the source chain's Endpoint contract and channel it to the counterpart on the target chain. With this mechanism in place, XDC ZERO promises the exact and secure relay of transaction data, fostering efficient cross-chain synergies.
 
 ### Endpoint
 
-The XDC Zero Endpoint acts as the heart of the cross-chain communication process. It's designed to both receive and dispatch data packets across multiple blockchain networks. The functionalities it offers are crucial for the seamless operation of the cross-chain system:
+The XDC Zero Endpoint stands as the nexus for cross-chain communication, adeptly receiving and dispatching data packets across disparate blockchain networks. It offers indispensable services for the fluid operation of the cross-chain paradigm:
 
-- **Data Reception & Dispatch**: It enables data packets to be accepted from one chain and then relayed or broadcasted to another, ensuring data is always directed to its intended destination.
+- **Data Reception & Dispatch**: The Endpoint ensures data packets, once received from a chain, are aptly relayed to another, directing data unerringly to its designated recipient.
   
-- **Chain Registration**: The Endpoint allows for the recognition and registration of new blockchains within the system. By specifying unique identifiers and associated contracts, it can seamlessly integrate new chains into the cross-chain communication framework.
+- **Chain Integration**: The Endpoint facilitates the seamless onboarding of new blockchains into the system. By denoting unique identifiers and related contracts, it amalgamates new chains into the existing cross-chain communication matrix.
   
-- **Transaction Validation**: Through the Endpoint, transactions can be verified to ensure their legitimacy before being processed. This feature is vital for security and the prevention of malicious activities.
+- **Transaction Authentication**: With the Endpoint's prowess, transactions undergo rigorous validation, certifying their authenticity before processing, thus bolstering system security against potential threats.
   
-- **Payload Retrieval**: The Endpoint provides an interface for applications and services to fetch cross-chain payload data. This is critical for applications that rely on data from other blockchains to function correctly.
+- **Payload Access**: The Endpoint offers a user-friendly interface for applications and entities to pull cross-chain payload data, an essential feature for apps dependent on inter-chain data streams.
 
-In essence, the Endpoint serves as the central hub for all cross-chain data traffic, ensuring that data is accurately received, processed, and dispatched to its correct destination.
+At its core, the Endpoint functions as the orchestrator for all cross-chain data activities, ensuring data is meticulously received, processed, and channeled to its rightful destination.
+
+### Frontend
+
+Experience a user-centric interface to manage the endpoint contracts spanning different chains. View the chain entities already synchronized with the current endpoint contract and effortlessly onboard new chain entities as per requirements.
 
 ![System Architecture](image.png)
