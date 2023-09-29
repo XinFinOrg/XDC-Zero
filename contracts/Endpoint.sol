@@ -16,40 +16,65 @@ contract Endpoint is Ownable {
     using RLPReader for RLPReader.RLPItem;
     using MerklePatricia for bytes32;
 
-    struct Config {
-        IFullCheckpoint checkpoint;
+    /**
+     * @dev csc is the checkpoint contract of the receive chain
+     * @dev endpoint is the address of the endpoint contract of the send chain
+     */
+    struct Chain {
+        IFullCheckpoint csc;
+        address endpoint;
     }
 
+    /**
+     * @dev log of the receipt
+     */
     struct Log {
         address address_;
         bytes32[] topics;
         bytes data;
     }
-
+    /**
+     * @dev receipt of the transaction
+     */
     struct Receipt {
         bytes postStateOrStatus;
         uint64 cumulativeGasUsed;
-        bytes bloom; // Assuming Bloom is a 32 bytes hash in Go
-        Log[] logs; // Simplified version of []*LogForStorage
+        bytes bloom;
+        Log[] logs;
     }
 
-    Config private _config;
+    mapping(uint256 => Chain) private _chains;
 
-    //sender endpoint => bool
-    mapping(address => bool) private _se;
+    /**
+     * @dev chainId of the current chain
+     */
+    uint256 private _chainId;
 
-    // txHash => payload
+    /**
+     * @dev payload of the transaction 
+     */
     mapping(bytes => bytes) private _payloads;
 
     event Packet(bytes payload);
 
-    event PacketReceived(bytes payload);
+    event PacketReceived(uint256 chainId, address ua, bytes content);
+
+    /**
+     * @dev initialize the contract
+     * @param chainId chainId of the current chain
+     */
+    function initialize(uint256 chainId) external {
+        _chainId = chainId;
+    }
 
     function packetHash() private pure returns (bytes32) {
         return keccak256("Packet(bytes)");
     }
 
-    function send(bytes calldata payload) external {
+    function send(bytes calldata content) external {
+        require(_chainId != 0, "chainId not set");
+        address ua = msg.sender;
+        bytes memory payload = abi.encode(_chainId, ua, content);
         emit Packet(payload);
     }
 
@@ -59,13 +84,24 @@ contract Endpoint is Ownable {
         return _payloads[txHash];
     }
 
+    /**
+     * @dev validate transaction proof and save payload
+     * @param sChainId chainId of the send chain
+     * @param key key of the receipt mekle tree
+     * @param proof proof of the key of receipt mekle tree
+     * @param blockHash blockHash of the receipt
+     */
     function validateTransactionProof(
+        uint256 sChainId,
         bytes memory key,
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
-        IFullCheckpoint checkpoint = getConfig().checkpoint;
-        bytes32 receiptRoot = checkpoint.getReceiptHash(blockHash);
+        Chain memory chain = _chains[sChainId];
+        IFullCheckpoint csc = chain.csc;
+        require(csc != IFullCheckpoint(address(0)), "chainId not registered");
+
+        bytes32 receiptRoot = csc.getReceiptHash(blockHash);
 
         bytes[] memory keys = new bytes[](1);
         keys[0] = key;
@@ -75,37 +111,40 @@ contract Endpoint is Ownable {
         require(receiptRlp.length > 0, "invalid proof");
 
         Receipt memory receipt = getReceipt(receiptRlp);
-        // TODO
 
         for (uint256 i = 0; i < receipt.logs.length; i++) {
             if (
                 receipt.logs[i].topics[0] == packetHash() &&
-                _se[receipt.logs[i].address_]
+                receipt.logs[i].address_ == chain.endpoint
             ) {
                 bytes memory payload = receipt.logs[i].data;
-                emit PacketReceived(payload);
+                (uint256 chainId, address ua, bytes memory content) = abi
+                    .decode(payload, (uint256, address, bytes));
+
+                emit PacketReceived(chainId, ua, content);
                 break;
             }
         }
     }
 
-    function getConfig() public view returns (Config memory) {
-        require(
-            _config.checkpoint != IFullCheckpoint(address(0)),
-            "no checkpoint"
-        );
-        return _config;
+    /**
+     * @dev register a chain
+     * @param chainId chainId of the send chain
+     * @param csc checkpoint contract of the receive chain
+     * @param endpoint endpoint contract of the send chain
+     */
+    function registerChain(
+        uint256 chainId,
+        IFullCheckpoint csc,
+        address endpoint
+    ) external onlyOwner {
+        _chains[chainId] = Chain(csc, endpoint);
     }
 
-    function setConfig(Config calldata config) external onlyOwner {
-        require(
-            config.checkpoint != IFullCheckpoint(address(0)),
-            "invalid checkpoint"
-        );
-        _config = config;
-    }
-
-    //TODO
+    /**
+     * @dev get receipt from rlp
+     * @param receiptRlp receipt rlp
+     */
     function getReceipt(
         bytes memory receiptRlp
     ) public pure returns (Receipt memory) {
