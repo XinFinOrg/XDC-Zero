@@ -4,9 +4,11 @@ Elevate blockchain interoperability , ensuring seamless data transmission and va
 
 ## Table of Contents
 
-- [Core](/core/)
-- [Frontend](/frontend/)
+- [Oracle](https://github.com/XinFinOrg/XDC-CSC)
+- [Endpoint](/endpoint/)
 - [Relayer](/relayer/)
+- [Frontend](/frontend/)
+
 
 ## Key Components
 
