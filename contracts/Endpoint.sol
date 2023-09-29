@@ -15,11 +15,17 @@ contract Endpoint is Ownable {
         IFullCheckpoint checkpoint;
     }
 
+    struct Log {
+        address address_;
+        bytes32[] topics;
+        bytes data;
+    }
+
     struct Receipt {
         bytes postStateOrStatus;
         uint64 cumulativeGasUsed;
         bytes bloom; // Assuming Bloom is a 32 bytes hash in Go
-        bytes[] logs; // Simplified version of []*LogForStorage
+        Log[] logs; // Simplified version of []*LogForStorage
     }
 
     Config private _config;
@@ -58,8 +64,8 @@ contract Endpoint is Ownable {
 
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
-        bytes memory payload = receipt.logs[0];
-       
+        bytes memory payload = receipt.logs[0].data;
+
         emit PacketReceived(payload);
     }
 
@@ -91,10 +97,19 @@ contract Endpoint is Ownable {
         receipt.bloom = items[2].toBytes();
         // Decode logs
         RLPReader.RLPItem[] memory rlpLogs = items[3].toList();
-        receipt.logs = new bytes[](rlpLogs.length);
+        Log[] memory logs = new Log[](rlpLogs.length);
         for (uint256 i = 0; i < rlpLogs.length; i++) {
-            receipt.logs[i] = rlpLogs[i].toBytes();
+            RLPReader.RLPItem[] memory logItems = rlpLogs[i].toList();
+            logs[i].address_ = logItems[0].toAddress();
+            RLPReader.RLPItem[] memory topicsItems = logItems[1].toList();
+            bytes32[] memory topics = new bytes32[](topicsItems.length);
+            for (uint256 j = 0; j < topicsItems.length; j++) {
+                topics[j] = bytes32(topicsItems[j].toUint());
+            }
+            logs[i].topics = topics;
+            logs[i].data = logItems[2].toBytes();
         }
+        receipt.logs = logs;
         return receipt;
     }
 }
