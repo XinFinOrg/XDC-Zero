@@ -43,6 +43,9 @@ contract Endpoint is Ownable {
         Log[] logs;
     }
 
+    //ra=>content
+    mapping(address => bytes[]) private _payloads;
+
     mapping(uint256 => Chain) private _chains;
 
     /**
@@ -51,13 +54,21 @@ contract Endpoint is Ownable {
     uint256 private _chainId;
 
     /**
-     * @dev payload of the transaction 
+     *
+     * @param payload payload of the packet
+     * chainId of the send chain
+     * sa is send applicaiton
+     * ra is receive applicaiton
+     * content is the data of the packet
      */
-    mapping(bytes => bytes) private _payloads;
-
     event Packet(bytes payload);
 
-    event PacketReceived(uint256 chainId, address ua, bytes content);
+    event PacketReceived(
+        uint256 chainId,
+        address sa,
+        address ra,
+        bytes content
+    );
 
     /**
      * @dev initialize the contract
@@ -67,37 +78,56 @@ contract Endpoint is Ownable {
         _chainId = chainId;
     }
 
+    /**
+     * @dev get hash of the packet event
+     */
     function packetHash() private pure returns (bytes32) {
         return keccak256("Packet(bytes)");
     }
 
-    function send(bytes calldata content) external {
+    /**
+     * @dev send packet to the receive chain
+     * @param ra receive application address
+     * @param content content of the packet
+     */
+    function send(address ra, bytes calldata content) external {
         require(_chainId != 0, "chainId not set");
-        address ua = msg.sender;
-        bytes memory payload = abi.encode(_chainId, ua, content);
+        address sa = msg.sender;
+        bytes memory payload = abi.encode(_chainId, sa, ra, content);
         emit Packet(payload);
     }
 
-    function getPayload(
-        bytes calldata txHash
-    ) external view returns (bytes memory) {
-        return _payloads[txHash];
+    /**
+     * @dev receive packet data length
+     */
+    function getPayloadLength() external view returns (uint256) {
+        address ra = msg.sender;
+        return _payloads[ra].length;
+    }
+
+    /**
+     * @dev receive packet data via ra
+     * @param index index of the payloads
+     */
+    function getPayload(uint256 index) external view returns (bytes memory) {
+        address ra = msg.sender;
+        return _payloads[ra][index];
     }
 
     /**
      * @dev validate transaction proof and save payload
-     * @param sChainId chainId of the send chain
+     * @param cid chainId of the send chain
      * @param key key of the receipt mekle tree
      * @param proof proof of the key of receipt mekle tree
      * @param blockHash blockHash of the receipt
      */
     function validateTransactionProof(
-        uint256 sChainId,
+        uint256 cid,
         bytes memory key,
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
-        Chain memory chain = _chains[sChainId];
+        Chain memory chain = _chains[cid];
         IFullCheckpoint csc = chain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
 
@@ -118,10 +148,18 @@ contract Endpoint is Ownable {
                 receipt.logs[i].address_ == chain.endpoint
             ) {
                 bytes memory payload = receipt.logs[i].data;
-                (uint256 chainId, address ua, bytes memory content) = abi
-                    .decode(payload, (uint256, address, bytes));
+                // receive send packet data
+                (
+                    uint256 chainId,
+                    address sa,
+                    address ra,
+                    bytes memory content
+                ) = abi.decode(payload, (uint256, address, address, bytes));
 
-                emit PacketReceived(chainId, ua, content);
+                require(chainId == cid, "invalid packet chainId");
+                // push data
+                _payloads[ra].push(content);
+                emit PacketReceived(chainId, sa, ra, content);
                 break;
             }
         }
