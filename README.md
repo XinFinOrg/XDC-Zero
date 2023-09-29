@@ -1,62 +1,53 @@
 # XDC Zero Endpoint
 
-The XDC Zero Endpoint is a foundational cross-chain contract designed to both receive and dispatch data packets across different blockchain networks.
+The XDC Zero Endpoint serves as a pivotal cross-chain contract, facilitating both the reception and dispatch of data packets across various blockchain networks.
 
 ## Overview
 
-- **Initialization**: Define the `chainId` of the current blockchain.
-- **Register Chain**: Introduce a new blockchain by specifying its unique identifier, checkpoint contract, and endpoint contract.
-
-- **Send Packet**: Transmit a data packet to the designated receiving chain.
-
+- **Initialization**: Assign the current blockchain's `chainId`.
+- **Register Chain**: Add a new blockchain, detailing its unique identifier, checkpoint contract, and endpoint contract.
+- **Send Packet**: Convey a data packet to the targeted receiving chain.
 - **Validate Transaction Proof**:
+  - Monitor the payload event data from the relayer linked to the sending chain's Zero Endpoint contract.
+  - Extract the `rid` (receiver's chainId).
+  - Utilize the `validateTransactionProof` method on the receiving chain to verify and store the transaction payload data.
+- **Retrieve Payload**: Applications (addressed by `ra`) can seamlessly extract the cross-chain payload data from the Zero Endpoint contract.
 
-  - Listen to the payload event data from the sending chain's Zero Endpoint contract using a relayer.
-  - Extract the `rid` (receiver's chainId) from this data.
-  - Invoke the `validateTransactionProof` method on the receiving chain to authenticate the transaction and archive the payload data.
+## Contract Development and Deployment
 
-- **Retrieve Payload**: Any receiving application (specified by its address `ra`) can effortlessly fetch the cross-chain payload data from the Zero Endpoint contract.
-
-## Contract Building and Testing
-
-### Setting up the Environment
+### Environment Setup
 
 1. **Install Dependencies**
-   Install the necessary dependencies using yarn:
 
    ```shell
    yarn
    ```
 
-2. **Testing**
-   Compile and test the contract using the following commands:
-
+2. **Compile & Test**
    ```shell
    npx hardhat test
    ```
 
-## Contract Setup
+### Contract Configuration
 
-1. **Configuration**
+1. **Setup Configuration Files**
 
-   Complete the fields in `deployment.config.json`:
+   Fill out `deployment.config.json`:
 
-   - `chainId`: set current enpoint chainId
+   - `chainId`: Define the current endpoint chainId.
 
-   Configure your network in `network.config.json`:
+   Update your network details in `network.config.json`:
 
-   - `xdcparentnet`: xdcparentnet RPC URL
-   - `xdcsubnet`: xdcsubnet RPC URL
+   - `xdcparentnet`: RPC URL for xdcparentnet.
+   - `xdcsubnet`: RPC URL for xdcsubnet.
 
-2. **Environment Variables**
+2. **Set Environment Variables**
 
-   Create a `.env` file containing a valid account private key (refer to `.env.sample` for an example).
+   Establish a `.env` file using the template from `.env.sample` and input a valid private key.
 
-## Contract Deployment
+### Deploying the Contract
 
-Deploy the contract and obtain the deployed contract address as follows:
-
-1. **XDC Zero Deployment**
+1. **Deploy XDC Zero**
 
    ```shell
    npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
@@ -64,7 +55,7 @@ Deploy the contract and obtain the deployed contract address as follows:
 
 ## Additional Commands
 
-For further assistance or to execute other operations, utilize the commands below:
+For a deeper dive or other functionalities, refer to the following command list:
 
 ```shell
 npx hardhat accounts
