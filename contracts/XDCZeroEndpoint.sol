@@ -64,11 +64,32 @@ contract XDCZeroEndpoint is Ownable {
      */
     event Packet(bytes payload);
 
+    /**
+     *
+     * @param sid send chain id
+     * @param sa send applicaiton address
+     * @param rid receive chain id
+     * @param ra receive applicaiton address
+     * @param content the data of the packet
+     */
     event PacketReceived(
-        uint256 chainId,
+        uint256 sid,
         address sa,
+        uint256 rid,
         address ra,
         bytes content
+    );
+
+    /**
+     *
+     * @param chainId chainId of the send chain
+     * @param csc checkpoint contract of the receive chain
+     * @param endpoint endpoint contract of the send chain
+     */
+    event ChainRegistered(
+        uint256 chainId,
+        IFullCheckpoint csc,
+        address endpoint
     );
 
     /**
@@ -168,7 +189,7 @@ contract XDCZeroEndpoint is Ownable {
                 require(rid == _chainId, "invalid packet receive chainId");
                 // push data
                 _payloads[ra].push(content);
-                emit PacketReceived(sid, sa, ra, content);
+                emit PacketReceived(sid, sa, rid, ra, content);
                 break;
             }
         }
@@ -186,6 +207,7 @@ contract XDCZeroEndpoint is Ownable {
         address endpoint
     ) external onlyOwner {
         _chains[chainId] = Chain(csc, endpoint);
+        emit ChainRegistered(chainId, csc, endpoint);
     }
 
     /**
