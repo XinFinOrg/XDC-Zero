@@ -6,6 +6,11 @@ import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePat
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPReader} from "./libraries/RLPReader.sol";
 
+/**
+ * @title XDC Zero
+ * @author Galaxy
+ * @notice Cross chain infra contract that receives packet and send packet to different chain
+ */
 contract Endpoint is Ownable {
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
