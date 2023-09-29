@@ -7,7 +7,7 @@ import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPReader} from "./libraries/RLPReader.sol";
 
 /**
- * @title XDC Zero
+ * @title XDC Zero Endpoint
  * @author Galaxy
  * @notice Cross chain infra contract that receives packet and send packet to different chain
  */
