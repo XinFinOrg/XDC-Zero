@@ -30,12 +30,19 @@ contract Endpoint is Ownable {
 
     Config private _config;
 
+    //sender endpoint => bool
+    mapping(address => bool) private _se;
+
     // txHash => payload
     mapping(bytes => bytes) private _payloads;
 
     event Packet(bytes payload);
 
     event PacketReceived(bytes payload);
+
+    function packetHash() private pure returns (bytes32) {
+        return keccak256("Packet(bytes)");
+    }
 
     function send(bytes calldata payload) external {
         emit Packet(payload);
@@ -64,9 +71,17 @@ contract Endpoint is Ownable {
 
         Receipt memory receipt = getReceipt(receiptRlp);
         // TODO
-        bytes memory payload = receipt.logs[0].data;
 
-        emit PacketReceived(payload);
+        for (uint256 i = 0; i < receipt.logs.length; i++) {
+            if (
+                receipt.logs[i].topics[0] == packetHash() &&
+                _se[receipt.logs[i].address_]
+            ) {
+                bytes memory payload = receipt.logs[i].data;
+                emit PacketReceived(payload);
+                break;
+            }
+        }
     }
 
     function getConfig() public view returns (Config memory) {
