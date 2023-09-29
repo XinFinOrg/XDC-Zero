@@ -11,7 +11,7 @@ import {RLPReader} from "./libraries/RLPReader.sol";
  * @author Galaxy
  * @notice Cross chain infra contract that receives packet and send packet to different chain
  */
-contract Endpoint is Ownable {
+contract XDCZeroEndpoint is Ownable {
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
     using MerklePatricia for bytes32;
