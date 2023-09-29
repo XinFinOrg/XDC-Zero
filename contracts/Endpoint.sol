@@ -46,6 +46,7 @@ contract Endpoint is Ownable {
     //ra=>content
     mapping(address => bytes[]) private _payloads;
 
+    //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
 
     /**
@@ -87,13 +88,15 @@ contract Endpoint is Ownable {
 
     /**
      * @dev send packet to the receive chain
+     * @param rid receive chainId
      * @param ra receive application address
      * @param content content of the packet
      */
-    function send(address ra, bytes calldata content) external {
+    function send(uint256 rid, address ra, bytes calldata content) external {
         require(_chainId != 0, "chainId not set");
         address sa = msg.sender;
-        bytes memory payload = abi.encode(_chainId, sa, ra, content);
+        uint256 sid = _chainId;
+        bytes memory payload = abi.encode(sid, sa, rid, ra, content);
         emit Packet(payload);
     }
 
@@ -127,6 +130,7 @@ contract Endpoint is Ownable {
         bytes[] calldata proof,
         bytes32 blockHash
     ) external {
+        require(_chainId != 0, "current chainId not set");
         Chain memory chain = _chains[cid];
         IFullCheckpoint csc = chain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
@@ -150,16 +154,21 @@ contract Endpoint is Ownable {
                 bytes memory payload = receipt.logs[i].data;
                 // receive send packet data
                 (
-                    uint256 chainId,
+                    uint256 sid,
                     address sa,
+                    uint256 rid,
                     address ra,
                     bytes memory content
-                ) = abi.decode(payload, (uint256, address, address, bytes));
+                ) = abi.decode(
+                        payload,
+                        (uint256, address, uint256, address, bytes)
+                    );
 
-                require(chainId == cid, "invalid packet chainId");
+                require(sid == cid, "invalid packet send chainId");
+                require(rid == _chainId, "invalid packet receive chainId");
                 // push data
                 _payloads[ra].push(content);
-                emit PacketReceived(chainId, sa, ra, content);
+                emit PacketReceived(sid, sa, ra, content);
                 break;
             }
         }
