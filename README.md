@@ -1,6 +1,6 @@
 # XDC ZERO: Cross-Chain System 
 
-Elevate blockchain interoperability with the XDC ZERO system, ensuring seamless data transmission and validation across diverse chains.
+Elevate blockchain interoperability , ensuring seamless data transmission and validation across diverse chains.
 
 ## Table of Contents
 
