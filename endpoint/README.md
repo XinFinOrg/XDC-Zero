@@ -19,6 +19,9 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
   - Execute the `validateTransactionProof` method on the recipient chain, authenticating and archiving the transaction payload.
 - **Retrieve Payload**: Applications, identified by `ra`, can easily access the cross-chain payload from the Zero Endpoint contract.
 
+## Workflow
+![Alt text](image.png)
+
 ## Contract Development and Deployment
 
 ### Environment Setup
