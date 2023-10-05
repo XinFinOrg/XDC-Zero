@@ -7,7 +7,7 @@ Achieve unparalleled blockchain interoperability with XDC ZERO, ensuring frictio
 - [Oracle](https://github.com/XinFinOrg/XDC-CSC) ✅ Finished
 - [Endpoint](/endpoint/) 🔄 In Progress
 - [Relayer](/relayer/) ☑️ Upcoming
-- [Frontend](/frontend/) ☑️ Upcoming
+- [Frontend](/frontend/) 🔄 In Progress
 
 ## Key Components
 
