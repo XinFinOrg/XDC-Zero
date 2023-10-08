@@ -16,7 +16,7 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
+        "internalType": "contract XDCZeroEndpoint",
         "name": "endpoint",
         "type": "address"
       }
@@ -99,6 +99,29 @@
         "internalType": "uint256",
         "name": "chainId",
         "type": "uint256"
+      },
+      {
+        "internalType": "contract IFullCheckpoint",
+        "name": "csc",
+        "type": "address"
+      },
+      {
+        "internalType": "contract XDCZeroEndpoint",
+        "name": "endpoint",
+        "type": "address"
+      }
+    ],
+    "name": "editChain",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
       }
     ],
     "name": "getChain",
@@ -111,7 +134,7 @@
             "type": "address"
           },
           {
-            "internalType": "address",
+            "internalType": "contract XDCZeroEndpoint",
             "name": "endpoint",
             "type": "address"
           }
@@ -322,7 +345,7 @@
         "type": "address"
       },
       {
-        "internalType": "address",
+        "internalType": "contract XDCZeroEndpoint",
         "name": "endpoint",
         "type": "address"
       }

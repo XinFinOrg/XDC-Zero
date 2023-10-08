@@ -38,6 +38,7 @@ export default function Home() {
     contracts: eChainKeys?.map((key) => {
       return { ...endpointContract, functionName: "getChain", args: [key] };
     }),
+    scopeKey: rerender,
   });
 
   const eChains = reads1?.map((read) => {
@@ -50,6 +51,21 @@ export default function Home() {
       ...endpointContract,
       functionName: "registerChain",
       args: [data["chainId"], data["csc"], data["endpoint"]],
+    },
+    callback: (confirmed) => {
+      if (confirmed) {
+        setData({});
+        setRerender(rerender + 1);
+      }
+    },
+  };
+
+  const editChain = {
+    buttonName: "Edit Chain",
+    data: {
+      ...endpointContract,
+      functionName: "editChain",
+      args: [data["editChainId"], data["editCsc"], data["editEndpoint"]],
     },
     callback: (confirmed) => {
       if (confirmed) {
@@ -73,6 +89,14 @@ export default function Home() {
             <div className="card-actions justify-end">
               <label
                 className="btn btn-success w-max btn-sm"
+                onClick={() => {
+                  alert("Comming soon");
+                }}
+              >
+                Message Box
+              </label>
+              <label
+                className="btn btn-success w-max btn-sm"
                 htmlFor="registerChain"
               >
                 Register a Chain
@@ -94,10 +118,24 @@ export default function Home() {
                       Remote Enpoint : {eChains?.[index].endpoint}
                     </div>
                     <div className="card-actions justify-end">
-                      <label className="btn btn-warning w-max btn-sm">
+                      <label
+                        className="btn btn-warning w-max btn-sm"
+                        onClick={() => {
+                          alert("Comming soon");
+                        }}
+                      >
                         Send Message
                       </label>
-                      <label className="btn btn-warning w-max btn-sm">
+                      <label
+                        className="btn btn-warning w-max btn-sm"
+                        onClick={(e) => {
+                          setData({
+                            ...data,
+                            editChainId: key,
+                          });
+                        }}
+                        htmlFor="configration"
+                      >
                         Configration
                       </label>
                     </div>
@@ -113,7 +151,7 @@ export default function Home() {
         <div className="modal">
           <div className="modal-box">
             <h3 className="font-bold text-lg">Register a Chain</h3>
-            <p className="py-4">This modal works with a hidden checkbox!</p>
+            <p className="py-4">Please submit your chain specifics</p>
             <div className="grid gap-2">
               <input
                 type="number"
@@ -143,6 +181,44 @@ export default function Home() {
             <div className="modal-action">
               <WriteButton {...registerChain} />
               <label htmlFor="registerChain" className="btn">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="configration" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Edit Chain</h3>
+            <p className="py-4">Please submit your chain specifics</p>
+            <div className="grid gap-2">
+              <input
+                type="number"
+                placeholder={data["editChainId"]}
+                className="input w-full max-w-xs input-bordered"
+                disabled={true}
+              />
+              <input
+                type="text"
+                placeholder="receive chain csc address"
+                className="input w-full max-w-xs input-bordered"
+                onChange={(e) => {
+                  setData({ ...data, editCsc: e.target.value });
+                }}
+              />
+              <input
+                type="text"
+                placeholder="send chain endpoint address"
+                className="input w-full max-w-xs input-bordered"
+                onChange={(e) => {
+                  setData({ ...data, editEndpoint: e.target.value });
+                }}
+              />
+            </div>
+            <div className="modal-action">
+              <WriteButton {...editChain} />
+              <label htmlFor="configration" className="btn">
                 Close!
               </label>
             </div>

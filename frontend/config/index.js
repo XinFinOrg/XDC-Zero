@@ -1,6 +1,6 @@
 const endpointMapping = {
   551: {
-    address: "0x5875f7c1e9EF7fad5d92160b0A6496Dc7233481b",
+    address: "0xAd1Efd9Ea933810DF05C49074b3B9C78af47A115",
   },
 };
 

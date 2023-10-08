@@ -14,12 +14,16 @@ async function main() {
 
   const EthereumTrieDB = await EthereumTrieDBLiberary.deploy();
 
+  await EthereumTrieDB.deployed();
+
   console.log("EthereumTrieDB deploy to ", EthereumTrieDB.address);
 
   const liberary = await hre.ethers.getContractFactory("MerklePatricia", {
     libraries: { EthereumTrieDB: EthereumTrieDB.address },
   });
   const merklePatricia = await liberary.deploy();
+
+  await merklePatricia.deployed();
 
   console.log("merklePatricia deploy to ", merklePatricia.address);
 
