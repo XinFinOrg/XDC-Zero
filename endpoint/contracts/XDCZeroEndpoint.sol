@@ -22,7 +22,7 @@ contract XDCZeroEndpoint is Ownable {
      */
     struct Chain {
         IFullCheckpoint csc;
-        address endpoint;
+        XDCZeroEndpoint endpoint;
     }
 
     /**
@@ -48,6 +48,9 @@ contract XDCZeroEndpoint is Ownable {
 
     //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
+
+    //chainIds
+    uint256[] private _chainKeys;
 
     /**
      * @dev chainId of the current chain
@@ -89,7 +92,7 @@ contract XDCZeroEndpoint is Ownable {
     event ChainRegistered(
         uint256 chainId,
         IFullCheckpoint csc,
-        address endpoint
+        XDCZeroEndpoint endpoint
     );
 
     /**
@@ -130,15 +133,6 @@ contract XDCZeroEndpoint is Ownable {
     }
 
     /**
-     * @dev receive packet data via ra
-     * @param index index of the payloads
-     */
-    function getPayload(uint256 index) external view returns (bytes memory) {
-        address ra = msg.sender;
-        return _payloads[ra][index];
-    }
-
-    /**
      * @dev validate transaction proof and save payload
      * @param cid chainId of the send chain
      * @param key key of the receipt mekle tree
@@ -170,7 +164,7 @@ contract XDCZeroEndpoint is Ownable {
         for (uint256 i = 0; i < receipt.logs.length; i++) {
             if (
                 receipt.logs[i].topics[0] == packetHash() &&
-                receipt.logs[i].address_ == chain.endpoint
+                receipt.logs[i].address_ == address(chain.endpoint)
             ) {
                 bytes memory payload = receipt.logs[i].data;
                 // receive send packet data
@@ -204,9 +198,14 @@ contract XDCZeroEndpoint is Ownable {
     function registerChain(
         uint256 chainId,
         IFullCheckpoint csc,
-        address endpoint
+        XDCZeroEndpoint endpoint
     ) external onlyOwner {
+        for (uint256 i = 0; i < _chainKeys.length; i++) {
+            require(_chainKeys[i] != chainId, "chainId already registered");
+        }
+
         _chains[chainId] = Chain(csc, endpoint);
+        _chainKeys.push(chainId);
         emit ChainRegistered(chainId, csc, endpoint);
     }
 
@@ -239,5 +238,71 @@ contract XDCZeroEndpoint is Ownable {
         }
         receipt.logs = logs;
         return receipt;
+    }
+
+    /**
+     * @dev get chainId of the current chain
+     */
+    function getChainId() external view returns (uint256) {
+        return _chainId;
+    }
+
+    /**
+     * @dev get chainId of the send chain
+     * @param chainId chainId of the send chain
+     */
+    function getChain(
+        uint256 chainId
+    ) external view returns (Chain memory chain) {
+        chain = _chains[chainId];
+    }
+
+    /**
+     * @dev edit chain
+     * @param chainId chainId of the send chain
+     * @param csc checkpoint contract of the receive chain
+     * @param endpoint endpoint contract of the send chain
+     */
+    function editChain(
+        uint256 chainId,
+        IFullCheckpoint csc,
+        XDCZeroEndpoint endpoint
+    ) external onlyOwner {
+        _chains[chainId] = Chain(csc, endpoint);
+    }
+
+    /**
+     * @dev get payload of the receive chain
+     * @param ra receive application address
+     * @param index index of the payloads
+     */
+    function getPayload(
+        address ra,
+        uint256 index
+    ) external view returns (bytes memory) {
+        return getPayloads(ra)[index];
+    }
+
+    /**
+     * @dev get payload of the receive chain
+     * @param ra receive application address
+     */
+    function getPayloads(address ra) public view returns (bytes[] memory) {
+        return _payloads[ra];
+    }
+
+    /**
+     * @dev get payload length of the receive chain
+     * @param ra receive application address
+     */
+    function getPayloadsLength(address ra) external view returns (uint256) {
+        return _payloads[ra].length;
+    }
+
+    /**
+     * @dev get chainIds
+     */
+    function getChainKeys() external view returns (uint256[] memory) {
+        return _chainKeys;
     }
 }
