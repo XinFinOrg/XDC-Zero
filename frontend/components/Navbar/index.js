@@ -3,7 +3,7 @@ import React from "react";
 
 const Navbar = () => {
   return (
-    <div className="navbar items-center h-20">
+    <div className="navbar items-center">
       <div className="navbar-start">
         <div className="font-black ml-2">
           <div className="font-black text-2xl">XDC Zero</div>

@@ -1,12 +1,13 @@
 import Navbar from "../Navbar";
-
+import Footer from "../Footer";
 const Layout = ({ children }) => {
   return (
     <main>
-      <div className="z-50 relative">
-        <Navbar />
-        {children}
-      </div>
+      <Navbar />
+      <div className="divider"></div>
+      <div className="min-h-screen"> {children}</div>
+      <div className="divider"></div>
+      <Footer />
     </main>
   );
 };
