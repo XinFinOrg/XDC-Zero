@@ -78,7 +78,7 @@ export default function Home() {
   return (
     isClient && (
       <>
-        <div className="card shadow-2xl w-[1000px] m-auto mt-8">
+        <div className="card shadow-2xl lg:w-[1000px] m-auto mt-8 whitespace-normal break-words">
           <div className="card-body">
             <div className="font-black">
               Local ChainId : {eChainId?.toString() || "Not Set"}
