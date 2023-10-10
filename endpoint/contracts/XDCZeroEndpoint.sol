@@ -37,7 +37,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         bytes data;
     }
     /**
-     * @dev receipt of the transaction
+     * @dev receipt of the transuaction
      */
     struct Receipt {
         bytes postStateOrStatus;
@@ -45,9 +45,6 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         bytes bloom;
         Log[] logs;
     }
-
-    //ra=>content
-    mapping(address => bytes[]) private _payloads;
 
     //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
@@ -64,26 +61,18 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
      *
      * @param payload payload of the packet
      * chainId of the send chain
-     * sa is send applicaiton
-     * ra is receive applicaiton
-     * content is the data of the packet
+     * sua is send applicaiton
+     * rua is receive applicaiton
+     * data is the data of the packet
      */
     event Packet(bytes payload);
 
-    /**
-     *
-     * @param sid send chain id
-     * @param sa send applicaiton address
-     * @param rid receive chain id
-     * @param ra receive applicaiton address
-     * @param content the data of the packet
-     */
     event PacketReceived(
         uint256 sid,
-        address sa,
+        address sua,
         uint256 rid,
-        address ra,
-        bytes content
+        address rua,
+        bytes data
     );
 
     /**
@@ -117,7 +106,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
      * @dev send packet to the receive chain
      * @param rid receive chainId
      * @param rua receive application address
-     * @param data data of the packet
+     * @param data data of the packet , it will be used to call rua contract
      */
     function send(
         uint256 rid,
@@ -132,21 +121,13 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev receive packet data length
-     */
-    function getPayloadLength() external view returns (uint256) {
-        address ra = msg.sender;
-        return _payloads[ra].length;
-    }
-
-    /**
-     * @dev validate transaction proof and save payload
+     * @dev validate transuaction proof and suave payload
      * @param cid chainId of the send chain
      * @param key key of the receipt mekle tree
      * @param proof proof of the key of receipt mekle tree
      * @param blockHash blockHash of the receipt
      */
-    function validateTransactionProof(
+    function validateTransuactionProof(
         uint256 cid,
         bytes memory key,
         bytes[] calldata proof,
@@ -188,8 +169,6 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
 
                 require(sid == cid, "invalid packet send chainId");
                 require(rid == _chainId, "invalid packet receive chainId");
-                // push data
-                _payloads[rua].push(data);
 
                 // because call audited rua contract ,so dont need value and gas limit
                 rua.functionCall(data);
@@ -280,34 +259,6 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         XDCZeroEndpoint endpoint
     ) external onlyOwner {
         _chains[chainId] = Chain(csc, endpoint);
-    }
-
-    /**
-     * @dev get payload of the receive chain
-     * @param ra receive application address
-     * @param index index of the payloads
-     */
-    function getPayload(
-        address ra,
-        uint256 index
-    ) external view returns (bytes memory) {
-        return getPayloads(ra)[index];
-    }
-
-    /**
-     * @dev get payload of the receive chain
-     * @param ra receive application address
-     */
-    function getPayloads(address ra) public view returns (bytes[] memory) {
-        return _payloads[ra];
-    }
-
-    /**
-     * @dev get payload length of the receive chain
-     * @param ra receive application address
-     */
-    function getPayloadsLength(address ra) external view returns (uint256) {
-        return _payloads[ra].length;
     }
 
     /**
