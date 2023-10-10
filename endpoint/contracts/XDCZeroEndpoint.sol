@@ -49,6 +49,10 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
 
+    mapping(address => bool) private _approvedRua;
+
+    mapping(address => bool) private _approvedSua;
+
     //chainIds
     uint256[] private _chainKeys;
 
@@ -115,6 +119,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     ) external payable {
         require(_chainId != 0, "chainId not set");
         address sua = msg.sender;
+        require(_approvedRua[sua], "sua not approved");
         uint256 sid = _chainId;
         bytes memory payload = abi.encode(sid, sua, rid, rua, data);
         emit Packet(payload);
@@ -172,7 +177,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
 
                 require(sid == cid, "invalid packet send chainId");
                 require(rid == _chainId, "invalid packet receive chainId");
-
+                require(_approvedRua[rua], "rua not approved");
                 // because call audited rua contract ,so dont need value and gas limit
                 rua.functionCall(data);
 
