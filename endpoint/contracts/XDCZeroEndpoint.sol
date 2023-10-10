@@ -149,6 +149,9 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
 
         Receipt memory receipt = getReceipt(receiptRlp);
 
+        //there need verify the receipt contract address , the address must be equals the sender chain endpoint address
+        //TODO receipt.contractAddress==address(chain.endpoint)
+
         for (uint256 i = 0; i < receipt.logs.length; i++) {
             if (
                 receipt.logs[i].topics[0] == packetHash() &&
