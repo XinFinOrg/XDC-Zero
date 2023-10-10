@@ -5,13 +5,16 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPReader} from "./libraries/RLPReader.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title XDC Zero Endpoint
  * @author Galaxy
  * @notice Cross chain infra contract that receives packet and send packet to different chain
  */
-contract XDCZeroEndpoint is Ownable {
+contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
+    using Address for address;
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
     using MerklePatricia for bytes32;
@@ -113,14 +116,18 @@ contract XDCZeroEndpoint is Ownable {
     /**
      * @dev send packet to the receive chain
      * @param rid receive chainId
-     * @param ra receive application address
-     * @param content content of the packet
+     * @param rua receive application address
+     * @param data data of the packet
      */
-    function send(uint256 rid, address ra, bytes calldata content) external {
+    function send(
+        uint256 rid,
+        address rua,
+        bytes calldata data
+    ) external payable {
         require(_chainId != 0, "chainId not set");
-        address sa = msg.sender;
+        address sua = msg.sender;
         uint256 sid = _chainId;
-        bytes memory payload = abi.encode(sid, sa, rid, ra, content);
+        bytes memory payload = abi.encode(sid, sua, rid, rua, data);
         emit Packet(payload);
     }
 
@@ -144,7 +151,7 @@ contract XDCZeroEndpoint is Ownable {
         bytes memory key,
         bytes[] calldata proof,
         bytes32 blockHash
-    ) external {
+    ) external nonReentrant {
         require(_chainId != 0, "current chainId not set");
         Chain memory chain = _chains[cid];
         IFullCheckpoint csc = chain.csc;
@@ -170,10 +177,10 @@ contract XDCZeroEndpoint is Ownable {
                 // receive send packet data
                 (
                     uint256 sid,
-                    address sa,
+                    address sua,
                     uint256 rid,
-                    address ra,
-                    bytes memory content
+                    address rua,
+                    bytes memory data
                 ) = abi.decode(
                         payload,
                         (uint256, address, uint256, address, bytes)
@@ -182,8 +189,12 @@ contract XDCZeroEndpoint is Ownable {
                 require(sid == cid, "invalid packet send chainId");
                 require(rid == _chainId, "invalid packet receive chainId");
                 // push data
-                _payloads[ra].push(content);
-                emit PacketReceived(sid, sa, rid, ra, content);
+                _payloads[rua].push(data);
+
+                // because call audited rua contract ,so dont need value and gas limit
+                rua.functionCall(data);
+
+                emit PacketReceived(sid, sua, rid, rua, data);
                 break;
             }
         }
