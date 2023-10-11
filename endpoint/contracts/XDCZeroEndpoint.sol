@@ -275,4 +275,36 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     function getChainKeys() external view returns (uint256[] memory) {
         return _chainKeys;
     }
+
+    /**
+     * @dev approve rua
+     * @param rua rua address
+     */
+    function approveRua(address rua) external onlyOwner {
+        _approvedRua[rua] = true;
+    }
+
+    /**
+     * @dev revoke rua
+     * @param rua rua address
+     */
+    function revokeRua(address rua) external onlyOwner {
+        _approvedRua[rua] = false;
+    }
+
+    /**
+     * @dev approve sua
+     * @param sua sua address
+     */
+    function approveSua(address sua) external onlyOwner {
+        _approvedSua[sua] = true;
+    }
+
+    /**
+     * @dev revoke sua
+     * @param sua sua address
+     */
+    function revokeSua(address sua) external onlyOwner {
+        _approvedSua[sua] = false;
+    }
 }
