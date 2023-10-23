@@ -2,5 +2,14 @@
 pragma solidity =0.8.19;
 
 interface IFullCheckpoint {
-    function getReceiptHash(bytes32 blockHash) external view returns (bytes32);
+    function getRoots(
+        bytes32 blockHash
+    )
+        external
+        view
+        returns (
+            bytes32 stateRoot,
+            bytes32 transactionsRoot,
+            bytes32 receiptRoot
+        );
 }

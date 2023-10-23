@@ -46,6 +46,10 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         Log[] logs;
     }
 
+    struct Transaction {
+        address to;
+    }
+
     //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
 
@@ -126,16 +130,18 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev validate transuaction proof and suave payload
+     * @dev validate the transaction proof and receipt proof
      * @param cid chainId of the send chain
-     * @param key key of the receipt mekle tree
-     * @param proof proof of the key of receipt mekle tree
-     * @param blockHash blockHash of the receipt
+     * @param key key of the transaction
+     * @param receiptProof receipt proof
+     * @param transactionProof transaction proof
+     * @param blockHash block hash of the transaction
      */
     function validateTransuactionProof(
         uint256 cid,
         bytes memory key,
-        bytes[] calldata proof,
+        bytes[] calldata receiptProof,
+        bytes[] calldata transactionProof,
         bytes32 blockHash
     ) external nonReentrant {
         require(_chainId != 0, "current chainId not set");
@@ -143,16 +149,29 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         IFullCheckpoint csc = chain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
 
-        bytes32 receiptRoot = csc.getReceiptHash(blockHash);
+        (, bytes32 transactionsRoot, bytes32 receiptRoot) = csc.getRoots(
+            blockHash
+        );
 
         bytes[] memory keys = new bytes[](1);
         keys[0] = key;
         bytes memory receiptRlp = receiptRoot
-        .VerifyEthereumProof(proof, keys)[0].value;
+        .VerifyEthereumProof(receiptProof, keys)[0].value;
 
-        require(receiptRlp.length > 0, "invalid proof");
+        require(receiptRlp.length > 0, "invalid receipt proof");
 
         Receipt memory receipt = getReceipt(receiptRlp);
+
+        bytes memory transactionRlp = transactionsRoot
+        .VerifyEthereumProof(transactionProof, keys)[0].value;
+
+        require(transactionRlp.length > 0, "invalid transaction proof");
+        Transaction memory transaction = getTransaction(transactionRlp);
+
+        require(
+            transaction.to == address(chain.endpoint),
+            "invalid endpoint address"
+        );
 
         //there need verify the receipt contract address , the address must be equals the sender chain endpoint address
         //TODO receipt.contractAddress==address(chain.endpoint)
@@ -205,6 +224,16 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
         _chains[chainId] = Chain(csc, endpoint);
         _chainKeys.push(chainId);
         emit ChainRegistered(chainId, csc, endpoint);
+    }
+
+    function getTransaction(
+        bytes memory transactionRlp
+    ) public pure returns (Transaction memory) {
+        RLPReader.RLPItem[] memory items = transactionRlp.toRlpItem().toList();
+
+        Transaction memory transaction;
+        transaction.to = items[3].toAddress();
+        return transaction;
     }
 
     /**
