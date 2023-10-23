@@ -5,7 +5,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 
-const xdc = {
+const xdcdevnet = {
   id: 551,
   name: "XDC Devnet",
   network: "XDC Devnet",
@@ -20,7 +20,25 @@ const xdc = {
   },
 };
 
-const { chains, publicClient } = configureChains([xdc], [publicProvider()]);
+const xdcsubnet = {
+  id: 56162,
+  name: "XDC Subnet",
+  network: "XDC Subnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "XDC",
+    symbol: "XDC",
+  },
+  rpcUrls: {
+    public: { http: ["https://devnetstats.apothem.network/subnet"] },
+    default: { http: ["https://devnetstats.apothem.network/subnet"] },
+  },
+};
+
+const { chains, publicClient } = configureChains(
+  [xdcdevnet, xdcsubnet],
+  [publicProvider()]
+);
 const { connectors } = getDefaultWallets({
   appName: "App",
   projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",

@@ -15,7 +15,7 @@ export default function Home() {
 
   const chainId = useChainId();
 
-  const endpoint = endpointMapping[chainId].address;
+  const endpoint = endpointMapping[chainId]?.address;
 
   const endpointContract = {
     address: endpoint,
