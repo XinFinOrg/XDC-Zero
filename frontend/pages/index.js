@@ -89,14 +89,6 @@ export default function Home() {
             <div className="card-actions justify-end">
               <label
                 className="btn btn-success w-max btn-sm"
-                onClick={() => {
-                  alert("Comming soon");
-                }}
-              >
-                Message Box
-              </label>
-              <label
-                className="btn btn-success w-max btn-sm"
                 htmlFor="registerChain"
               >
                 Register a Chain
@@ -120,11 +112,9 @@ export default function Home() {
                     <div className="card-actions justify-end">
                       <label
                         className="btn btn-warning w-max btn-sm"
-                        onClick={() => {
-                          alert("Comming soon");
-                        }}
+                        htmlFor="crossChainCall"
                       >
-                        Send Message
+                        Cross Chain Call
                       </label>
                       <label
                         className="btn btn-warning w-max btn-sm"
@@ -219,6 +209,26 @@ export default function Home() {
             <div className="modal-action">
               <WriteButton {...editChain} />
               <label htmlFor="configration" className="btn">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="crossChainCall" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <input
+              type="text"
+              placeholder="Receive user application address"
+              className="input input-bordered w-full max-w-xs"
+            />
+            <textarea
+              className="textarea textarea-bordered mt-2 w-full max-w-xs"
+              placeholder="Data"
+            ></textarea>
+            <div className="modal-action">
+              <label htmlFor="crossChainCall" className="btn">
                 Close!
               </label>
             </div>
