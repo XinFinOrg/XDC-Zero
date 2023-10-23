@@ -13,7 +13,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
  * @author Galaxy
  * @notice Cross chain infra contract that receives packet and send packet to different chain
  */
-contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
+contract Endpoint is Ownable, ReentrancyGuard {
     using Address for address;
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
@@ -25,7 +25,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
      */
     struct Chain {
         IFullCheckpoint csc;
-        XDCZeroEndpoint endpoint;
+        Endpoint endpoint;
     }
 
     /**
@@ -92,7 +92,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     event ChainRegistered(
         uint256 chainId,
         IFullCheckpoint csc,
-        XDCZeroEndpoint endpoint
+        Endpoint endpoint
     );
 
     /**
@@ -215,7 +215,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     function registerChain(
         uint256 chainId,
         IFullCheckpoint csc,
-        XDCZeroEndpoint endpoint
+        Endpoint endpoint
     ) external onlyOwner {
         for (uint256 i = 0; i < _chainKeys.length; i++) {
             require(_chainKeys[i] != chainId, "chainId already registered");
@@ -293,7 +293,7 @@ contract XDCZeroEndpoint is Ownable, ReentrancyGuard {
     function editChain(
         uint256 chainId,
         IFullCheckpoint csc,
-        XDCZeroEndpoint endpoint
+        Endpoint endpoint
     ) external onlyOwner {
         _chains[chainId] = Chain(csc, endpoint);
     }
