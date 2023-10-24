@@ -104,6 +104,9 @@ export default function Home() {
               Local Enpoint : {endpoint || "Not Set"}
             </div>
             <div className="card-actions justify-end">
+              <label className="btn btn-success w-max btn-sm">
+                Validate Transaction
+              </label>
               <label
                 className="btn btn-success w-max btn-sm"
                 htmlFor="registerChain"
