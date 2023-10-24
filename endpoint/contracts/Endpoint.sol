@@ -106,7 +106,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
     /**
      * @dev get hash of the packet event
      */
-    function packetHash() private pure returns (bytes32) {
+    function packetHash() public pure returns (bytes32) {
         return keccak256("Packet(bytes)");
     }
 
@@ -129,6 +129,12 @@ contract Endpoint is Ownable, ReentrancyGuard {
         emit Packet(payload);
     }
 
+    /**
+     * @dev get rlp from proof
+     * @param key key of the rlp
+     * @param proof proof of the rlp
+     * @param root root of the rlp
+     */
     function getRlp(
         bytes memory key,
         bytes[] calldata proof,
@@ -164,28 +170,20 @@ contract Endpoint is Ownable, ReentrancyGuard {
             blockHash
         );
 
-        bytes[] memory keys = new bytes[](1);
-        keys[0] = key;
-        bytes memory receiptRlp = receiptRoot
-        .VerifyEthereumProof(receiptProof, keys)[0].value;
+        bytes memory receiptRlp = getRlp(key, receiptProof, receiptRoot);
 
         require(receiptRlp.length > 0, "invalid receipt proof");
 
         Receipt memory receipt = getReceipt(receiptRlp);
 
-        bytes memory transactionRlp = transactionsRoot
-        .VerifyEthereumProof(transactionProof, keys)[0].value;
+        bytes memory transactionRlp = getRlp(
+            key,
+            transactionProof,
+            transactionsRoot
+        );
 
         require(transactionRlp.length > 0, "invalid transaction proof");
         Transaction memory transaction = getTransaction(transactionRlp);
-
-        require(
-            transaction.to == address(chain.endpoint),
-            "invalid endpoint address"
-        );
-
-        //there need verify the receipt contract address , the address must be equals the sender chain endpoint address
-        //TODO receipt.contractAddress==address(chain.endpoint)
 
         for (uint256 i = 0; i < receipt.logs.length; i++) {
             if (
@@ -200,11 +198,12 @@ contract Endpoint is Ownable, ReentrancyGuard {
                     uint256 rid,
                     address rua,
                     bytes memory data
-                ) = abi.decode(
-                        payload,
-                        (uint256, address, uint256, address, bytes)
-                    );
+                ) = getPayload(payload);
 
+                require(
+                    transaction.to == rua,
+                    "invalid sender application address"
+                );
                 require(sid == cid, "invalid packet send chainId");
                 require(rid == _chainId, "invalid packet receive chainId");
                 require(_approvedRua[rua], "rua not approved");
@@ -215,6 +214,25 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 break;
             }
         }
+    }
+
+    function getPayload(
+        bytes memory payload
+    )
+        public
+        pure
+        returns (
+            uint256 sid,
+            address sua,
+            uint256 rid,
+            address rua,
+            bytes memory data
+        )
+    {
+        (sid, sua, rid, rua, data) = abi.decode(
+            payload,
+            (uint256, address, uint256, address, bytes)
+        );
     }
 
     /**
@@ -272,10 +290,22 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 topics[j] = bytes32(topicsItems[j].toUint());
             }
             logs[i].topics = topics;
-            logs[i].data = logItems[2].toBytes();
+            logs[i].data = sliceBytes(logItems[2].toBytes());
         }
         receipt.logs = logs;
         return receipt;
+    }
+
+    function sliceBytes(bytes memory data) public pure returns (bytes memory) {
+        require(data.length >= 64, "Data must be at least 64 bytes long");
+
+        bytes memory slicedData = new bytes(data.length - 64);
+
+        for (uint256 i = 64; i < data.length; i++) {
+            slicedData[i - 64] = data[i];
+        }
+
+        return slicedData;
     }
 
     /**
