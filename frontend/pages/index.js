@@ -98,8 +98,8 @@ export default function Home() {
       args: [
         data["validateCid"],
         data["validateKey"],
-        JSON.parse(data["validateReceiptProof"]),
-        JSON.parse(data["validateTransactionProof"]),
+        JSON.parse(data["validateReceiptProof"] | "[]"),
+        JSON.parse(data["validateTransactionProof"] | "[]"),
         data["validateBlockHash"],
       ],
     },
@@ -110,8 +110,6 @@ export default function Home() {
       }
     },
   };
-
-  console.log(data);
 
   return (
     isClient && (
