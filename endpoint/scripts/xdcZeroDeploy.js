@@ -27,7 +27,7 @@ async function main() {
 
   console.log("merklePatricia deploy to ", merklePatricia.address);
 
-  const factory = await hre.ethers.getContractFactory("XDCZeroEndpoint", {
+  const factory = await hre.ethers.getContractFactory("Endpoint", {
     libraries: { MerklePatricia: merklePatricia.address },
   });
 

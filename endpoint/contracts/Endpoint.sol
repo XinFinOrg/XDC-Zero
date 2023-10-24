@@ -129,6 +129,17 @@ contract Endpoint is Ownable, ReentrancyGuard {
         emit Packet(payload);
     }
 
+    function getRlp(
+        bytes memory key,
+        bytes[] calldata proof,
+        bytes32 root
+    ) public pure returns (bytes memory) {
+        bytes[] memory keys = new bytes[](1);
+        keys[0] = key;
+        bytes memory rlp = root.VerifyEthereumProof(proof, keys)[0].value;
+        return rlp;
+    }
+
     /**
      * @dev validate the transaction proof and receipt proof
      * @param cid chainId of the send chain
