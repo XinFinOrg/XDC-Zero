@@ -61,11 +61,6 @@ contract Endpoint is Ownable, ReentrancyGuard {
     uint256[] private _chainKeys;
 
     /**
-     * @dev chainId of the current chain
-     */
-    uint256 private _chainId;
-
-    /**
      *
      * @param payload payload of the packet
      * chainId of the send chain
@@ -96,14 +91,6 @@ contract Endpoint is Ownable, ReentrancyGuard {
     );
 
     /**
-     * @dev initialize the contract
-     * @param chainId chainId of the current chain
-     */
-    function initialize(uint256 chainId) external {
-        _chainId = chainId;
-    }
-
-    /**
      * @dev get hash of the packet event
      */
     function packetHash() public pure returns (bytes32) {
@@ -121,10 +108,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
         address rua,
         bytes calldata data
     ) external payable {
-        require(_chainId != 0, "chainId not set");
         address sua = msg.sender;
-        require(_approvedRua[sua], "sua not approved");
-        uint256 sid = _chainId;
+        uint256 sid = getChainId();
         bytes memory payload = abi.encode(sid, sua, rid, rua, data);
         emit Packet(payload);
     }
@@ -161,7 +146,6 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes[] calldata transactionProof,
         bytes32 blockHash
     ) external nonReentrant {
-        require(_chainId != 0, "current chainId not set");
         Chain memory chain = _chains[cid];
         IFullCheckpoint csc = chain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
@@ -205,7 +189,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                     "invalid sender application address"
                 );
                 require(sid == cid, "invalid packet send chainId");
-                require(rid == _chainId, "invalid packet receive chainId");
+                require(rid == getChainId(), "invalid packet receive chainId");
                 require(_approvedRua[rua], "rua not approved");
                 // because call audited rua contract ,so dont need value and gas limit
                 rua.functionCall(data);
@@ -296,7 +280,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         return receipt;
     }
 
-    function sliceBytes(bytes memory data) public pure returns (bytes memory) {
+    function sliceBytes(bytes memory data) private pure returns (bytes memory) {
         require(data.length >= 64, "Data must be at least 64 bytes long");
 
         bytes memory slicedData = new bytes(data.length - 64);
@@ -311,8 +295,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
     /**
      * @dev get chainId of the current chain
      */
-    function getChainId() external view returns (uint256) {
-        return _chainId;
+    function getChainId() public view returns (uint256) {
+        return block.chainid;
     }
 
     /**

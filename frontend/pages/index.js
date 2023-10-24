@@ -75,6 +75,23 @@ export default function Home() {
     },
   };
 
+  console.log(data);
+
+  const send = {
+    buttonName: "Send",
+    data: {
+      ...endpointContract,
+      functionName: "send",
+      args: [data["rid"], data["rua"], data["data"]],
+    },
+    callback: (confirmed) => {
+      if (confirmed) {
+        setData({});
+        setRerender(rerender + 1);
+      }
+    },
+  };
+
   return (
     isClient && (
       <>
@@ -113,6 +130,9 @@ export default function Home() {
                       <label
                         className="btn btn-warning w-max btn-sm"
                         htmlFor="crossChainCall"
+                        onClick={() => {
+                          setData({ ...data, rid: key?.toString() });
+                        }}
                       >
                         Cross Chain Call
                       </label>
@@ -147,6 +167,7 @@ export default function Home() {
                 type="number"
                 placeholder="send chain id"
                 className="input w-full max-w-xs input-bordered"
+                value={data["chainId"]}
                 onChange={(e) => {
                   setData({ ...data, chainId: e.target.value });
                 }}
@@ -155,6 +176,7 @@ export default function Home() {
                 type="text"
                 placeholder="receive chain csc address"
                 className="input w-full max-w-xs input-bordered"
+                value={data["csc"]}
                 onChange={(e) => {
                   setData({ ...data, csc: e.target.value });
                 }}
@@ -163,6 +185,7 @@ export default function Home() {
                 type="text"
                 placeholder="send chain endpoint address"
                 className="input w-full max-w-xs input-bordered"
+                value={data["endpoint"]}
                 onChange={(e) => {
                   setData({ ...data, endpoint: e.target.value });
                 }}
@@ -193,6 +216,7 @@ export default function Home() {
                 type="text"
                 placeholder="receive chain csc address"
                 className="input w-full max-w-xs input-bordered"
+                value={data["editCsc"]}
                 onChange={(e) => {
                   setData({ ...data, editCsc: e.target.value });
                 }}
@@ -201,6 +225,7 @@ export default function Home() {
                 type="text"
                 placeholder="send chain endpoint address"
                 className="input w-full max-w-xs input-bordered"
+                value={data["editEndpoint"]}
                 onChange={(e) => {
                   setData({ ...data, editEndpoint: e.target.value });
                 }}
@@ -222,12 +247,21 @@ export default function Home() {
               type="text"
               placeholder="Receive user application address"
               className="input input-bordered w-full max-w-xs"
+              value={data["rua"]}
+              onChange={(e) => {
+                setData({ ...data, rua: e.target.value });
+              }}
             />
             <textarea
               className="textarea textarea-bordered mt-2 w-full max-w-xs"
               placeholder="Data"
-            ></textarea>
+              value={data["data"]}
+              onChange={(e) => {
+                setData({ ...data, data: e.target.value });
+              }}
+            />
             <div className="modal-action">
+              <WriteButton {...send} />
               <label htmlFor="crossChainCall" className="btn">
                 Close!
               </label>

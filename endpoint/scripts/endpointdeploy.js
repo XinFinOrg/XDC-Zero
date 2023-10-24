@@ -5,7 +5,6 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const deployment = require("../deployment.config.json");
 
 async function main() {
   const EthereumTrieDBLiberary = await hre.ethers.getContractFactory(
@@ -34,10 +33,6 @@ async function main() {
   const endpoint = await factory.deploy();
 
   await endpoint.deployed();
-
-  const tx = await endpoint.initialize(deployment?.chainId);
-
-  await tx.wait();
 
   console.log("XDCZeroEndpoint deploy to ", endpoint.address);
 }

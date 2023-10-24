@@ -16,7 +16,7 @@
       },
       {
         "indexed": false,
-        "internalType": "contract XDCZeroEndpoint",
+        "internalType": "contract Endpoint",
         "name": "endpoint",
         "type": "address"
       }
@@ -68,7 +68,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "sa",
+        "name": "sua",
         "type": "address"
       },
       {
@@ -80,18 +80,44 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "ra",
+        "name": "rua",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "bytes",
-        "name": "content",
+        "name": "data",
         "type": "bytes"
       }
     ],
     "name": "PacketReceived",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      }
+    ],
+    "name": "approveRua",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      }
+    ],
+    "name": "approveSua",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
@@ -106,7 +132,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract XDCZeroEndpoint",
+        "internalType": "contract Endpoint",
         "name": "endpoint",
         "type": "address"
       }
@@ -134,12 +160,12 @@
             "type": "address"
           },
           {
-            "internalType": "contract XDCZeroEndpoint",
+            "internalType": "contract Endpoint",
             "name": "endpoint",
             "type": "address"
           }
         ],
-        "internalType": "struct XDCZeroEndpoint.Chain",
+        "internalType": "struct Endpoint.Chain",
         "name": "chain",
         "type": "tuple"
       }
@@ -176,76 +202,40 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "ra",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
+        "internalType": "bytes",
+        "name": "payload",
+        "type": "bytes"
       }
     ],
     "name": "getPayload",
     "outputs": [
       {
+        "internalType": "uint256",
+        "name": "sid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      },
+      {
         "internalType": "bytes",
-        "name": "",
+        "name": "data",
         "type": "bytes"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPayloadLength",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "ra",
-        "type": "address"
-      }
-    ],
-    "name": "getPayloads",
-    "outputs": [
-      {
-        "internalType": "bytes[]",
-        "name": "",
-        "type": "bytes[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "ra",
-        "type": "address"
-      }
-    ],
-    "name": "getPayloadsLength",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -293,12 +283,12 @@
                 "type": "bytes"
               }
             ],
-            "internalType": "struct XDCZeroEndpoint.Log[]",
+            "internalType": "struct Endpoint.Log[]",
             "name": "logs",
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct XDCZeroEndpoint.Receipt",
+        "internalType": "struct Endpoint.Receipt",
         "name": "",
         "type": "tuple"
       }
@@ -309,14 +299,56 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "chainId",
-        "type": "uint256"
+        "internalType": "bytes",
+        "name": "key",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "proof",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "root",
+        "type": "bytes32"
       }
     ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "getRlp",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "transactionRlp",
+        "type": "bytes"
+      }
+    ],
+    "name": "getTransaction",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Endpoint.Transaction",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -333,6 +365,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "packetHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -345,7 +390,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract XDCZeroEndpoint",
+        "internalType": "contract Endpoint",
         "name": "endpoint",
         "type": "address"
       }
@@ -365,24 +410,50 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRua",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      }
+    ],
+    "name": "revokeSua",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "rid",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "ra",
+        "name": "rua",
         "type": "address"
       },
       {
         "internalType": "bytes",
-        "name": "content",
+        "name": "data",
         "type": "bytes"
       }
     ],
     "name": "send",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -412,7 +483,12 @@
       },
       {
         "internalType": "bytes[]",
-        "name": "proof",
+        "name": "receiptProof",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "transactionProof",
         "type": "bytes[]"
       },
       {
@@ -421,7 +497,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "validateTransactionProof",
+    "name": "validateTransuactionProof",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
