@@ -75,8 +75,6 @@ export default function Home() {
     },
   };
 
-  console.log(data);
-
   const send = {
     buttonName: "Send",
     data: {
@@ -92,6 +90,29 @@ export default function Home() {
     },
   };
 
+  const validateTransaction = {
+    buttonName: "validateTransuactionProof",
+    data: {
+      ...endpointContract,
+      functionName: "validateTransuactionProof",
+      args: [
+        data["validateCid"],
+        data["validateKey"],
+        JSON.parse(data["validateReceiptProof"]),
+        JSON.parse(data["validateTransactionProof"]),
+        data["validateBlockHash"],
+      ],
+    },
+    callback: (confirmed) => {
+      if (confirmed) {
+        setData({});
+        setRerender(rerender + 1);
+      }
+    },
+  };
+
+  console.log(data);
+
   return (
     isClient && (
       <>
@@ -104,7 +125,10 @@ export default function Home() {
               Local Enpoint : {endpoint || "Not Set"}
             </div>
             <div className="card-actions justify-end">
-              <label className="btn btn-success w-max btn-sm">
+              <label
+                className="btn btn-success w-max btn-sm"
+                htmlFor="validateTransaction"
+              >
                 Validate Transaction
               </label>
               <label
@@ -266,6 +290,68 @@ export default function Home() {
             <div className="modal-action">
               <WriteButton {...send} />
               <label htmlFor="crossChainCall" className="btn">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Put this part before </body> tag */}
+        <input
+          type="checkbox"
+          id="validateTransaction"
+          className="modal-toggle"
+        />
+        <div className="modal">
+          <div className="modal-box">
+            <input
+              type="text"
+              placeholder="cid"
+              className="input w-full max-w-xs input-bordered"
+              value={data["validateCid"]}
+              onChange={(e) => {
+                setData({ ...data, validateCid: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="key"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["validateKey"]}
+              onChange={(e) => {
+                setData({ ...data, validateKey: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="receiptProof"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["validateReceiptProof"]}
+              onChange={(e) => {
+                setData({ ...data, validateReceiptProof: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="transactionProof"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["validateTransactionProof"]}
+              onChange={(e) => {
+                setData({ ...data, validateTransactionProof: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="blockHash"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["validateBlockHash"]}
+              onChange={(e) => {
+                setData({ ...data, validateBlockHash: e.target.value });
+              }}
+            />
+            <div className="modal-action">
+              <WriteButton {...validateTransaction} />
+              <label htmlFor="validateTransaction" className="btn">
                 Close!
               </label>
             </div>
