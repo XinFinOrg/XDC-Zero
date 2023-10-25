@@ -49,8 +49,6 @@ export default function Home() {
     return read.result;
   });
 
-  console.log(data);
-
   const registerChain = {
     buttonName: "Register a Chain",
     data: {
@@ -81,8 +79,6 @@ export default function Home() {
     },
   };
 
-  console.log(data);
-
   const send = {
     buttonName: "Send",
     data: {
@@ -99,7 +95,7 @@ export default function Home() {
   };
 
   const validateTransaction = {
-    buttonName: "validateTransuactionProof",
+    buttonName: "validate Transuaction Proof",
     data: {
       ...endpointContract,
       functionName: "validateTransuactionProof",
@@ -118,8 +114,6 @@ export default function Home() {
       }
     },
   };
-
-  console.log(oracleContract);
 
   const addHeader = {
     buttonName: "Add Header",
