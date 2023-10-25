@@ -109,6 +109,10 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes calldata data
     ) external payable {
         address sua = msg.sender;
+        if (!msg.sender.isContract()) {
+            sua = address(this);
+        }
+
         uint256 sid = getChainId();
         bytes memory payload = abi.encode(sid, sua, rid, rua, data);
         emit Packet(payload);
@@ -185,12 +189,12 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 ) = getPayload(payload);
 
                 require(
-                    transaction.to == rua,
+                    transaction.to == sua,
                     "invalid sender application address"
                 );
                 require(sid == cid, "invalid packet send chainId");
                 require(rid == getChainId(), "invalid packet receive chainId");
-                require(_approvedRua[rua], "rua not approved");
+
                 // because call audited rua contract ,so dont need value and gas limit
                 rua.functionCall(data);
 

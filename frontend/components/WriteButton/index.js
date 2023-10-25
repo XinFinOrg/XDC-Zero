@@ -43,7 +43,8 @@ const WriteButton = (props) => {
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
               (confirming
-                ? "btn btn-primary btn-outline loading text-xs " + props.className
+                ? "btn btn-primary btn-outline loading text-xs " +
+                  props.className
                 : "btn btn-primary btn-outline text-xs " + props.className)
             }
             // disabled={props?.disabled || !write || confirming}
@@ -51,10 +52,12 @@ const WriteButton = (props) => {
             onClick={() => {
               write?.();
               if (tx) {
-                addRecentTransaction({
-                  hash: tx,
-                  description: props?.buttonName,
-                });
+                try {
+                  addRecentTransaction({
+                    hash: tx,
+                    description: props?.buttonName,
+                  });
+                } catch (e) {}
               }
             }}
           >

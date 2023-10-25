@@ -7,4 +7,8 @@ contract RUA {
     function test() public {
         status = 1;
     }
+
+    function reset() public {
+        status = 0;
+    }
 }

@@ -1,12 +1,13 @@
-const endpointMapping = {
+const contractMapping = {
   551: {
-    address: "0xAd1Efd9Ea933810DF05C49074b3B9C78af47A115",
+    endpoint: "0xF42Dd1B7F6e0fAB4b2bF9c5301E41e7229fD9c1E",
+    oracle: "0x8d6c3B7D1972925019d1C3810747f65C24Db01E3",
   },
   953: {
-    address: "0xc6c75819812D8322e7863bFe2773aC0679292310",
+    endpoint: "0x6722A605566C4FCcF5FE634AAB41DfF6A3d40532",
   },
 };
 
 module.exports = {
-  endpointMapping,
+  contractMapping,
 };

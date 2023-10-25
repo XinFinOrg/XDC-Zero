@@ -1,0 +1,88 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "blockHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "stateRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "transactionsRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "receiptRoot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "addRoot",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "blockHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoots",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "stateRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "transactionsRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "receiptRoot",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "roots",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "stateRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "transactionsRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "receiptRoot",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

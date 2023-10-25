@@ -1,6 +1,7 @@
 import { useAccount, useChainId, useContractReads } from "wagmi";
-import { endpointMapping } from "../config";
+import { contractMapping } from "../config";
 import endpointABI from "../abi/endpointABI.json";
+import oracleABI from "../abi/oracleABI.json";
 import WriteButton from "@/components/WriteButton";
 import { useEffect, useState } from "react";
 export default function Home() {
@@ -15,7 +16,10 @@ export default function Home() {
 
   const chainId = useChainId();
 
-  const endpoint = endpointMapping[chainId]?.address;
+  const endpoint = contractMapping[chainId]?.endpoint;
+  const oracle = contractMapping[chainId]?.oracle;
+
+  const oracleContract = { address: oracle, abi: oracleABI };
 
   const endpointContract = {
     address: endpoint,
@@ -44,6 +48,8 @@ export default function Home() {
   const eChains = reads1?.map((read) => {
     return read.result;
   });
+
+  console.log(data);
 
   const registerChain = {
     buttonName: "Register a Chain",
@@ -75,6 +81,8 @@ export default function Home() {
     },
   };
 
+  console.log(data);
+
   const send = {
     buttonName: "Send",
     data: {
@@ -98,9 +106,31 @@ export default function Home() {
       args: [
         data["validateCid"],
         data["validateKey"],
-        JSON.parse(data["validateReceiptProof"] | "[]"),
-        JSON.parse(data["validateTransactionProof"] | "[]"),
+        JSON.parse(data["validateReceiptProof"] || "[]"),
+        JSON.parse(data["validateTransactionProof"] || "[]"),
         data["validateBlockHash"],
+      ],
+    },
+    callback: (confirmed) => {
+      if (confirmed) {
+        setData({});
+        setRerender(rerender + 1);
+      }
+    },
+  };
+
+  console.log(oracleContract);
+
+  const addHeader = {
+    buttonName: "Add Header",
+    data: {
+      ...oracleContract,
+      functionName: "addRoot",
+      args: [
+        data["addBlockHash"],
+        data["addStateRoot"],
+        data["addTransactionsRoot"],
+        data["addReceiptRoot"],
       ],
     },
     callback: (confirmed) => {
@@ -114,6 +144,12 @@ export default function Home() {
   return (
     isClient && (
       <>
+        <div className="text-center">
+          <label className="btn btn-success" htmlFor="oracle">
+            oracle
+          </label>
+        </div>
+
         <div className="card shadow-2xl lg:w-[1000px] m-auto mt-8 whitespace-normal break-words">
           <div className="card-body">
             <div className="font-black">
@@ -350,6 +386,55 @@ export default function Home() {
             <div className="modal-action">
               <WriteButton {...validateTransaction} />
               <label htmlFor="validateTransaction" className="btn">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="oracle" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <input
+              type="text"
+              placeholder="addBlockHash"
+              className="input w-full max-w-xs input-bordered"
+              value={data["addBlockHash"]}
+              onChange={(e) => {
+                setData({ ...data, addBlockHash: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="addStateRoot"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["addStateRoot"]}
+              onChange={(e) => {
+                setData({ ...data, addStateRoot: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="addTransactionsRoot"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["addTransactionsRoot"]}
+              onChange={(e) => {
+                setData({ ...data, addTransactionsRoot: e.target.value });
+              }}
+            />
+            <input
+              type="text"
+              placeholder="addReceiptRoot"
+              className="input w-full max-w-xs input-bordered mt-1"
+              value={data["addReceiptRoot"]}
+              onChange={(e) => {
+                setData({ ...data, addReceiptRoot: e.target.value });
+              }}
+            />
+
+            <div className="modal-action">
+              <WriteButton {...addHeader} />
+              <label htmlFor="oracle" className="btn">
                 Close!
               </label>
             </div>
