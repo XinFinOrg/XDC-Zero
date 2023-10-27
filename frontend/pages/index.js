@@ -1,4 +1,9 @@
-import { useAccount, useChainId, useContractReads } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useContractReads,
+  usePublicClient,
+} from "wagmi";
 import { contractMapping } from "../config";
 import endpointABI from "../abi/endpointABI.json";
 import oracleABI from "../abi/oracleABI.json";
@@ -8,11 +13,10 @@ export default function Home() {
   const [rerender, setRerender] = useState(0);
   const [data, setData] = useState({});
   const [isClient, setIsClient] = useState(false);
-
+  const publicClient = usePublicClient();
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const address = useAccount();
 
   const chainId = useChainId();
 
@@ -25,6 +29,19 @@ export default function Home() {
     address: endpoint,
     abi: endpointABI,
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      const logs = await publicClient.getContractEvents({
+        ...endpointContract,
+        eventName: "PacketReceived",
+        fromBlock: 0n,
+      });
+      data.logs = logs;
+      setData({ ...data });
+    }
+    fetchData();
+  }, [endpoint]);
 
   const { data: reads0 } = useContractReads({
     contracts: [
@@ -153,6 +170,12 @@ export default function Home() {
               Local Enpoint : {endpoint || "Not Set"}
             </div>
             <div className="card-actions justify-end">
+              <label
+                className="btn btn-success w-max btn-sm"
+                htmlFor="receiveBox"
+              >
+                Rua logs
+              </label>
               <label
                 className="btn btn-success w-max btn-sm"
                 htmlFor="validateTransaction"
@@ -429,6 +452,30 @@ export default function Home() {
             <div className="modal-action">
               <WriteButton {...addHeader} />
               <label htmlFor="oracle" className="btn">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="receiveBox" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            {data?.logs?.map((log) => {
+              const args = log?.args;
+              return (
+                <div className="card shadow-2xl" key={log?.logIndex}>
+                  <div className="card-body overflow-auto">
+                    <div>index:#{log?.logIndex}</div>
+                    <div>rua:{args?.rua}</div>
+                    <div>data:{args?.data}</div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="modal-action">
+              <label htmlFor="receiveBox" className="btn">
                 Close!
               </label>
             </div>
