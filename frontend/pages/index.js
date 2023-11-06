@@ -457,6 +457,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
 
         <input type="checkbox" id="receiveBox" className="modal-toggle" />
         <div className="modal">
