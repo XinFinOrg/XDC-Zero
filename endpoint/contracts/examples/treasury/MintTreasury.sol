@@ -8,14 +8,27 @@ contract MintTreasury {
     //originalToken => TreasuryToken
     mapping(address => TreasuryToken) public treasuryMapping;
 
+    address private _endpoint;
+
+    modifier onlyEndpoint() {
+        require(msg.sender == _endpoint, "only endpoint");
+        _;
+    }
+
+    function init(address endpoint) external {
+        _endpoint = endpoint;
+    }
+
     function mint(
         address originalToken,
+        string calldata name,
+        string calldata symbol,
         address account,
         uint256 amount
-    ) public {
+    ) external onlyEndpoint {
         TreasuryToken token = treasuryMapping[originalToken];
         if (address(token) == address(0)) {
-            token = new TreasuryToken("T", "T");
+            token = new TreasuryToken(name, symbol);
             treasuryMapping[originalToken] = token;
         }
         token.mint(account, amount);
