@@ -6,7 +6,7 @@ import "./TreasuryToken.sol";
 
 contract MintTreasury {
     //originalToken => TreasuryToken
-    mapping(address => TreasuryToken) public treasuryMapping;
+    mapping(address => address) public treasuryMapping;
 
     address private _endpoint;
 
@@ -26,12 +26,12 @@ contract MintTreasury {
         address account,
         uint256 amount
     ) external onlyEndpoint {
-        TreasuryToken token = treasuryMapping[originalToken];
-        if (address(token) == address(0)) {
-            token = new TreasuryToken(name, symbol);
+        address token = treasuryMapping[originalToken];
+        if (token == address(0)) {
+            token = address(new TreasuryToken(name, symbol));
             treasuryMapping[originalToken] = token;
         }
-        token.mint(account, amount);
+        TreasuryToken(token).mint(account, amount);
     }
 
     function burn(address token, uint256 amount) public {
