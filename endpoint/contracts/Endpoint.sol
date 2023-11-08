@@ -26,6 +26,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
     struct Chain {
         IFullCheckpoint csc;
         Endpoint endpoint;
+        uint256 lastIndex;
     }
 
     /**
@@ -57,8 +58,11 @@ contract Endpoint is Ownable, ReentrancyGuard {
 
     mapping(address => bool) private _approvedSua;
 
+    //chainId=>lastIndex
+    mapping(uint256 => uint256) private _chainlastIndexes;
+
     //chainIds
-    uint256[] private _chainKeys;
+    uint256[] private _chainIds;
 
     /**
      *
@@ -114,7 +118,16 @@ contract Endpoint is Ownable, ReentrancyGuard {
         }
 
         uint256 sid = getChainId();
-        bytes memory payload = abi.encode(sid, sua, rid, rua, data);
+
+        bytes memory payload = abi.encode(
+            _chainlastIndexes[rid],
+            sid,
+            sua,
+            rid,
+            rua,
+            data
+        );
+        _chainlastIndexes[rid]++;
         emit Packet(payload);
     }
 
@@ -150,7 +163,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes[] calldata transactionProof,
         bytes32 blockHash
     ) external nonReentrant {
-        Chain memory chain = _chains[cid];
+        Chain storage chain = _chains[cid];
         IFullCheckpoint csc = chain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
 
@@ -199,9 +212,14 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 rua.functionCall(data);
 
                 emit PacketReceived(sid, sua, rid, rua, data);
+                chain.lastIndex++;
                 break;
             }
         }
+    }
+
+    function getChainIndex(uint256 _chainId) external view returns (uint256) {
+        return _chainlastIndexes[_chainId];
     }
 
     function getPayload(
@@ -234,12 +252,13 @@ contract Endpoint is Ownable, ReentrancyGuard {
         IFullCheckpoint csc,
         Endpoint endpoint
     ) external onlyOwner {
-        for (uint256 i = 0; i < _chainKeys.length; i++) {
-            require(_chainKeys[i] != chainId, "chainId already registered");
+        for (uint256 i = 0; i < _chainIds.length; i++) {
+            require(_chainIds[i] != chainId, "chainId already registered");
         }
+        _chains[chainId].csc = csc;
+        _chains[chainId].endpoint = endpoint;
 
-        _chains[chainId] = Chain(csc, endpoint);
-        _chainKeys.push(chainId);
+        _chainIds.push(chainId);
         emit ChainRegistered(chainId, csc, endpoint);
     }
 
@@ -324,14 +343,15 @@ contract Endpoint is Ownable, ReentrancyGuard {
         IFullCheckpoint csc,
         Endpoint endpoint
     ) external onlyOwner {
-        _chains[chainId] = Chain(csc, endpoint);
+        _chains[chainId].csc = csc;
+        _chains[chainId].endpoint = endpoint;
     }
 
     /**
      * @dev get chainIds
      */
-    function getChainKeys() external view returns (uint256[] memory) {
-        return _chainKeys;
+    function getChainIds() external view returns (uint256[] memory) {
+        return _chainIds;
     }
 
     /**
