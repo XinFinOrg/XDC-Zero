@@ -46,17 +46,17 @@ export default function Home() {
   const { data: reads0 } = useContractReads({
     contracts: [
       { ...endpointContract, functionName: "getChainId" },
-      { ...endpointContract, functionName: "getChainKeys" },
+      { ...endpointContract, functionName: "getChainIds" },
     ],
     scopeKey: rerender,
   });
 
   const eChainId = reads0?.[0]?.result;
 
-  const eChainKeys = reads0?.[1]?.result;
+  const eChainIds = reads0?.[1]?.result;
 
   const { data: reads1 } = useContractReads({
-    contracts: eChainKeys?.map((key) => {
+    contracts: eChainIds?.map((key) => {
       return { ...endpointContract, functionName: "getChain", args: [key] };
     }),
     scopeKey: rerender,
@@ -191,7 +191,7 @@ export default function Home() {
             </div>
 
             <div className="divider"></div>
-            {eChainKeys?.map((key, index) => {
+            {eChainIds?.map((key, index) => {
               return (
                 <div className="card shadow-2xl">
                   <div className="card-body">
@@ -457,7 +457,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
 
         <input type="checkbox" id="receiveBox" className="modal-toggle" />
         <div className="modal">

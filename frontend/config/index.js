@@ -1,10 +1,10 @@
 const contractMapping = {
   551: {
-    endpoint: "0xF42Dd1B7F6e0fAB4b2bF9c5301E41e7229fD9c1E",
+    endpoint: "0xc77f4F74FE5E0416A8e35285332f189954928834",
     oracle: "0x8d6c3B7D1972925019d1C3810747f65C24Db01E3",
   },
   953: {
-    endpoint: "0x6722A605566C4FCcF5FE634AAB41DfF6A3d40532",
+    endpoint: "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
   },
 };
 
