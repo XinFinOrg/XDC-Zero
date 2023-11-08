@@ -218,6 +218,10 @@ contract Endpoint is Ownable, ReentrancyGuard {
         }
     }
 
+    function getChainIndex(uint256 _chainId) external view returns (uint256) {
+        return _chainlastIndexes[_chainId];
+    }
+
     function getPayload(
         bytes memory payload
     )
