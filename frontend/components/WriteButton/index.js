@@ -42,10 +42,8 @@ const WriteButton = (props) => {
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              (confirming
-                ? "btn btn-primary btn-outline loading text-xs " +
-                  props.className
-                : "btn btn-primary btn-outline text-xs " + props.className)
+              "btn btn-primary btn-outline text-xs " +
+              props.className
             }
             // disabled={props?.disabled || !write || confirming}
             style={{ minWidth: 112 }}
@@ -61,6 +59,12 @@ const WriteButton = (props) => {
               }
             }}
           >
+            {confirming && (
+              <>
+                <span className="loading loading-spinner"></span>loading
+              </>
+            )}
+
             {confirming ? lang[locale]?.confirming : props?.buttonName}
           </button>
         )}
