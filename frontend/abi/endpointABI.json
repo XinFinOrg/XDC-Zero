@@ -62,6 +62,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "sid",
         "type": "uint256"
       },
@@ -233,6 +239,11 @@
     ],
     "name": "getPayload",
     "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "sid",
@@ -521,7 +532,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "validateTransuactionProof",
+    "name": "validateTransactionProof",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

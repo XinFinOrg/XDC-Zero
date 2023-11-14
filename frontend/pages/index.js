@@ -37,6 +37,8 @@ export default function Home() {
         eventName: "PacketReceived",
         fromBlock: 0n,
       });
+
+      console.log(logs);
       data.logs = logs;
       setData({ ...data });
     }
