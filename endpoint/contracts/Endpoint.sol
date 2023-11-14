@@ -120,6 +120,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
 
         uint256 sid = getChainId();
 
+        _chainlastIndexes[rid]++;
         bytes memory payload = abi.encode(
             _chainlastIndexes[rid],
             sid,
@@ -128,7 +129,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
             rua,
             data
         );
-        _chainlastIndexes[rid]++;
+
         emit Packet(payload);
     }
 
