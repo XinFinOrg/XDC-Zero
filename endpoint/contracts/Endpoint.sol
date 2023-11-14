@@ -158,7 +158,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @param transactionProof transaction proof
      * @param blockHash block hash of the transaction
      */
-    function validateTransuactionProof(
+    function validateTransactionProof(
         uint256 cid,
         bytes memory key,
         bytes[] calldata receiptProof,
