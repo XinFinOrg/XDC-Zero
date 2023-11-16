@@ -114,10 +114,10 @@ export default function Home() {
   };
 
   const validateTransaction = {
-    buttonName: "validate Transuaction Proof",
+    buttonName: "validate Transaction Proof",
     data: {
       ...endpointContract,
-      functionName: "validateTransuactionProof",
+      functionName: "validateTransactionProof",
       args: [
         data["validateCid"],
         data["validateKey"],
@@ -381,7 +381,10 @@ export default function Home() {
               className="input w-full max-w-xs input-bordered mt-1"
               value={data["validateReceiptProof"]}
               onChange={(e) => {
-                setData({ ...data, validateReceiptProof: e.target.value });
+                setData({
+                  ...data,
+                  validateReceiptProof: e.target.value?.replaceAll("'", '"'),
+                });
               }}
             />
             <input
@@ -390,7 +393,13 @@ export default function Home() {
               className="input w-full max-w-xs input-bordered mt-1"
               value={data["validateTransactionProof"]}
               onChange={(e) => {
-                setData({ ...data, validateTransactionProof: e.target.value });
+                setData({
+                  ...data,
+                  validateTransactionProof: e.target.value?.replaceAll(
+                    "'",
+                    '"'
+                  ),
+                });
               }}
             />
             <input
