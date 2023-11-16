@@ -157,11 +157,11 @@ export default function Home() {
   return (
     isClient && (
       <>
-        <div className="text-center">
+        {/* <div className="text-center">
           <label className="btn btn-success" htmlFor="oracle">
             oracle
           </label>
-        </div>
+        </div> */}
 
         <div className="card shadow-2xl lg:w-[1000px] m-auto mt-8 whitespace-normal break-words">
           <div className="card-body">
