@@ -12,7 +12,7 @@ const Footer = () => {
         <header className="footer-title">Services</header>
         <a
           className="link link-hover"
-          href="https://github.com/GalaxySciTech/XDC-Zero"
+          href="https://github.com/XinFinOrg/XDC-Zero"
           target="_blank"
         >
           Gihutb
