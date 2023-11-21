@@ -17,6 +17,13 @@ const Footer = () => {
         >
           Gihutb
         </a>
+        <a
+          className="link link-hover"
+          href="https://t.me/xdczero"
+          target="_blank"
+        >
+          Telegram
+        </a>
       </nav>
       <nav>
         <header className="footer-title">Company</header>
