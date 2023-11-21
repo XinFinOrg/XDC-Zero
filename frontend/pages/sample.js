@@ -30,7 +30,7 @@ const Sample = () => {
     },
   };
   const reset = {
-    buttonName: "reset",
+    buttonName: "reset status to 0",
     data: {
       ...sampleContract,
       functionName: "reset",
