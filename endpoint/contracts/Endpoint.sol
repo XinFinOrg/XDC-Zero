@@ -75,6 +75,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
     event Packet(bytes payload);
 
     event PacketReceived(
+        uint256 index,
         uint256 sid,
         address sua,
         uint256 rid,
@@ -119,6 +120,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
 
         uint256 sid = getChainId();
 
+        _chainlastIndexes[rid]++;
         bytes memory payload = abi.encode(
             _chainlastIndexes[rid],
             sid,
@@ -127,7 +129,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
             rua,
             data
         );
-        _chainlastIndexes[rid]++;
+
         emit Packet(payload);
     }
 
@@ -156,7 +158,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @param transactionProof transaction proof
      * @param blockHash block hash of the transaction
      */
-    function validateTransuactionProof(
+    function validateTransactionProof(
         uint256 cid,
         bytes memory key,
         bytes[] calldata receiptProof,
@@ -194,6 +196,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 bytes memory payload = receipt.logs[i].data;
                 // receive send packet data
                 (
+                    uint256 index,
                     uint256 sid,
                     address sua,
                     uint256 rid,
@@ -211,7 +214,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 // because call audited rua contract ,so dont need value and gas limit
                 rua.functionCall(data);
 
-                emit PacketReceived(sid, sua, rid, rua, data);
+                emit PacketReceived(index, sid, sua, rid, rua, data);
                 chain.lastIndex++;
                 break;
             }
@@ -228,6 +231,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         public
         pure
         returns (
+            uint256 index,
             uint256 sid,
             address sua,
             uint256 rid,
@@ -235,9 +239,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
             bytes memory data
         )
     {
-        (sid, sua, rid, rua, data) = abi.decode(
+        (index, sid, sua, rid, rua, data) = abi.decode(
             payload,
-            (uint256, address, uint256, address, bytes)
+            (uint256, uint256, address, uint256, address, bytes)
         );
     }
 

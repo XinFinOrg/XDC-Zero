@@ -21,7 +21,7 @@ const xdcdevnet = {
 };
 
 const xdcsubnet = {
-  id: 953,
+  id: 8851,
   name: "XDC Subnet",
   network: "XDC Subnet",
   nativeCurrency: {

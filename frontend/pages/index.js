@@ -37,6 +37,8 @@ export default function Home() {
         eventName: "PacketReceived",
         fromBlock: 0n,
       });
+
+      console.log(logs);
       data.logs = logs;
       setData({ ...data });
     }
@@ -46,17 +48,17 @@ export default function Home() {
   const { data: reads0 } = useContractReads({
     contracts: [
       { ...endpointContract, functionName: "getChainId" },
-      { ...endpointContract, functionName: "getChainKeys" },
+      { ...endpointContract, functionName: "getChainIds" },
     ],
     scopeKey: rerender,
   });
 
   const eChainId = reads0?.[0]?.result;
 
-  const eChainKeys = reads0?.[1]?.result;
+  const eChainIds = reads0?.[1]?.result;
 
   const { data: reads1 } = useContractReads({
-    contracts: eChainKeys?.map((key) => {
+    contracts: eChainIds?.map((key) => {
       return { ...endpointContract, functionName: "getChain", args: [key] };
     }),
     scopeKey: rerender,
@@ -112,10 +114,10 @@ export default function Home() {
   };
 
   const validateTransaction = {
-    buttonName: "validate Transuaction Proof",
+    buttonName: "validate Transaction Proof",
     data: {
       ...endpointContract,
-      functionName: "validateTransuactionProof",
+      functionName: "validateTransactionProof",
       args: [
         data["validateCid"],
         data["validateKey"],
@@ -155,11 +157,11 @@ export default function Home() {
   return (
     isClient && (
       <>
-        <div className="text-center">
+        {/* <div className="text-center">
           <label className="btn btn-success" htmlFor="oracle">
             oracle
           </label>
-        </div>
+        </div> */}
 
         <div className="card shadow-2xl lg:w-[1000px] m-auto mt-8 whitespace-normal break-words">
           <div className="card-body">
@@ -191,7 +193,7 @@ export default function Home() {
             </div>
 
             <div className="divider"></div>
-            {eChainKeys?.map((key, index) => {
+            {eChainIds?.map((key, index) => {
               return (
                 <div className="card shadow-2xl">
                   <div className="card-body">
@@ -379,7 +381,10 @@ export default function Home() {
               className="input w-full max-w-xs input-bordered mt-1"
               value={data["validateReceiptProof"]}
               onChange={(e) => {
-                setData({ ...data, validateReceiptProof: e.target.value });
+                setData({
+                  ...data,
+                  validateReceiptProof: e.target.value?.replaceAll("'", '"'),
+                });
               }}
             />
             <input
@@ -388,7 +393,13 @@ export default function Home() {
               className="input w-full max-w-xs input-bordered mt-1"
               value={data["validateTransactionProof"]}
               onChange={(e) => {
-                setData({ ...data, validateTransactionProof: e.target.value });
+                setData({
+                  ...data,
+                  validateTransactionProof: e.target.value?.replaceAll(
+                    "'",
+                    '"'
+                  ),
+                });
               }}
             />
             <input
@@ -457,7 +468,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
 
         <input type="checkbox" id="receiveBox" className="modal-toggle" />
         <div className="modal">
