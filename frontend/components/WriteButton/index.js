@@ -36,14 +36,13 @@ const WriteButton = (props) => {
 
   return (
     mounted && (
-      <>
+      <div className={props.className}>
         {!isConnected && <ConnectButton />}
         {isConnected && (
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
-              "btn btn-primary btn-outline text-xs " +
-              props.className
+              "btn btn-primary btn-outline text-xs "
             }
             // disabled={props?.disabled || !write || confirming}
             style={{ minWidth: 112 }}
@@ -68,7 +67,7 @@ const WriteButton = (props) => {
             {confirming ? lang[locale]?.confirming : props?.buttonName}
           </button>
         )}
-      </>
+      </div>
     )
   );
 };

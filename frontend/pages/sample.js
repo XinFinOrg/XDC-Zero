@@ -43,12 +43,12 @@ const Sample = () => {
   };
 
   return (
-    <div className="text-center">
+    <div className="text-center w-96 m-auto">
       <div>Application : {sample}</div>
       <div>status : {String(status)}</div>
 
       <WriteButton {...test} />
-      <WriteButton {...reset} className="m-1" />
+      <WriteButton {...reset} className="mt-1" />
     </div>
   );
 };
