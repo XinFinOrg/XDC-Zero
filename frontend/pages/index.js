@@ -477,7 +477,8 @@ export default function Home() {
               return (
                 <div className="card shadow-2xl" key={log?.logIndex}>
                   <div className="card-body overflow-auto">
-                    <div>index:#{log?.logIndex}</div>
+                    <div>sid:{args?.sid?.toString()}</div>
+                    <div>index:#{args?.index?.toString()}</div>
                     <div>rua:{args?.rua}</div>
                     <div>data:{args?.data}</div>
                   </div>

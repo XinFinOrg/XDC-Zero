@@ -1,15 +1,19 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React from "react";
-
+import Link from "next/link";
 const Navbar = () => {
   return (
     <div className="navbar items-center">
       <div className="navbar-start">
-        <div className="font-black ml-2">
-          <div className="font-black text-2xl">XDC Zero</div>
-        </div>
+        <Link href={"/"}>
+          <div className="font-black ml-2">
+            <div className="font-black text-2xl">XDC Zero</div>
+          </div>
+        </Link>
       </div>
-      <div className="navbar-center"></div>
+      <div className="navbar-center">
+        <Link href="/sample">Sample application</Link>
+      </div>
       <div className="navbar-end gap-2">
         <ConnectButton />
         <label className="swap swap-rotate">
