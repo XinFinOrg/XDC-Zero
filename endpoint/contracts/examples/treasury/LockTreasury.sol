@@ -9,10 +9,6 @@ import {IEndpoint} from "../../interfaces/IEndpoint.sol";
 contract LockTreasury {
     using SafeERC20 for IERC20Metadata;
 
-    uint256 private _rid;
-
-    address private _rua;
-
     address private _endpoint;
 
     modifier onlyEndpoint() {
@@ -20,13 +16,16 @@ contract LockTreasury {
         _;
     }
 
-    function init(uint256 rid, address rua, address endpoint) external {
-        _rid = rid;
-        _rua = rua;
+    function init(address endpoint) external {
         _endpoint = endpoint;
     }
 
-    function lock(address token, uint256 amount) external {
+    function lock(
+        uint256 rid,
+        address rua,
+        address token,
+        uint256 amount
+    ) external {
         IERC20Metadata(token).safeTransferFrom(
             msg.sender,
             address(this),
@@ -42,7 +41,7 @@ contract LockTreasury {
             msg.sender,
             amount
         );
-        IEndpoint(_endpoint).send(_rid, _rua, data);
+        IEndpoint(_endpoint).send(rid, rua, data);
     }
 
     function unlock(address token, uint256 amount) external onlyEndpoint {
