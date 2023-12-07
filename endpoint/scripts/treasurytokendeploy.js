@@ -9,7 +9,7 @@ const hre = require("hardhat");
 async function main() {
   const factory = await hre.ethers.getContractFactory("TreasuryToken");
 
-  const treasuryToken = await factory.deploy();
+  const treasuryToken = await factory.deploy("test","test");
 
   await treasuryToken.deployed();
 

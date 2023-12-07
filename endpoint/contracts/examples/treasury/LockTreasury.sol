@@ -11,21 +11,22 @@ contract LockTreasury {
 
     address private _endpoint;
 
+    uint256 private _rid;
+
+    address private _rua;
+
     modifier onlyEndpoint() {
         require(msg.sender == _endpoint, "only endpoint");
         _;
     }
 
-    function init(address endpoint) external {
+    constructor(address endpoint, uint256 rid, address rua) {
         _endpoint = endpoint;
+        _rid = rid;
+        _rua = rua;
     }
 
-    function lock(
-        uint256 rid,
-        address rua,
-        address token,
-        uint256 amount
-    ) external {
+    function lock(address token, uint256 amount) external {
         IERC20Metadata(token).safeTransferFrom(
             msg.sender,
             address(this),
@@ -41,10 +42,14 @@ contract LockTreasury {
             msg.sender,
             amount
         );
-        IEndpoint(_endpoint).send(rid, rua, data);
+        IEndpoint(_endpoint).send(_rid, _rua, data);
     }
 
     function unlock(address token, uint256 amount) external onlyEndpoint {
         IERC20Metadata(token).safeTransfer(msg.sender, amount);
+    }
+
+    function setEndpoint(address endpoint) external onlyEndpoint {
+        _endpoint = endpoint;
     }
 }

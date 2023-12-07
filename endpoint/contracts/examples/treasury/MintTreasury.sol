@@ -15,7 +15,7 @@ contract MintTreasury {
         _;
     }
 
-    function init(address endpoint) external {
+    constructor(address endpoint) {
         _endpoint = endpoint;
     }
 
@@ -36,5 +36,9 @@ contract MintTreasury {
 
     function burn(address token, uint256 amount) public {
         TreasuryToken(token).burnFrom(msg.sender, amount);
+    }
+
+    function setEndpoint(address endpoint) external onlyEndpoint {
+        _endpoint = endpoint;
     }
 }

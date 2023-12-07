@@ -193,7 +193,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 receipt.logs[i].topics[0] == packetHash() &&
                 receipt.logs[i].address_ == address(chain.endpoint)
             ) {
-                bytes memory payload = receipt.logs[i].data;
+                bytes memory payload = sliceBytes(receipt.logs[i].data);
                 // receive send packet data
                 (
                     uint256 index,
@@ -301,7 +301,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 topics[j] = bytes32(topicsItems[j].toUint());
             }
             logs[i].topics = topics;
-            logs[i].data = sliceBytes(logItems[2].toBytes());
+            logs[i].data = logItems[2].toBytes();
         }
         receipt.logs = logs;
         return receipt;
