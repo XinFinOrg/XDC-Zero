@@ -5,8 +5,12 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const deploy = require("../deploy.json");
 
 async function main() {
+  const networkName = hre.network.name;
+  console.log(networkName);
+
   const EthereumTrieDBLiberary = await hre.ethers.getContractFactory(
     "EthereumTrieDB"
   );
@@ -35,6 +39,27 @@ async function main() {
   await endpoint.deployed();
 
   console.log("XDCZeroEndpoint deploy to ", endpoint.address);
+
+  const deployConfig = deploy[networkName];
+  if (deployConfig) {
+    const csc = deployConfig.csc;
+    const otherSideEndpoint = deployConfig.otherSideEndpoint;
+    const otherSideChainId = deployConfig.otherSideChainId;
+    const tx = await endpoint.registerChain(
+      otherSideChainId,
+      csc,
+      otherSideEndpoint
+    );
+    await tx.wait();
+    console.log(
+      "register chain success csc ",
+      csc,
+      " otherSideEndpoint ",
+      otherSideEndpoint,
+      " otherSideChainId ",
+      otherSideChainId
+    );
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
