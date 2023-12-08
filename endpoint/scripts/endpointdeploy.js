@@ -5,7 +5,7 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const deploy = require("../deploy.json");
+const deploy = require("../endpointdeploy.json");
 
 async function main() {
   const networkName = hre.network.name;
