@@ -35,12 +35,15 @@ contract LockTreasury {
         string memory name = IERC20Metadata(token).name();
         string memory symbol = IERC20Metadata(token).symbol();
         bytes memory data = abi.encodeWithSelector(
-            bytes4(keccak256("mint(address,string,string,address,uint256)")),
+            bytes4(
+                keccak256("mint(address,string,string,address,uint256,uint256)")
+            ),
             token,
             name,
             symbol,
             msg.sender,
-            amount
+            amount,
+            getChainId()
         );
         IEndpoint(_endpoint).send(_rid, _rua, data);
     }
@@ -51,5 +54,12 @@ contract LockTreasury {
 
     function setEndpoint(address endpoint) external onlyEndpoint {
         _endpoint = endpoint;
+    }
+
+    /**
+     * @dev get chainId of the current chain
+     */
+    function getChainId() public view returns (uint256) {
+        return block.chainid;
     }
 }

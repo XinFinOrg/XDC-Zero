@@ -6,7 +6,8 @@ import "./TreasuryToken.sol";
 
 contract MintTreasury {
     //originalToken => TreasuryToken
-    mapping(address => address) public treasuryMapping;
+
+    mapping(uint256 => mapping(address => address)) public treasuryMapping;
 
     address private _endpoint;
 
@@ -24,12 +25,13 @@ contract MintTreasury {
         string calldata name,
         string calldata symbol,
         address account,
-        uint256 amount
+        uint256 amount,
+        uint256 chainId
     ) external onlyEndpoint {
-        address token = treasuryMapping[originalToken];
+        address token = treasuryMapping[chainId][originalToken];
         if (token == address(0)) {
             token = address(new TreasuryToken(name, symbol));
-            treasuryMapping[originalToken] = token;
+            treasuryMapping[chainId][originalToken] = token;
         }
         TreasuryToken(token).mint(account, amount);
     }
