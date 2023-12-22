@@ -10,7 +10,7 @@ contract TreasuryToken is ERC20Burnable, Ownable {
         string memory symbol_
     ) ERC20(name_, symbol_) {}
 
-    function mint(address account, uint256 amount) external onlyOwner {
+    function mint(address account, uint256 amount) external {
         _mint(account, amount);
     }
 }
