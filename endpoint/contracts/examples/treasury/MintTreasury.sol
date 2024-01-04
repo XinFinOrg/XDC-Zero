@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.19;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "./TreasuryToken.sol";
+import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import {TreasuryToken} from "./TreasuryToken.sol";
+import {IEndpoint} from "../../interfaces/IEndpoint.sol";
 
 contract MintTreasury {
     //originalToken => TreasuryToken
@@ -36,8 +37,24 @@ contract MintTreasury {
         TreasuryToken(token).mint(account, amount);
     }
 
-    function burn(address token, uint256 amount) public {
+    function burn(
+        uint256 rid,
+        address rua,
+        address originalToken,
+        address token,
+        uint256 amount
+    ) public {
+        require(
+            token == treasuryMapping[rid][originalToken],
+            "token not match"
+        );
         TreasuryToken(token).burnFrom(msg.sender, amount);
+        bytes memory data = abi.encodeWithSelector(
+            bytes4(keccak256("unlock(address,uint256)")),
+            token,
+            amount
+        );
+        IEndpoint(_endpoint).send(rid, rua, data);
     }
 
     function setEndpoint(address endpoint) external onlyEndpoint {
