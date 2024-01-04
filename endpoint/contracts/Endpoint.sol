@@ -361,6 +361,12 @@ contract Endpoint is Ownable, ReentrancyGuard {
         return _chainIds;
     }
 
+    /**
+     *
+     * @param rid receive chainId
+     * @param rua receive application address
+     * @param sua send application address
+     */
     function approveApplication(
         uint256 rid,
         address rua,
@@ -370,6 +376,12 @@ contract Endpoint is Ownable, ReentrancyGuard {
         approveSua(sua);
     }
 
+    /**
+     *
+     * @param rid receive chainId
+     * @param rua receive application address
+     * @param sua send application address
+     */
     function revokeApplication(
         uint256 rid,
         address rua,
