@@ -6,8 +6,8 @@ import {TreasuryToken} from "./TreasuryToken.sol";
 import {IEndpoint} from "../../interfaces/IEndpoint.sol";
 
 contract MintTreasury {
-    //originalToken => TreasuryToken
 
+    //chainId=>originalToken => TreasuryToken
     mapping(uint256 => mapping(address => address)) public treasuryMapping;
 
     address private _endpoint;
