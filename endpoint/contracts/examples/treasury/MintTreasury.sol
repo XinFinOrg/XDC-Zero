@@ -42,7 +42,8 @@ contract MintTreasury {
         address rua,
         address originalToken,
         address token,
-        uint256 amount
+        uint256 amount,
+        address recv
     ) public {
         require(
             token == treasuryMapping[rid][originalToken],
@@ -50,9 +51,10 @@ contract MintTreasury {
         );
         TreasuryToken(token).burnFrom(msg.sender, amount);
         bytes memory data = abi.encodeWithSelector(
-            bytes4(keccak256("unlock(address,uint256)")),
+            bytes4(keccak256("unlock(address,uint256,address)")),
             token,
-            amount
+            amount,
+            recv
         );
         IEndpoint(_endpoint).send(rid, rua, data);
     }

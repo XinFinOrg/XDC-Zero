@@ -26,7 +26,7 @@ contract LockTreasury {
         _rua = rua;
     }
 
-    function lock(address token, uint256 amount) external {
+    function lock(address token, uint256 amount, address recv) external {
         IERC20Metadata(token).safeTransferFrom(
             msg.sender,
             address(this),
@@ -41,15 +41,19 @@ contract LockTreasury {
             token,
             name,
             symbol,
-            msg.sender,
+            recv,
             amount,
             getChainId()
         );
         IEndpoint(_endpoint).send(_rid, _rua, data);
     }
 
-    function unlock(address token, uint256 amount) external onlyEndpoint {
-        IERC20Metadata(token).safeTransfer(msg.sender, amount);
+    function unlock(
+        address token,
+        uint256 amount,
+        address recv
+    ) external onlyEndpoint {
+        IERC20Metadata(token).safeTransfer(recv, amount);
     }
 
     function setEndpoint(address endpoint) external onlyEndpoint {
