@@ -361,11 +361,29 @@ contract Endpoint is Ownable, ReentrancyGuard {
         return _chainIds;
     }
 
+    function approveApplication(
+        uint256 rid,
+        address rua,
+        address sua
+    ) external onlyOwner {
+        approveRua(rid, rua);
+        approveSua(sua);
+    }
+
+    function revokeApplication(
+        uint256 rid,
+        address rua,
+        address sua
+    ) external onlyOwner {
+        revokeRua(rid, rua);
+        revokeSua(sua);
+    }
+
     /**
      * @dev approve rua
      * @param rua rua address
      */
-    function approveRua(uint256 rid, address rua) external onlyOwner {
+    function approveRua(uint256 rid, address rua) public onlyOwner {
         _approvedRua[rid][rua] = true;
     }
 
@@ -373,7 +391,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @dev revoke rua
      * @param rua rua address
      */
-    function revokeRua(uint256 rid, address rua) external onlyOwner {
+    function revokeRua(uint256 rid, address rua) public onlyOwner {
         _approvedRua[rid][rua] = false;
     }
 
@@ -381,7 +399,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @dev approve sua
      * @param sua sua address
      */
-    function approveSua(address sua) external onlyOwner {
+    function approveSua(address sua) public onlyOwner {
         _approvedSua[sua] = true;
     }
 
@@ -389,7 +407,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @dev revoke sua
      * @param sua sua address
      */
-    function revokeSua(address sua) external onlyOwner {
+    function revokeSua(address sua) public onlyOwner {
         _approvedSua[sua] = false;
     }
 }
