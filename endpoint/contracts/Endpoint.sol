@@ -118,6 +118,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
             sua = address(this);
         }
 
+        require(_approvedSua[sua], "sua not approved");
+        require(_approvedRua[rua], "rua not approved");
+
         uint256 sid = getChainId();
 
         _chainlastIndexes[rid]++;
