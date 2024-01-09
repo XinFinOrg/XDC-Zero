@@ -7,13 +7,13 @@
 const hre = require("hardhat");
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("MintTreasury");
+  const factory = await hre.ethers.getContractFactory("ParentnetTreasury");
 
-  const mintTreasury = await factory.deploy("0xe974de4A684bb358Bc9141Cd0187010e998854F5");
+  const parentnetTreasury = await factory.deploy("0xe974de4A684bb358Bc9141Cd0187010e998854F5");
 
-  await mintTreasury.deployed();
+  await parentnetTreasury.deployed();
 
-  console.log("MintTreasury deploy to ", mintTreasury.address);
+  console.log("ParentnetTreasury deploy to ", parentnetTreasury.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

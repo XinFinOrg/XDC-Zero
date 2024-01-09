@@ -6,7 +6,7 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 
 import {IEndpoint} from "../../interfaces/IEndpoint.sol";
 
-contract LockTreasury {
+contract SubnetTreasury {
     using SafeERC20 for IERC20Metadata;
 
     address private _endpoint;
