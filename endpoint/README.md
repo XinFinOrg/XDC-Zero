@@ -40,17 +40,22 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 
 1. **Configuration Files**:
 
-- Define network details in `endpointdeploy.json`:
+### `registerchain.json` - Defining Network Details:
 
-  - `xdcparentnet`: Contains parameters for deploying the parentnet endpoint.
-  - `xdcsubnet`: Contains parameters for deploying the subnet endpoint.
-  - `csc`: Checkpoint smart contract within this chain.
-  - `otherSideEndpoint`: Endpoint address of the other side (e.g., if set in `xdcparentnet`, the other side is the subnet).
-  - `otherSideChainId`: Chain ID of the other side (e.g., if set in `xdcparentnet`, the other side is the subnet).
+- **`xdcparentnet`**: Contains parameters for deploying the parentnet endpoint.
+- **`xdcsubnet`**: Contains parameters for deploying the subnet endpoint.
 
-- Specify network details in `network.config.json`:
-  - `xdcparentnet`: RPC URL for the parentnet.
-  - `xdcsubnet`: RPC URL for the subnet.
+  - **`endpoint`**: Current address of the chain endpoint.
+  - **`registers`**: Parameters for registering specific details.
+
+    - **`csc`**: Checkpoint smart contract address within this chain.
+    - **`chainId`**: Identifies the Chain ID of the corresponding chain. (e.g., if set in `xdcparentnet`, the other side refers to the subnet).
+    - **`endpoint`**: Address of the endpoint for the register chain.
+
+### `network.config.json` - Specifying Network Details:
+
+- **`xdcparentnet`**: RPC URL for the parentnet.
+- **`xdcsubnet`**: RPC URL for the subnet.
 
 2. **Environment Variables**:
    - Set up a `.env` file based on `.env.sample` and provide a valid private key.
