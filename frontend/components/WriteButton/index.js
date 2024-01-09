@@ -37,8 +37,7 @@ const WriteButton = (props) => {
   return (
     mounted && (
       <div className={props.className}>
-        {!isConnected && <ConnectButton />}
-        {isConnected && (
+        {
           <button
             className={
               (props?.disabled || !write || confirming ? "btn-disabled " : "") +
@@ -47,6 +46,10 @@ const WriteButton = (props) => {
             // disabled={props?.disabled || !write || confirming}
             style={{ minWidth: 112 }}
             onClick={() => {
+              if (!isConnected) {
+                alert("please connect wallet");
+                return;
+              }
               write?.();
               if (tx) {
                 try {
@@ -66,7 +69,7 @@ const WriteButton = (props) => {
 
             {confirming ? lang[locale]?.confirming : props?.buttonName}
           </button>
-        )}
+        }
       </div>
     )
   );

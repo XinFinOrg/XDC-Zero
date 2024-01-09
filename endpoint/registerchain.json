@@ -1,0 +1,22 @@
+{
+  "xdcparentnet": {
+    "endpoint": "0xf218D129CD4a8bB153c9593bc5dFc12FAdfc44f4",
+    "registers": [
+      {
+        "csc": "0x8EC22d14cD38FAB7C5AeF1d97105A6ec3FefEe5f",
+        "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
+        "chainId": "8851"
+      }
+    ]
+  },
+  "xdcsubnet": {
+    "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
+    "registers": [
+      {
+        "csc": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
+        "endpoint": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
+        "chainId": "551"
+      }
+    ]
+  }
+}

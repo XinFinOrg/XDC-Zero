@@ -6,12 +6,8 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 
 import {IEndpoint} from "../../interfaces/IEndpoint.sol";
 
-contract LockTreasury {
+contract SubnetTreasury {
     using SafeERC20 for IERC20Metadata;
-
-    uint256 private _rid;
-
-    address private _rua;
 
     address private _endpoint;
 
@@ -20,13 +16,17 @@ contract LockTreasury {
         _;
     }
 
-    function init(uint256 rid, address rua, address endpoint) external {
-        _rid = rid;
-        _rua = rua;
+    constructor(address endpoint) {
         _endpoint = endpoint;
     }
 
-    function lock(address token, uint256 amount) external {
+    function lock(
+        uint256 rid,
+        address rua,
+        address token,
+        uint256 amount,
+        address recv
+    ) external {
         IERC20Metadata(token).safeTransferFrom(
             msg.sender,
             address(this),
@@ -35,17 +35,35 @@ contract LockTreasury {
         string memory name = IERC20Metadata(token).name();
         string memory symbol = IERC20Metadata(token).symbol();
         bytes memory data = abi.encodeWithSelector(
-            bytes4(keccak256("mint(address,string,string,address,uint256)")),
+            bytes4(
+                keccak256("mint(address,string,string,address,uint256,uint256)")
+            ),
             token,
             name,
             symbol,
-            msg.sender,
-            amount
+            recv,
+            amount,
+            getChainId()
         );
-        IEndpoint(_endpoint).send(_rid, _rua, data);
+        IEndpoint(_endpoint).send(rid, rua, data);
     }
 
-    function unlock(address token, uint256 amount) external onlyEndpoint {
-        IERC20Metadata(token).safeTransfer(msg.sender, amount);
+    function unlock(
+        address token,
+        uint256 amount,
+        address recv
+    ) external onlyEndpoint {
+        IERC20Metadata(token).safeTransfer(recv, amount);
+    }
+
+    function setEndpoint(address endpoint) external onlyEndpoint {
+        _endpoint = endpoint;
+    }
+
+    /**
+     * @dev get chainId of the current chain
+     */
+    function getChainId() public view returns (uint256) {
+        return block.chainid;
     }
 }

@@ -20,6 +20,7 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 - **Retrieve Payload**: Applications, identified by `ra`, can easily access the cross-chain payload from the Zero Endpoint contract.
 
 ## Workflow
+
 ![Alt text](image.png)
 
 ## Contract Development and Deployment
@@ -39,20 +40,41 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 
 1. **Configuration Files**:
 
-   - Update `deployment.config.json` with the current endpoint's `chainId`.
-   - Specify network details in `network.config.json`:
-     - `xdcparentnet`: RPC URL.
-     - `xdcsubnet`: RPC URL.
+### `registerchain.json` - Defining Network Details:
+
+- **`xdcparentnet`**: Contains parameters for deploying the parentnet endpoint.
+- **`xdcsubnet`**: Contains parameters for deploying the subnet endpoint.
+
+  - **`endpoint`**: Current address of the chain endpoint.
+  - **`registers`**: Parameters for registering specific details.
+
+    - **`csc`**: Checkpoint smart contract address within this chain.
+    - **`chainId`**: Identifies the Chain ID of the corresponding chain. (e.g., if set in `xdcparentnet`, the other side refers to the subnet).
+    - **`endpoint`**: Address of the endpoint for the register chain.
+
+### `network.config.json` - Specifying Network Details:
+
+- **`xdcparentnet`**: RPC URL for the parentnet.
+- **`xdcsubnet`**: RPC URL for the subnet.
 
 2. **Environment Variables**:
    - Set up a `.env` file based on `.env.sample` and provide a valid private key.
 
 ### Deployment
 
-1. **Deploy XDC Zero**:
-   ```shell
-   npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
-   ```
+Prior to deploying the subnet endpoint, two contracts are required for the subnet and parentnet.
+
+Initiate the deployment of the subnet endpoint first:
+
+```shell
+npx hardhat run scripts/xdcZeroDeploy.js --network xdcsubnet
+```
+
+Then, insert the subnet endpoint address into the otherSideEndpoint and otherSideChainId fields of the endpointdeploy.json file under xdcparentnet:
+
+```shell
+npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
+```
 
 ## Additional Commands
 

@@ -54,7 +54,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
     //chainId=>Chain
     mapping(uint256 => Chain) private _chains;
 
-    mapping(address => bool) private _approvedRua;
+    mapping(uint256 => mapping(address => bool)) private _approvedRua;
 
     mapping(address => bool) private _approvedSua;
 
@@ -117,6 +117,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
         if (!msg.sender.isContract()) {
             sua = address(this);
         }
+
+        require(_approvedSua[sua], "sua not approved");
+        require(_approvedRua[rid][rua], "rua not approved");
 
         uint256 sid = getChainId();
 
@@ -193,7 +196,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 receipt.logs[i].topics[0] == packetHash() &&
                 receipt.logs[i].address_ == address(chain.endpoint)
             ) {
-                bytes memory payload = receipt.logs[i].data;
+                bytes memory payload = sliceBytes(receipt.logs[i].data);
                 // receive send packet data
                 (
                     uint256 index,
@@ -301,7 +304,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 topics[j] = bytes32(topicsItems[j].toUint());
             }
             logs[i].topics = topics;
-            logs[i].data = sliceBytes(logItems[2].toBytes());
+            logs[i].data = logItems[2].toBytes();
         }
         receipt.logs = logs;
         return receipt;
@@ -359,26 +362,56 @@ contract Endpoint is Ownable, ReentrancyGuard {
     }
 
     /**
+     *
+     * @param rid receive chainId
+     * @param rua receive application address
+     * @param sua send application address
+     */
+    function approveApplication(
+        uint256 rid,
+        address rua,
+        address sua
+    ) external onlyOwner {
+        approveRua(rid, rua);
+        approveSua(sua);
+    }
+
+    /**
+     *
+     * @param rid receive chainId
+     * @param rua receive application address
+     * @param sua send application address
+     */
+    function revokeApplication(
+        uint256 rid,
+        address rua,
+        address sua
+    ) external onlyOwner {
+        revokeRua(rid, rua);
+        revokeSua(sua);
+    }
+
+    /**
      * @dev approve rua
      * @param rua rua address
      */
-    function approveRua(address rua) external onlyOwner {
-        _approvedRua[rua] = true;
+    function approveRua(uint256 rid, address rua) public onlyOwner {
+        _approvedRua[rid][rua] = true;
     }
 
     /**
      * @dev revoke rua
      * @param rua rua address
      */
-    function revokeRua(address rua) external onlyOwner {
-        _approvedRua[rua] = false;
+    function revokeRua(uint256 rid, address rua) public onlyOwner {
+        _approvedRua[rid][rua] = false;
     }
 
     /**
      * @dev approve sua
      * @param sua sua address
      */
-    function approveSua(address sua) external onlyOwner {
+    function approveSua(address sua) public onlyOwner {
         _approvedSua[sua] = true;
     }
 
@@ -386,7 +419,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @dev revoke sua
      * @param sua sua address
      */
-    function revokeSua(address sua) external onlyOwner {
+    function revokeSua(address sua) public onlyOwner {
         _approvedSua[sua] = false;
     }
 }
