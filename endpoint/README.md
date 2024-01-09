@@ -20,6 +20,7 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 - **Retrieve Payload**: Applications, identified by `ra`, can easily access the cross-chain payload from the Zero Endpoint contract.
 
 ## Workflow
+
 ![Alt text](image.png)
 
 ## Contract Development and Deployment
@@ -50,9 +51,20 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 ### Deployment
 
 1. **Deploy XDC Zero**:
-   ```shell
-   npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
-   ```
+
+Prior to deploying the subnet endpoint, two contracts are required for the subnet and parentnet.
+
+Initiate the deployment of the subnet endpoint first:
+
+```shell
+npx hardhat run scripts/xdcZeroDeploy.js --network xdcsubnet
+```
+
+Then, insert the subnet endpoint address into the otherSideEndpoint and otherSideChainId fields of the endpointdeploy.json file under xdcparentnet:
+
+```shell
+npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
+```
 
 ## Additional Commands
 
