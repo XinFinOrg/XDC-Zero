@@ -40,17 +40,22 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 
 1. **Configuration Files**:
 
-   - Update `deployment.config.json` with the current endpoint's `chainId`.
-   - Specify network details in `network.config.json`:
-     - `xdcparentnet`: RPC URL.
-     - `xdcsubnet`: RPC URL.
+- Define network details in `endpointdeploy.json`:
+
+  - `xdcparentnet`: Contains parameters for deploying the parentnet endpoint.
+  - `xdcsubnet`: Contains parameters for deploying the subnet endpoint.
+  - `csc`: Checkpoint smart contract within this chain.
+  - `otherSideEndpoint`: Endpoint address of the other side (e.g., if set in `xdcparentnet`, the other side is the subnet).
+  - `otherSideChainId`: Chain ID of the other side (e.g., if set in `xdcparentnet`, the other side is the subnet).
+
+- Specify network details in `network.config.json`:
+  - `xdcparentnet`: RPC URL for the parentnet.
+  - `xdcsubnet`: RPC URL for the subnet.
 
 2. **Environment Variables**:
    - Set up a `.env` file based on `.env.sample` and provide a valid private key.
 
 ### Deployment
-
-1. **Deploy XDC Zero**:
 
 Prior to deploying the subnet endpoint, two contracts are required for the subnet and parentnet.
 
