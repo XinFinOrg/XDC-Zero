@@ -1,7 +1,7 @@
 {
   "xdcparentnet": {
-    "csc": "0xd541C0e973e291EEed915D54Eb59161702c8724C",
-    "otherSideEndpoint": "0xeDAAAC4C676181449bC5CAE8EA61Be9D91d207c8",
+    "csc": "0x8EC22d14cD38FAB7C5AeF1d97105A6ec3FefEe5f",
+    "otherSideEndpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
     "otherSideChainId": "8851"
   },
   "xdcsubnet": {
