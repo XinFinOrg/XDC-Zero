@@ -10,9 +10,7 @@ async function main() {
   const factory = await hre.ethers.getContractFactory("SubnetTreasury");
 
   const subnetTreasury = await factory.deploy(
-    "0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664",
-    551,
-    "0xEff102f8321d63Db6794DfD82B0503Aeb6149A17"
+    "0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664"
   );
 
   await subnetTreasury.deployed();
