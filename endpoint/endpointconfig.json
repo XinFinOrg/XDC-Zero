@@ -17,6 +17,13 @@
         "endpoint": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
         "chainId": "551"
       }
+    ],
+    "applications": [
+      {
+        "rid": "8851",
+        "rua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
+        "sua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0"
+      }
     ]
   }
 }

@@ -14,7 +14,7 @@ async function main() {
   const deployConfig = deploy[networkName];
   if (deployConfig) {
     const endpoint = deployConfig.endpoint;
-    const registers = deployConfig.registers;
+    const applications = deployConfig.applications;
 
     const factory = await hre.ethers.getContractFactory("Endpoint", {
       //doesn't care about the address, just need to pass the address to deploy
@@ -23,16 +23,16 @@ async function main() {
 
     const endpointContract = await factory.attach(endpoint);
 
-    for (const register of registers) {
-      const tx = await endpointContract.registerChain(
-        register.chainId,
-        register.csc,
-        register.endpoint
+    for (const application of applications) {
+      const tx = await endpointContract.approveApplication(
+        application.rid,
+        application.rua,
+        application.sua
       );
       await tx.wait();
       console.log(
-        "register chain success " +
-          JSON.stringify(register) +
+        "register application success " +
+          JSON.stringify(application) +
           " to current chain endpoint" +
           endpoint
       );
