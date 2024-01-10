@@ -40,7 +40,7 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 
 1. **Configuration Files**:
 
-### `registerchain.json` - Defining Network Details:
+### `endpointconfig.json` - Defining Network Details:
 
 - **`xdcparentnet`**: Contains parameters for deploying the parentnet endpoint.
 - **`xdcsubnet`**: Contains parameters for deploying the subnet endpoint.
@@ -67,12 +67,22 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
 
 ### Deployment
 
-Prior to deploying the subnet endpoint, two contracts are required for the subnet and parentnet.
-
-Initiate the deployment of the subnet endpoint first:
+To begin deployment, start with the subnet endpoint:
 
 ```shell
 npx hardhat run scripts/endpointdeploy.js --network xdcsubnet
+```
+
+Next, configure the registration parameters in the `endpointconfig.json` file for the chain:
+
+```shell
+npx hardhat run scripts/registerchain.js --network xdcsubnet
+```
+
+After setting the application parameters in `endpointconfig.json`, proceed to register the user application:
+
+```shell
+npx hardhat run scripts/registerapplication.js --network xdcsubnet
 ```
 
 ## Additional Commands
