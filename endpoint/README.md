@@ -52,6 +52,11 @@ The XDC Zero Endpoint is a foundational cross-chain contract that enables seamle
     - **`chainId`**: Identifies the Chain ID of the corresponding chain. (e.g., if set in `xdcparentnet`, the other side refers to the subnet).
     - **`endpoint`**: Address of the endpoint for the register chain.
 
+  - **`applications`**: Parameters for application specific details.
+    - **`rid`**: receive chain id
+    - **`rua`**: receive chain user application
+    - **`sua`**: send chain user application
+
 ### `network.config.json` - Specifying Network Details:
 
 - **`xdcparentnet`**: RPC URL for the parentnet.
@@ -67,13 +72,7 @@ Prior to deploying the subnet endpoint, two contracts are required for the subne
 Initiate the deployment of the subnet endpoint first:
 
 ```shell
-npx hardhat run scripts/xdcZeroDeploy.js --network xdcsubnet
-```
-
-Then, insert the subnet endpoint address into the otherSideEndpoint and otherSideChainId fields of the endpointdeploy.json file under xdcparentnet:
-
-```shell
-npx hardhat run scripts/xdcZeroDeploy.js --network xdcparentnet
+npx hardhat run scripts/endpointdeploy.js --network xdcsubnet
 ```
 
 ## Additional Commands
