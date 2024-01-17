@@ -96,5 +96,9 @@ describe("xdc zero endpoint", () => {
       expect(values.rua).to.eq(rua.address);
       expect(values.data).to.eq(data);
     });
+
+    it("should be able receive message use real data", async () => {
+      await csc.setRoots();
+    });
   });
 });
