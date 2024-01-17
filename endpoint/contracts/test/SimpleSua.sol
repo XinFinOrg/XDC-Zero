@@ -9,10 +9,11 @@ contract SimpleSua {
         _endpoint = endpoint;
     }
 
+    function data() public pure returns (bytes memory) {
+        return abi.encodeWithSelector(bytes4(keccak256("simpleCall()")));
+    }
+
     function simpleCall(uint256 rid, address rua) external {
-        bytes memory data = abi.encodeWithSelector(
-            bytes4(keccak256("simpleCall()"))
-        );
-        IEndpoint(_endpoint).send(rid, rua, data);
+        IEndpoint(_endpoint).send(rid, rua, data());
     }
 }

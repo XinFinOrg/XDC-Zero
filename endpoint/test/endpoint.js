@@ -47,7 +47,7 @@ describe("xdc zero endpoint", () => {
 
     const chainId = network.config.chainId;
 
-    await endpoint.registerChain(chainId, csc, rua.address);
+    await endpoint.registerChain(chainId, csc.address, rua.address);
 
     await endpoint.approveApplication(chainId, rua.address, sua.address);
 
@@ -62,11 +62,39 @@ describe("xdc zero endpoint", () => {
     it("shold be able to send message", async () => {
       await sua.simpleCall(chainId, rua.address);
 
+      const data = await sua.data();
+
       const filter = await endpoint.filters.Packet();
 
       const logs = await ethers.provider.getLogs(filter);
 
-      console.log(logs);
+      const log = logs[0];
+
+      expect(log).to.not.be.undefined;
+      expect(log.address).to.eq(endpoint.address);
+
+      expect(log.topics[0]).to.eq(
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Packet(bytes)"))
+      );
+
+      const values = ethers.utils.defaultAbiCoder.decode(
+        [
+          { name: "index", type: "uint" },
+          { name: "sid", type: "uint" },
+          { name: "sua", type: "address" },
+          { name: "rid", type: "uint" },
+          { name: "rua", type: "address" },
+          { name: "data", type: "bytes" },
+        ],
+        `0x${log.data.substring(130)}`
+      );
+
+      expect(values.index).to.eq(1);
+      expect(values.sid).to.eq(chainId);
+      expect(values.rid).to.eq(chainId);
+      expect(values.sua).to.eq(sua.address);
+      expect(values.rua).to.eq(rua.address);
+      expect(values.data).to.eq(data);
     });
   });
 });
