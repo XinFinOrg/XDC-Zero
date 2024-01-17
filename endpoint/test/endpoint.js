@@ -6,6 +6,8 @@ const {
 
 describe("xdc zero endpoint", () => {
   let endpoint;
+  let rua;
+  let sua;
 
   const fixture = async () => {
     const EthereumTrieDBLiberary = await hre.ethers.getContractFactory(
@@ -29,17 +31,24 @@ describe("xdc zero endpoint", () => {
 
     const endpoint = await factory.deploy();
 
-    return { endpoint };
+    const ruaFactory = await hre.ethers.getContractFactory("SimpleRua");
+
+    const rua = await ruaFactory.deploy(endpoint.address);
+
+    const suaFactory = await hre.ethers.getContractFactory("SimpleSua");
+
+    const sua = await suaFactory.deploy(endpoint.address);
+
+    return { endpoint, rua, sua };
   };
 
   beforeEach("deploy fixture", async () => {
-    ({ endpoint } = await loadFixture(fixture));
+    ({ endpoint, rua, sua } = await loadFixture(fixture));
   });
 
   describe("test endpoint", () => {
-    it("shold be able to register chain", async () => {
-
-      
+    it("shold be able to send message", async () => {
+      await sua.simpleCall();
     });
   });
 });
