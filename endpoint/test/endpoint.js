@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const {
   loadFixture,
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
@@ -8,6 +8,8 @@ describe("xdc zero endpoint", () => {
   let endpoint;
   let rua;
   let sua;
+  let chainId;
+  let csc;
 
   const fixture = async () => {
     const EthereumTrieDBLiberary = await hre.ethers.getContractFactory(
@@ -39,16 +41,32 @@ describe("xdc zero endpoint", () => {
 
     const sua = await suaFactory.deploy(endpoint.address);
 
-    return { endpoint, rua, sua };
+    const cscFactory = await hre.ethers.getContractFactory("SimpleCsc");
+
+    const csc = await cscFactory.deploy();
+
+    const chainId = network.config.chainId;
+
+    await endpoint.registerChain(chainId, csc, rua.address);
+
+    await endpoint.approveApplication(chainId, rua.address, sua.address);
+
+    return { endpoint, csc, rua, sua, chainId };
   };
 
   beforeEach("deploy fixture", async () => {
-    ({ endpoint, rua, sua } = await loadFixture(fixture));
+    ({ endpoint, csc, rua, sua, chainId } = await loadFixture(fixture));
   });
 
   describe("test endpoint", () => {
     it("shold be able to send message", async () => {
-      await sua.simpleCall();
+      await sua.simpleCall(chainId, rua.address);
+
+      const filter = await endpoint.filters.Packet();
+
+      const logs = await ethers.provider.getLogs(filter);
+
+      console.log(logs);
     });
   });
 });
