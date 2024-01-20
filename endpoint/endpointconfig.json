@@ -10,19 +10,19 @@
     ]
   },
   "xdcsubnet": {
-    "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
+    "endpoint": "0x550491BD078F7c5f78F16395b296E80F82f58700",
     "registers": [
       {
         "csc": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
         "endpoint": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
-        "chainId": "551"
+        "chainId": "31337"
       }
     ],
     "applications": [
       {
-        "rid": "8851",
-        "rua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
-        "sua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0"
+        "rid": "31337",
+        "rua": "0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664",
+        "sua": "0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664"
       }
     ]
   }

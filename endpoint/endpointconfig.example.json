@@ -10,7 +10,7 @@
     ]
   },
   "xdcsubnet": {
-    "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
+    "endpoint": "0x550491BD078F7c5f78F16395b296E80F82f58700",
     "registers": [
       {
         "csc": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
@@ -21,8 +21,8 @@
     "applications": [
       {
         "rid": "8851",
-        "rua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
-        "sua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0"
+        "rua": "0x5dff28627b2E4fd9516d18db6713c90d80d50f98",
+        "sua": "0x5dff28627b2E4fd9516d18db6713c90d80d50f98"
       }
     ]
   }
