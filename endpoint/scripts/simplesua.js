@@ -9,7 +9,9 @@ const hre = require("hardhat");
 async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleSua");
 
-  const endpoint = await factory.deploy("0x550491BD078F7c5f78F16395b296E80F82f58700");
+  const endpoint = await factory.deploy(
+    "0x550491BD078F7c5f78F16395b296E80F82f58700"
+  );
 
   await endpoint.deployed();
 
