@@ -33,7 +33,7 @@ async function main() {
       console.log(
         "register application success " +
           JSON.stringify(application) +
-          " to current chain endpoint" +
+          " to current chain endpoint " +
           endpoint
       );
     }
