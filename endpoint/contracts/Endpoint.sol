@@ -176,6 +176,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
             blockHash
         );
 
+        require(transactionsRoot > bytes32(0), "invalid transactionsRoot");
+        require(receiptRoot > bytes32(0), "invalid receiptRoot");
+
         bytes memory receiptRlp = getRlp(key, receiptProof, receiptRoot);
 
         require(receiptRlp.length > 0, "invalid receipt proof");
