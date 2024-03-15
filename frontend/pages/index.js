@@ -30,11 +30,23 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchData() {
-      setMount(false);
+      try {
+        const logs = await publicClient.getContractEvents({
+          ...endpointContract,
+          eventName: "PacketReceived",
+          fromBlock: 0n,
+        });
 
-      setMount(true);
+        console.log(logs);
+        data.logs = logs;
+        setData({ ...data });
+      } catch (e) {
+      } finally {
+      }
     }
+
     fetchData();
+    setMount(true);
   }, [endpoint]);
 
   const { data: reads0 } = useContractReads({
