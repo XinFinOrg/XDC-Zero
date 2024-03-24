@@ -5,17 +5,8 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const deploy = require("../deploy.config.json");
 
-async function main() {
-  const factory = await hre.ethers.getContractFactory("SubnetTreasury");
-
-  const subnetTreasury = await factory.deploy(deploy.subnetendpoint);
-
-  await subnetTreasury.deployed();
-
-  console.log("subnetTreasury deploy to ", subnetTreasury.address);
-}
+async function main() {}
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.

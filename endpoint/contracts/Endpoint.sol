@@ -176,6 +176,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
             blockHash
         );
 
+        require(transactionsRoot > bytes32(0), "invalid transactionsRoot");
+        require(receiptRoot > bytes32(0), "invalid receiptRoot");
+
         bytes memory receiptRlp = getRlp(key, receiptProof, receiptRoot);
 
         require(receiptRlp.length > 0, "invalid receipt proof");
@@ -215,7 +218,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 require(rid == getChainId(), "invalid packet receive chainId");
 
                 // because call audited rua contract ,so dont need value and gas limit
-                rua.functionCall(data);
+                rua.call{value: 0}(data);
 
                 emit PacketReceived(index, sid, sua, rid, rua, data);
                 chain.lastIndex++;
@@ -421,5 +424,25 @@ contract Endpoint is Ownable, ReentrancyGuard {
      */
     function revokeSua(address sua) public onlyOwner {
         _approvedSua[sua] = false;
+    }
+
+    /**
+     * @dev get allowance of rua
+     * @param rid receive chainId
+     * @param rua rua address
+     */
+    function allowanceRua(
+        uint256 rid,
+        address rua
+    ) external view returns (bool) {
+        return _approvedRua[rid][rua];
+    }
+
+    /**
+     * @dev get allowance of sua
+     * @param sua sua address
+     */
+    function allowanceSua(address sua) external view returns (bool) {
+        return _approvedSua[sua];
     }
 }

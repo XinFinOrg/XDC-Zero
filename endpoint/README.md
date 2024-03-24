@@ -82,7 +82,7 @@ npx hardhat run scripts/registerchain.js --network xdcsubnet
 After setting the application parameters in `endpointconfig.json`, proceed to register the user application:
 
 ```shell
-npx hardhat run scripts/registerapplication.js --network xdcsubnet
+npx hardhat run scripts/registerapplications.js --network xdcsubnet
 ```
 
 ## Additional Commands
