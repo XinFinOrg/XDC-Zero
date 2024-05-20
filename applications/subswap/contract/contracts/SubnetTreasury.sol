@@ -65,4 +65,8 @@ contract SubnetTreasury {
     function getChainId() public view returns (uint256) {
         return block.chainid;
     }
+
+    function getEndpoint() external view returns (address) {
+        return _endpoint;
+    }
 }

@@ -7,6 +7,18 @@
         "endpoint": "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
         "chainId": "8851"
       }
+    ],
+    "applications": [
+      {
+        "rid": "8851",
+        "rua": "0x272655D0A3Fa7263524eA0Af2bbFb80BFDDC2F65",
+        "sua": "0xA55b967bF404d5C542833DaD63C7E288DDebBED0"
+      },
+      {
+        "rid": "8851",
+        "rua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
+        "sua": "0x517da8968ea941a76E29285fB3492A47A2214640"
+      }
     ]
   },
   "xdcsubnet": {

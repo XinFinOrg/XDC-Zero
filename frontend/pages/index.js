@@ -179,7 +179,7 @@ export default function Home() {
               className="btn btn-success w-max btn-sm"
               htmlFor="approvedSua"
             >
-              Approved Sua
+              Approved Sua List
             </label>
             <label
               className="btn btn-success w-max btn-sm"
@@ -220,7 +220,7 @@ export default function Home() {
                       className="btn btn-warning w-max btn-sm"
                       htmlFor="approvedRua"
                     >
-                      Approved Rua
+                      Approved Rua List
                     </label>
                     <label
                       className="btn btn-warning w-max btn-sm"

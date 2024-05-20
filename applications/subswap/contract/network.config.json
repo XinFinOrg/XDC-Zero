@@ -1,4 +1,4 @@
 {
-  "xdcparentnet": "https://devnetstats.apothem.network/devnet",
+  "xdcparentnet": "http://devnet.hashlabs.apothem.network:8545",
   "xdcsubnet": "https://devnetstats.apothem.network/subnet"
 }

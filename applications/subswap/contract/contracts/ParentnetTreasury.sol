@@ -61,4 +61,12 @@ contract ParentnetTreasury {
     function setEndpoint(address endpoint) external onlyEndpoint {
         _endpoint = endpoint;
     }
+
+    function getEndpoint() external view returns (address) {
+        return _endpoint;
+    }
+
+    function test(uint256 rid, address rua, bytes memory data) external {
+        IEndpoint(_endpoint).send(rid, rua, data);
+    }
 }
