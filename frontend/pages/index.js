@@ -177,6 +177,12 @@ export default function Home() {
           <div className="card-actions justify-end">
             <label
               className="btn btn-success w-max btn-sm"
+              htmlFor="approvedSua"
+            >
+              Approved Sua
+            </label>
+            <label
+              className="btn btn-success w-max btn-sm"
               htmlFor="receiveBox"
             >
               Rua logs
@@ -210,6 +216,12 @@ export default function Home() {
                     Remote Enpoint : {eChains?.[index].endpoint}
                   </div>
                   <div className="card-actions justify-end">
+                    <label
+                      className="btn btn-warning w-max btn-sm"
+                      htmlFor="approvedRua"
+                    >
+                      Approved Rua
+                    </label>
                     <label
                       className="btn btn-warning w-max btn-sm"
                       htmlFor="crossChainCall"
@@ -488,6 +500,28 @@ export default function Home() {
 
           <div className="modal-action">
             <label htmlFor="receiveBox" className="btn">
+              Close!
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <input type="checkbox" id="approvedRua" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">
+          <div className="modal-action">
+            <label htmlFor="approvedRua" className="btn">
+              Close!
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <input type="checkbox" id="approvedSua" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">
+          <div className="modal-action">
+            <label htmlFor="approvedSua" className="btn">
               Close!
             </label>
           </div>

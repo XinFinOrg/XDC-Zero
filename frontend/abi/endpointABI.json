@@ -102,6 +102,34 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      }
+    ],
+    "name": "approveApplication",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "rua",
         "type": "address"
@@ -444,6 +472,34 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      }
+    ],
+    "name": "revokeApplication",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
       {
         "internalType": "address",
         "name": "rua",
