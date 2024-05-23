@@ -10,6 +10,16 @@ contract SubnetTreasury {
 
     address private _endpoint;
 
+    event Lock(
+        uint256 rid,
+        address rua,
+        address token,
+        uint256 amount,
+        address recv
+    );
+
+    event UnLock(address token, uint256 amount, address recv);
+
     modifier onlyEndpoint() {
         require(msg.sender == _endpoint, "only endpoint");
         _;
@@ -45,6 +55,7 @@ contract SubnetTreasury {
             getChainId()
         );
         IEndpoint(_endpoint).send(rid, rua, data);
+        emit Lock(rid, rua, token, amount, recv);
     }
 
     function unlock(
@@ -53,6 +64,7 @@ contract SubnetTreasury {
         address recv
     ) external onlyEndpoint {
         IERC20Metadata(token).safeTransfer(recv, amount);
+        emit UnLock(token, amount, recv);
     }
 
     function setEndpoint(address endpoint) external onlyEndpoint {

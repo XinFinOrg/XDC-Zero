@@ -72,6 +72,8 @@ export default function Home() {
     return read.result;
   });
 
+  console.log(eChains);
+
   const registerChain = {
     buttonName: "Register a Chain",
     data: {

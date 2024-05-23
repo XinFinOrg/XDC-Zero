@@ -1,40 +1,35 @@
 {
   "xdcparentnet": {
-    "endpoint": "0x16F51b3D94eA45fE5981A1fA6C9d6B100881A978",
+    "endpoint": "0x88c10D043C89c1cB9AF9D783BF43aa3Cd455C12B",
     "registers": [
       {
-        "csc": "0x8EC22d14cD38FAB7C5AeF1d97105A6ec3FefEe5f",
-        "endpoint": "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
-        "chainId": "8851"
+        "csc": "0xd23a4bbfF1dAfF5f1194a3922b3A5a7A10A55999",
+        "endpoint": "0xaac494327BF44a1426517eb9D9a194583B363fE9",
+        "chainId": "5173"
       }
     ],
     "applications": [
       {
-        "rid": "8851",
-        "rua": "0x272655D0A3Fa7263524eA0Af2bbFb80BFDDC2F65",
-        "sua": "0xA55b967bF404d5C542833DaD63C7E288DDebBED0"
-      },
-      {
-        "rid": "8851",
-        "rua": "0x2475Dcd4Fe333bE814Ef7C8f8CE8A1E9B5FcDEA0",
-        "sua": "0x517da8968ea941a76E29285fB3492A47A2214640"
+        "rid": "5173",
+        "rua": "0x047695c6c781889F8955AbFaC6C99337C82b0C56",
+        "sua": "0xC4471D0567322deaC9a4422A007156e92ac9A103"
       }
     ]
   },
   "xdcsubnet": {
-    "endpoint": "0x1606C3211936fE0b596d4230129FAeA00D76A78A",
+    "endpoint": "0xaac494327BF44a1426517eb9D9a194583B363fE9",
     "registers": [
       {
-        "csc": "0x8EC22d14cD38FAB7C5AeF1d97105A6ec3FefEe5f",
-        "endpoint": "0x16F51b3D94eA45fE5981A1fA6C9d6B100881A978",
+        "csc": "0xF3E9e68238fD4684CBe95A55059E4b9b4deAD607",
+        "endpoint": "0x88c10D043C89c1cB9AF9D783BF43aa3Cd455C12B",
         "chainId": "551"
       }
     ],
     "applications": [
       {
         "rid": "551",
-        "rua": "0xA55b967bF404d5C542833DaD63C7E288DDebBED0",
-        "sua": "0x272655D0A3Fa7263524eA0Af2bbFb80BFDDC2F65"
+        "rua": "0xC4471D0567322deaC9a4422A007156e92ac9A103",
+        "sua": "0x047695c6c781889F8955AbFaC6C99337C82b0C56"
       }
     ]
   }

@@ -218,7 +218,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 require(rid == getChainId(), "invalid packet receive chainId");
 
                 // because call audited rua contract ,so dont need value and gas limit
-                rua.call{value: 0}(data);
+                bool success;
+                (success, ) = rua.call{value: 0}(data);
+                require(success, "Low-level call failed");
 
                 emit PacketReceived(index, sid, sua, rid, rua, data);
                 chain.lastIndex++;
