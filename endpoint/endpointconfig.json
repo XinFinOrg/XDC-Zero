@@ -1,35 +1,35 @@
 {
   "xdcparentnet": {
-    "endpoint": "0x88c10D043C89c1cB9AF9D783BF43aa3Cd455C12B",
+    "endpoint": "0x5a859f9226E80472CDCa216E2C6F881f799db05D",
     "registers": [
       {
-        "csc": "0xd23a4bbfF1dAfF5f1194a3922b3A5a7A10A55999",
-        "endpoint": "0xaac494327BF44a1426517eb9D9a194583B363fE9",
+        "csc": "0x8232043eaFbb680BDC4A2306F72D94c327889967",
+        "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
         "chainId": "5173"
       }
     ],
     "applications": [
       {
         "rid": "5173",
-        "rua": "0x047695c6c781889F8955AbFaC6C99337C82b0C56",
-        "sua": "0xC4471D0567322deaC9a4422A007156e92ac9A103"
+        "rua": "0xEA34885369cC31c673544Ac733759282dFbFC67D",
+        "sua": "0x4f2DeBD7C3709C7C7898f2fB1937017827201520"
       }
     ]
   },
   "xdcsubnet": {
-    "endpoint": "0xaac494327BF44a1426517eb9D9a194583B363fE9",
+    "endpoint": "0xD4449Bf3f8E6a1b3fb5224F4e1Ec4288BD765547",
     "registers": [
       {
         "csc": "0xF3E9e68238fD4684CBe95A55059E4b9b4deAD607",
-        "endpoint": "0x88c10D043C89c1cB9AF9D783BF43aa3Cd455C12B",
+        "endpoint": "0x5a859f9226E80472CDCa216E2C6F881f799db05D",
         "chainId": "551"
       }
     ],
     "applications": [
       {
         "rid": "551",
-        "rua": "0xC4471D0567322deaC9a4422A007156e92ac9A103",
-        "sua": "0x047695c6c781889F8955AbFaC6C99337C82b0C56"
+        "rua": "0x4f2DeBD7C3709C7C7898f2fB1937017827201520",
+        "sua": "0xEA34885369cC31c673544Ac733759282dFbFC67D"
       }
     ]
   }
