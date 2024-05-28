@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.19;
+pragma solidity =0.8.23;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPReader} from "./libraries/RLPReader.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title XDC Zero Endpoint
@@ -18,6 +18,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
     using MerklePatricia for bytes32;
+
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev csc is the checkpoint contract of the receive chain
@@ -114,7 +116,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes calldata data
     ) external payable {
         address sua = msg.sender;
-        if (!msg.sender.isContract()) {
+        if (!isContract(msg.sender)) {
             sua = address(this);
         }
 
@@ -446,5 +448,13 @@ contract Endpoint is Ownable, ReentrancyGuard {
      */
     function allowanceSua(address sua) external view returns (bool) {
         return _approvedSua[sua];
+    }
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
     }
 }
