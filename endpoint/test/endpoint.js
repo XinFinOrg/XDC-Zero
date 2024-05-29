@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { ethers, network } = require("hardhat");
 const {
   loadFixture,
+  setCode,
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 describe("xdc zero endpoint", () => {
