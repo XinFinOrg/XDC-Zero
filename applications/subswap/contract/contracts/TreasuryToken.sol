@@ -8,7 +8,9 @@ contract TreasuryToken is ERC20Burnable, Ownable {
     constructor(
         string memory name_,
         string memory symbol_
-    ) ERC20(name_, symbol_) Ownable(msg.sender) {}
+    ) ERC20(name_, symbol_) Ownable(msg.sender) {
+        mint(msg.sender, 10000000e18);
+    }
 
     function mint(address account, uint256 amount) public onlyOwner {
         _mint(account, amount);
