@@ -1,15 +1,32 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.19;
+pragma solidity =0.8.23;
 
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {TreasuryToken} from "./TreasuryToken.sol";
 import {IEndpoint} from "./interfaces/IEndpoint.sol";
 
 contract ParentnetTreasury {
-    //chainId=>originalToken => TreasuryToken
+    //send id=>originalToken => TreasuryToken
     mapping(uint256 => mapping(address => address)) public treasuryMapping;
 
     address private _endpoint;
+
+    event Mint(
+        address originalToken,
+        address token,
+        address account,
+        uint256 amount,
+        uint256 chainId
+    );
+
+    event Burn(
+        uint256 rid,
+        address rua,
+        address originalToken,
+        address token,
+        uint256 amount,
+        address recv
+    );
 
     modifier onlyEndpoint() {
         require(msg.sender == _endpoint, "only endpoint");
@@ -26,14 +43,15 @@ contract ParentnetTreasury {
         string calldata symbol,
         address account,
         uint256 amount,
-        uint256 chainId
+        uint256 sid
     ) external onlyEndpoint {
-        address token = treasuryMapping[chainId][originalToken];
+        address token = treasuryMapping[sid][originalToken];
         if (token == address(0)) {
             token = address(new TreasuryToken(name, symbol));
-            treasuryMapping[chainId][originalToken] = token;
+            treasuryMapping[sid][originalToken] = token;
         }
         TreasuryToken(token).mint(account, amount);
+        emit Mint(originalToken, token, account, amount, sid);
     }
 
     function burn(
@@ -51,14 +69,23 @@ contract ParentnetTreasury {
         TreasuryToken(token).burnFrom(msg.sender, amount);
         bytes memory data = abi.encodeWithSelector(
             bytes4(keccak256("unlock(address,uint256,address)")),
-            token,
+            originalToken,
             amount,
             recv
         );
         IEndpoint(_endpoint).send(rid, rua, data);
+        emit Burn(rid, rua, originalToken, token, amount, recv);
     }
 
     function setEndpoint(address endpoint) external onlyEndpoint {
         _endpoint = endpoint;
+    }
+
+    function getEndpoint() external view returns (address) {
+        return _endpoint;
+    }
+
+    function test(uint256 rid, address rua, bytes memory data) external {
+        IEndpoint(_endpoint).send(rid, rua, data);
     }
 }

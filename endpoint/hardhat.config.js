@@ -7,7 +7,7 @@ const network = require("./network.config.json");
  */
 module.exports = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.23",
     settings: {
       viaIR: true,
       optimizer: {

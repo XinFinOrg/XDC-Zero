@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.19;
+pragma solidity =0.8.23;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
 import {RLPReader} from "./libraries/RLPReader.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title XDC Zero Endpoint
@@ -18,6 +18,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
     using RLPReader for bytes;
     using RLPReader for RLPReader.RLPItem;
     using MerklePatricia for bytes32;
+
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev csc is the checkpoint contract of the receive chain
@@ -114,7 +116,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes calldata data
     ) external payable {
         address sua = msg.sender;
-        if (!msg.sender.isContract()) {
+        if (!isContract(msg.sender)) {
             sua = address(this);
         }
 
@@ -218,7 +220,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 require(rid == getChainId(), "invalid packet receive chainId");
 
                 // because call audited rua contract ,so dont need value and gas limit
-                rua.call{value: 0}(data);
+                bool success;
+                (success, ) = rua.call{value: 0}(data);
+                require(success, "Low-level call failed");
 
                 emit PacketReceived(index, sid, sua, rid, rua, data);
                 chain.lastIndex++;
@@ -262,12 +266,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
         IFullCheckpoint csc,
         Endpoint endpoint
     ) external onlyOwner {
-        for (uint256 i = 0; i < _chainIds.length; i++) {
-            require(_chainIds[i] != chainId, "chainId already registered");
-        }
         _chains[chainId].csc = csc;
         _chains[chainId].endpoint = endpoint;
-
         _chainIds.push(chainId);
         emit ChainRegistered(chainId, csc, endpoint);
     }
@@ -340,21 +340,6 @@ contract Endpoint is Ownable, ReentrancyGuard {
         uint256 chainId
     ) external view returns (Chain memory chain) {
         chain = _chains[chainId];
-    }
-
-    /**
-     * @dev edit chain
-     * @param chainId chainId of the send chain
-     * @param csc checkpoint contract of the receive chain
-     * @param endpoint endpoint contract of the send chain
-     */
-    function editChain(
-        uint256 chainId,
-        IFullCheckpoint csc,
-        Endpoint endpoint
-    ) external onlyOwner {
-        _chains[chainId].csc = csc;
-        _chains[chainId].endpoint = endpoint;
     }
 
     /**
@@ -444,5 +429,13 @@ contract Endpoint is Ownable, ReentrancyGuard {
      */
     function allowanceSua(address sua) external view returns (bool) {
         return _approvedSua[sua];
+    }
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
     }
 }
