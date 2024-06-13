@@ -4,8 +4,9 @@ pragma solidity =0.8.23;
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IEndpoint} from "./interfaces/IEndpoint.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SubnetTreasury {
+contract SubnetTreasury is Ownable {
     using SafeERC20 for IERC20Metadata;
 
     address private _endpoint;
@@ -25,7 +26,11 @@ contract SubnetTreasury {
         _;
     }
 
-    constructor(address endpoint) {
+    constructor(address endpoint) Ownable(msg.sender) {
+        _endpoint = endpoint;
+    }
+
+    function changeEndpoint(address endpoint) external onlyOwner {
         _endpoint = endpoint;
     }
 
