@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.23;
-import "../interfaces/IEndpoint.sol";
+import "./interfaces/IEndpoint.sol";
 
 contract SimpleSua {
     address private _endpoint;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.23;
 
-import "../interfaces/IEndpoint.sol";
+import "./interfaces/IEndpoint.sol";
 
 contract SimpleRua {
     uint256 public status;
