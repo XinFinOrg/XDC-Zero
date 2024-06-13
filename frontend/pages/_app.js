@@ -21,7 +21,7 @@ const xdcdevnet = {
 };
 
 const xdcsubnet = {
-  id: 5173,
+  id: 953,
   name: "XDC Subnet",
   network: "XDC Subnet",
   nativeCurrency: {
@@ -30,8 +30,8 @@ const xdcsubnet = {
     symbol: "XDC",
   },
   rpcUrls: {
-    public: { http: ["http://66.94.98.186:8545"] },
-    default: { http: ["http://66.94.98.186:8545"] },
+    public: { http: ["https://devnetstats.apothem.network/subnet"] },
+    default: { http: ["https://devnetstats.apothem.network/subnet"] },
   },
 };
 
