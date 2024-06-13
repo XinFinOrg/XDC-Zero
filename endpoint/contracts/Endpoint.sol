@@ -212,6 +212,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
                     bytes memory data
                 ) = getPayload(payload);
 
+                require(index > chain.lastIndex, "invalid index");
+
                 require(
                     transaction.to == sua,
                     "invalid sender application address"
