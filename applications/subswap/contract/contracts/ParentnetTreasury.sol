@@ -4,8 +4,9 @@ pragma solidity =0.8.23;
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {TreasuryToken} from "./TreasuryToken.sol";
 import {IEndpoint} from "./interfaces/IEndpoint.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ParentnetTreasury {
+contract ParentnetTreasury is Ownable {
     //send id=>originalToken => TreasuryToken
     mapping(uint256 => mapping(address => address)) public treasuryMapping;
 
@@ -33,7 +34,11 @@ contract ParentnetTreasury {
         _;
     }
 
-    constructor(address endpoint) {
+    constructor(address endpoint) Ownable(msg.sender) {
+        _endpoint = endpoint;
+    }
+
+    function changeEndpoint(address endpoint) external onlyOwner {
         _endpoint = endpoint;
     }
 
