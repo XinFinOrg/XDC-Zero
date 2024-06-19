@@ -5,11 +5,12 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const deploy = require("../deploy.config.json");
 
 async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleRua");
 
-  const parentnetTreasury = await factory.deploy();
+  const parentnetTreasury = await factory.deploy(deploy.parentnetendpoint);
 
   await parentnetTreasury.deployed();
 
