@@ -5,7 +5,10 @@
 ### Check `deploy.config.json` File
 
 1. Open the `deploy.config.json` file.
-2. Check the values of `rua` and `sua`.
+2. Check the values of `parentnetendpoint` and `subnetendpoint`.
+   - `parentnetendpoint`: The endpoint contract address on Parentnet.
+   - `subnetendpoint`: The endpoint contract address on Subnet.
+3. Check the values of `rua` and `sua`.
    - `rua`: The rua contract address on Parentnet.
    - `sua`: The sua contract address on Subnet.
 
