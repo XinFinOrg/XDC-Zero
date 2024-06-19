@@ -34,21 +34,22 @@ npx hardhat run scripts/ruaDeploy.js --network xdcparentnet
 ```
 npx hardhat run scripts/suaDeploy.js --network xdcsubnet
 ```
-
 4. Check the Rua Contract Status:
 
 ```
 npx hardhat run scripts/ruaStatus.js --network xdcparentnet
 ```
 
-5. Call the Sua contract:
 
+
+##### **Before this step, you need to first register the application to XDC-Zero, (check endpoint direcotry)
+5. Call the Sua contract:
 ```
 npx hardhat run scripts/suaCall.js --network xdcsubnet
 ```
 
+##### **To successfully transfer the call to parentnet, the Relayer has to be running and trigger the XDC-Zero data transfer
 6. Check the Rua Contract Status:
-
 ```
 npx hardhat run scripts/ruaStatus.js --network xdcparentnet
 ```
