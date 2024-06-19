@@ -73,16 +73,32 @@ To begin deployment, start with the subnet endpoint:
 npx hardhat run scripts/endpointdeploy.js --network xdcsubnet
 ```
 
+Also start the parentnet endpoint:
+
+```shell
+npx hardhat run scripts/endpointdeploy.js --network xdcparentnet
+```
+
 Next, configure the registration parameters in the `endpointconfig.json` file for the chain:
 
 ```shell
 npx hardhat run scripts/registerchain.js --network xdcsubnet
 ```
 
-After setting the application parameters in `endpointconfig.json`, proceed to register the user application:
+Also register on the parentnet:
+
+```shell
+npx hardhat run scripts/registerchain.js --network xdcparentnet
+```
+
+After setting the application parameters in `endpointconfig.json`, proceed to register the user application (check applications/subswap for an example on deploying application):
 
 ```shell
 npx hardhat run scripts/registerapplications.js --network xdcsubnet
+```
+
+```shell
+npx hardhat run scripts/registerapplications.js --network xdcparentnet
 ```
 
 ## Additional Commands
