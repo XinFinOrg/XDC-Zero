@@ -8,7 +8,8 @@
 2. Check the values of `parentnetendpoint` and `subnetendpoint`.
    - `parentnetendpoint`: The endpoint contract address on Parentnet.
    - `subnetendpoint`: The endpoint contract address on Subnet.
-3. Check the values of `rua` and `sua`.
+3. Check the values of `rid`,`rua` and `sua`.
+   - `rid`: The rua Parentnet chain id.
    - `rua`: The rua contract address on Parentnet.
    - `sua`: The sua contract address on Subnet.
 

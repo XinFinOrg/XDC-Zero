@@ -12,7 +12,7 @@ async function main() {
 
   const sua = factory.attach(deploy.sua);
 
-  await sua.simpleCall();
+  await sua.simpleCall(deploy.rid, deploy.rua);
   console.log("SimpleSua simpleCall success");
 }
 
