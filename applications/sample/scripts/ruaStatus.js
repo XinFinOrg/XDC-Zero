@@ -10,7 +10,7 @@ const deploy = require("../deploy.config.json");
 async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleRua");
 
-  const rua = await factory.attach(deploy.rua);
+  const rua = factory.attach(deploy.rua);
 
   const status = await rua.status();
   console.log("Rua status: ", status);

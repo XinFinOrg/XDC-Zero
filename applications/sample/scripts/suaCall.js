@@ -10,7 +10,7 @@ const deploy = require("../deploy.config.json");
 async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleSua");
 
-  const sua = await factory.attach(deploy.sua);
+  const sua = factory.attach(deploy.sua);
 
   await sua.simpleCall();
   console.log("SimpleSua simpleCall success");
