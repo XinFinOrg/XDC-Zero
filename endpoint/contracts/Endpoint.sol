@@ -28,7 +28,6 @@ contract Endpoint is Ownable, ReentrancyGuard {
     struct Chain {
         IFullCheckpoint csc;
         Endpoint endpoint;
-        uint256 lastIndex;
     }
 
     /**
@@ -54,17 +53,20 @@ contract Endpoint is Ownable, ReentrancyGuard {
     }
 
     //receive chainId=>Chain
-    mapping(uint256 => Chain) private _receiveChains;
+    mapping(uint256 => Chain) private _sendChains;
 
     mapping(uint256 => mapping(address => bool)) private _approvedRua;
 
     mapping(address => bool) private _approvedSua;
 
     //send chainId=>lastIndex
-    mapping(uint256 => uint256) private _sendChainLastIndexes;
+    mapping(uint256 => uint256) private _receiveChainLastIndexes;
 
-    //chainIds
-    uint256[] private _receiveChainIds;
+    //receive chainIds
+    uint256[] private _sendChainIds;
+
+    //send chainId=> index => bool
+    mapping(uint256 => mapping(uint256 => bool)) private _usedSendChainIndex;
 
     /**
      *
@@ -123,11 +125,11 @@ contract Endpoint is Ownable, ReentrancyGuard {
         require(_approvedSua[sua], "sua not approved");
         require(_approvedRua[rid][rua], "rua not approved");
 
-        uint256 sid = getSendChainId();
+        uint256 sid = getChainId();
 
-        _sendChainLastIndexes[rid]++;
+        _receiveChainLastIndexes[rid]++;
         bytes memory payload = abi.encode(
-            _sendChainLastIndexes[rid],
+            _receiveChainLastIndexes[rid],
             sid,
             sua,
             rid,
@@ -157,21 +159,21 @@ contract Endpoint is Ownable, ReentrancyGuard {
 
     /**
      * @dev validate the transaction proof and receipt proof
-     * @param cid chainId of the send chain
+     * @param csid chainId of the send chain
      * @param key key of the transaction
      * @param receiptProof receipt proof
      * @param transactionProof transaction proof
      * @param blockHash block hash of the transaction
      */
     function validateTransactionProof(
-        uint256 cid,
+        uint256 csid,
         bytes memory key,
         bytes[] calldata receiptProof,
         bytes[] calldata transactionProof,
         bytes32 blockHash
     ) external nonReentrant {
-        Chain storage receiveChain = _receiveChains[cid];
-        IFullCheckpoint csc = receiveChain.csc;
+        Chain storage sendChain = _sendChains[csid];
+        IFullCheckpoint csc = sendChain.csc;
         require(csc != IFullCheckpoint(address(0)), "chainId not registered");
 
         (, bytes32 transactionsRoot, bytes32 receiptRoot) = csc.getRoots(
@@ -199,7 +201,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < receipt.logs.length; i++) {
             if (
                 receipt.logs[i].topics[0] == packetHash() &&
-                receipt.logs[i].address_ == address(receiveChain.endpoint)
+                receipt.logs[i].address_ == address(sendChain.endpoint)
             ) {
                 bytes memory payload = sliceBytes(receipt.logs[i].data);
                 // receive send packet data
@@ -212,17 +214,14 @@ contract Endpoint is Ownable, ReentrancyGuard {
                     bytes memory data
                 ) = getPayload(payload);
 
-                require(index > receiveChain.lastIndex, "invalid index");
+                require(!_usedSendChainIndex[sid][index], "index used");
 
                 require(
                     transaction.to == sua,
                     "invalid sender application address"
                 );
-                require(sid == cid, "invalid packet send chainId");
-                require(
-                    rid == getSendChainId(),
-                    "invalid packet receive chainId"
-                );
+                require(sid == csid, "invalid packet send chainId");
+                require(rid == getChainId(), "invalid packet receive chainId");
 
                 // because call audited rua contract ,so dont need value and gas limit
                 bool success;
@@ -230,16 +229,17 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 require(success, "Low-level call failed");
 
                 emit PacketReceived(index, sid, sua, rid, rua, data);
-                receiveChain.lastIndex++;
+                _usedSendChainIndex[sid][index] = true;
                 break;
             }
         }
     }
 
-    function getSendChainIndex(
+    // get receive chain last index
+    function getReceiveChainLastIndex(
         uint256 _chainId
     ) external view returns (uint256) {
-        return _sendChainLastIndexes[_chainId];
+        return _receiveChainLastIndexes[_chainId];
     }
 
     function getPayload(
@@ -263,7 +263,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev register a chain
+     * @dev register a receive chain
      * @param chainId chainId of the send chain
      * @param csc checkpoint contract of the receive chain
      * @param endpoint endpoint contract of the send chain
@@ -273,9 +273,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
         IFullCheckpoint csc,
         Endpoint endpoint
     ) external onlyOwner {
-        _receiveChains[chainId].csc = csc;
-        _receiveChains[chainId].endpoint = endpoint;
-        _receiveChainIds.push(chainId);
+        _sendChains[chainId].csc = csc;
+        _sendChains[chainId].endpoint = endpoint;
+        _sendChainIds.push(chainId);
         emit ChainRegistered(chainId, csc, endpoint);
     }
 
@@ -333,9 +333,9 @@ contract Endpoint is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev get chainId of the send chain
+     * @dev get chainId of the current chain
      */
-    function getSendChainId() public view returns (uint256) {
+    function getChainId() public view returns (uint256) {
         return block.chainid;
     }
 
@@ -343,17 +343,17 @@ contract Endpoint is Ownable, ReentrancyGuard {
      * @dev get chainId of the send chain
      * @param chainId chainId of the send chain
      */
-    function getReceiveChain(
+    function getSendChain(
         uint256 chainId
     ) external view returns (Chain memory chain) {
-        chain = _receiveChains[chainId];
+        chain = _sendChains[chainId];
     }
 
     /**
      * @dev get receive chainIds
      */
-    function getReceiveChainIds() external view returns (uint256[] memory) {
-        return _receiveChainIds;
+    function getSendChainIds() external view returns (uint256[] memory) {
+        return _sendChainIds;
     }
 
     /**
