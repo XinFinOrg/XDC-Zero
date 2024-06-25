@@ -10,7 +10,10 @@ contract SimpleSua {
     }
 
     function data() public pure returns (bytes memory) {
-        return abi.encodeWithSelector(bytes4(keccak256("simpleCall()")));
+        //anything you want to do for i
+        uint256 i = 1;
+        return
+            abi.encodeWithSelector(bytes4(keccak256("simpleCall(uint256)")), i);
     }
 
     function simpleCall(uint256 rid, address rua) external {
