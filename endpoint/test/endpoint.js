@@ -63,7 +63,15 @@ describe("xdc zero endpoint", () => {
     it("shold be able to send message", async () => {
       await sua.simpleCall(chainId, rua.address);
 
-      const data = await sua.data();
+      const functionSignature = "simpleCall()";
+
+      const functionSelector = ethers.utils
+        .id(functionSignature)
+        .substring(0, 10);
+
+      const encodedData = ethers.utils.defaultAbiCoder.encode([], []);
+
+      const fullEncodedData = functionSelector + encodedData.substring(2);
 
       const filter = await endpoint.filters.Packet();
 
@@ -95,7 +103,7 @@ describe("xdc zero endpoint", () => {
       expect(values.rid).to.eq(chainId);
       expect(values.sua).to.eq(sua.address);
       expect(values.rua).to.eq(rua.address);
-      expect(values.data).to.eq(data);
+      expect(values.data).to.eq(fullEncodedData);
     });
 
     it("should be able receive message use real data", async () => {
@@ -154,14 +162,23 @@ describe("xdc zero endpoint", () => {
         ],
         log.data
       );
-      const data = await sua.data();
+
+      const functionSignature = "simpleCall()";
+
+      const functionSelector = ethers.utils
+        .id(functionSignature)
+        .substring(0, 10);
+
+      const encodedData = ethers.utils.defaultAbiCoder.encode([], []);
+
+      const fullEncodedData = functionSelector + encodedData.substring(2);
 
       expect(values.index).to.eq(1);
       expect(values.sid).to.eq(8851);
       expect(values.rid).to.eq(31337);
       expect(values.sua).to.eq("0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664");
       expect(values.rua).to.eq("0x5bC5ea6E43425fa08A03ee7b5D1C1726057E7664");
-      expect(values.data).to.eq(data);
+      expect(values.data).to.eq(fullEncodedData);
     });
   });
 });
