@@ -11,8 +11,14 @@ async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleSua");
 
   const sua = factory.attach(deploy.sua);
+  try {
+    await sua.simpleCall(deploy.rid, deploy.rua);
+  } catch (e) {
+    console.error(
+      "it seems your sua didn't registered to endpoint on subnet, please register it .refer to https://github.com/XinFinOrg/XDC-Zero/blob/a7dcf5ffd3ba7ad74b6ab3557544f52621dff808/endpoint/README.md?plain=1#L94-L102"
+    );
+  }
 
-  await sua.simpleCall(deploy.rid, deploy.rua);
   console.log("SimpleSua simpleCall success");
 }
 
