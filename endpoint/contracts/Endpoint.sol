@@ -59,14 +59,16 @@ contract Endpoint is Ownable, ReentrancyGuard {
 
     mapping(address => bool) private _approvedSua;
 
-    //send chainId=>lastIndex
+    //receive chainId=>lastIndex
     mapping(uint256 => uint256) private _receiveChainLastIndexes;
 
-    //receive chainIds
+    //send chainIds
     uint256[] private _sendChainIds;
 
-    //send chainId=> index => bool
-    mapping(uint256 => mapping(uint256 => bool)) private _usedSendChainIndex;
+    //send chainId=> lastIndex
+    mapping(uint256 => uint256) private _sendChainLastIndexes;
+
+    mapping(uint256 => bytes[]) public failureData;
 
     /**
      *
@@ -79,6 +81,15 @@ contract Endpoint is Ownable, ReentrancyGuard {
     event Packet(bytes payload);
 
     event PacketReceived(
+        uint256 index,
+        uint256 sid,
+        address sua,
+        uint256 rid,
+        address rua,
+        bytes data
+    );
+
+    event FailureData(
         uint256 index,
         uint256 sid,
         address sua,
@@ -214,7 +225,10 @@ contract Endpoint is Ownable, ReentrancyGuard {
                     bytes memory data
                 ) = getPayload(payload);
 
-                require(!_usedSendChainIndex[sid][index], "index used");
+                require(
+                    _sendChainLastIndexes[csid] + 1 == index,
+                    "invailid index"
+                );
 
                 require(
                     transaction.to == sua,
@@ -224,15 +238,24 @@ contract Endpoint is Ownable, ReentrancyGuard {
                 require(rid == getChainId(), "invalid packet receive chainId");
 
                 // because call audited rua contract ,so dont need value and gas limit
+
                 bool success;
                 (success, ) = rua.call{value: 0}(data);
-                require(success, "Low-level call failed");
+                if (!success) {
+                    //simply ignore hanlde
+                    failureData[rid].push(payload);
+                    emit FailureData(index, sid, sua, rid, rua, data);
+                }
 
                 emit PacketReceived(index, sid, sua, rid, rua, data);
-                _usedSendChainIndex[sid][index] = true;
+                _sendChainLastIndexes[csid]++;
                 break;
             }
         }
+    }
+
+    function getFailureDataLength(uint256 rid) external view returns (uint256) {
+        return failureData[rid].length;
     }
 
     // get receive chain last index
@@ -444,5 +467,11 @@ contract Endpoint is Ownable, ReentrancyGuard {
             size := extcodesize(account)
         }
         return size > 0;
+    }
+
+    function getSendChainLastIndex(
+        uint256 sid
+    ) external view returns (uint256) {
+        return _sendChainLastIndexes[sid];
     }
 }
