@@ -14,7 +14,7 @@ async function main() {
 
   const endpointFactory = await hre.ethers.getContractFactory("IEndpoint");
 
-  const endpointAddress = await sua._endpoint();
+  const endpointAddress = await sua.endpoint();
 
   const endpoint = endpointFactory.attach(endpointAddress);
 
