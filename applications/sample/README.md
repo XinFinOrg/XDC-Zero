@@ -11,7 +11,6 @@
 3. Check the values of `rid`,`rua` and `sua`.
    - `rid`: The rua Parentnet chain id.
    - `rua`: The rua contract address on Parentnet.
-   - `sid`: The rua Subnet chain id.   
    - `sua`: The sua contract address on Subnet.
 
 ### Deploy Subswap

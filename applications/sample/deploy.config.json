@@ -1,8 +1,7 @@
 {
-  "parentnetendpoint": "0xB575c682301e20935B8C5846313a01E6f0Bd9f4B",
-  "subnetendpoint": "0x0bb5a292b13C7983BFDCd62538e0e81603793342",
-  "rid": "551",
-  "rua": "0x40DC79697399686cd4003Ab9B7B87115bA945397",
-  "sid": "953",
-  "sua": "0xdfc2cD2b6AA7fD236e3A4Efa255A9b81c94B3fF4"
+  "parentnetendpoint": "0x89D933dFBd879DA78643530Bf413c81F94A73c31",
+  "subnetendpoint": "0x0B1795ccA8E4eC4df02346a082df54D437F8D9aF",
+  "rid": "",
+  "rua": "",
+  "sua": ""
 }
