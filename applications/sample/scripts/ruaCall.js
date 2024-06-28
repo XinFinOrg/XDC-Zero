@@ -8,26 +8,26 @@ const hre = require("hardhat");
 const deploy = require("../deploy.config.json");
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("SimpleSua");
+  const factory = await hre.ethers.getContractFactory("SimpleRua");
 
-  const sua = factory.attach(deploy.sua);
+  const rua = factory.attach(deploy.rua);
 
   const endpointFactory = await hre.ethers.getContractFactory("IEndpoint");
 
-  const endpointAddress = await sua._endpoint();
+  const endpointAddress = await rua._endpoint();
 
   const endpoint = endpointFactory.attach(endpointAddress);
 
-  const registered = await endpoint.allowanceSua(deploy.sua);
+  const registered = await endpoint.allowanceSua(deploy.rua);
 
   if (!registered) {
-    console.error("SimpleSua not registered with endpoint");
+    console.error("SimpleRua not registered with endpoint");
     return;
   }
 
-  await sua.simpleCall(deploy.rid, deploy.rua);
+  await rua.simpleCallReverse(deploy.sid, deploy.sua);
 
-  console.log("SimpleSua simpleCall success");
+  console.log("SimpleRua simpleCall success");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
