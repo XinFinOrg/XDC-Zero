@@ -5,54 +5,36 @@ const env = require("dotenv").config({path: 'mount/.env'});
 
 const { ethers } = require('ethers')
 
-
-function writeEndpointEnv(key){
+function writeEnv(key, path){
   content = "PRIVATE_KEY="+key
-  fs.writeFileSync('../endpoint/.env', content, err => {
+  fullPath = path+"/"+".env"
+  fs.writeFileSync(fullPath, content, err => {
     if (err) {
-      throw Error("error writing endpoint env, "+err)
+      throw Error(`error writing ${fullPath}, `+err)
     }
   });
 }
-
-function writeSubswapEnv(key){ //refactor
-  content = "PRIVATE_KEY="+key
-  fs.writeFileSync('../applications/subswap/contract/.env', content, err => {
-    if (err) {
-      throw Error("error writing endpoint env, "+err)
-    }
-  });
+function writeNetworkJson(config){
+  networkJson = {
+    "xdcsubnet": config.subnetURL,
+    "xdcparentnet": config.parentnetURL,
+  }
+  writeJson(networkJson, config.relativePath, "network.config.json")
 }
 
-function writeEndpointNetworkJson(subnetURL, parentnetURL){
-  networkJson = {
-    "xdcsubnet": subnetURL,
-    "xdcparentnet": parentnetURL,
-  }
-  fs.writeFileSync('../endpoint/network.config.json', JSON.stringify(networkJson, null, 2) , 'utf-8', err => {
+function writeJson(obj, path, filename){
+  fullPath = path+"/"+filename
+  fs.writeFileSync(fullPath, JSON.stringify(obj, null, 2) , 'utf-8', err => {
     if (err) {
-      throw Error("error writing network.config.json, "+err)
+      throw Error(`error writing ${fullPath}, `+err)
     } 
   });
 }
-
-function writeSubswapNetworkJson(subnetURL, parentnetURL){ //refactor
-  networkJson = {
-    "xdcsubnet": subnetURL,
-    "xdcparentnet": parentnetURL,
-  }
-  fs.writeFileSync('../applications/subswap/contract/network.config.json', JSON.stringify(networkJson, null, 2) , 'utf-8', err => {
-    if (err) {
-      throw Error("error writing network.config.json, "+err)
-    } 
-  });
-}
-
 
 function callExec(command){
   try{
-    // const stdout = execSync(command,{timeout: 12000})
-    const stdout = execSync(command)
+    const stdout = execSync(command,{timeout: 200000})
+    // const stdout = execSync(command)
     output = stdout.toString()
     // console.log(`${stdout}`);
     console.log(output);
@@ -61,7 +43,7 @@ function callExec(command){
     if (error.code) {
       // Spawning child process failed
       if (error.code == "ETIMEDOUT"){
-        throw Error("Timed out (120 seconds)")
+        throw Error("Timed out (200 seconds)")
       } else {
         throw Error(error)
       }
@@ -75,7 +57,9 @@ function callExec(command){
   }
 }
 
-async function getNetworkID(subnetURL, parentnetURL){
+async function getNetworkID(config){
+  subnetURL = config.subnetURL
+  parentnetURL = config.parentnetURL
   console.log("getting chain ID")
   const subRPC = new ethers.providers.JsonRpcProvider(subnetURL)
   subID = await subRPC.getNetwork()
@@ -88,14 +72,13 @@ async function getNetworkID(subnetURL, parentnetURL){
   console.log("parentnet chain ID:", parentID)
   console.log()
 
-  return [subID, parentID]
+  config["subnetID"] = subID
+  config["parentnetID"] = parentID
 }
 
 module.exports = {
   getNetworkID,
-  writeEndpointEnv,
-  writeSubswapEnv,
-  writeEndpointNetworkJson,
-  writeSubswapNetworkJson,
   callExec,
+  writeEnv,
+  writeNetworkJson,
 }

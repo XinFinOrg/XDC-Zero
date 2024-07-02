@@ -2,7 +2,9 @@ process.chdir(__dirname)
 const { execSync } = require("child_process");
 const fs = require('node:fs');
 const env = require("dotenv").config({path: 'mount/.env'});
-const config = {}
+const config = {
+  "relativePath": "../endpoint/"
+}
 const endpointConfig = {}
 
 const { ethers } = require('ethers')
@@ -12,7 +14,7 @@ main()
 
 async function main(){
   initEndpointDeploy()
-  await getNetworkID()
+  await u.getNetworkID(config)
   deployEndpoint()
   configureEndpointJson()
   registerEndpoint()
@@ -99,15 +101,15 @@ function exportEndpointJson(){
 
 function deployEndpoint(){
   console.log("writing network config")
-  writeEndpointNetworkJson()
+  u.writeNetworkJson(config)
   console.log("configuring PK")
-  u.writeEndpointEnv(config.subnetPK)
+  u.writeEnv(config.subnetPK, config.relativePath)
   console.log("deploying subnet endpoint")
   subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcsubnet")
   subnetZeroEndpoint = parseEndpointOutput(subnetEndpointOut)
 
   console.log("configuring PK")
-  u.writeEndpointEnv(config.parentnetPK)
+  u.writeEnv(config.parentnetPK, config.relativePath)
   console.log("deploying parentnet endpoint")
   parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcparentnet")
   parentnetZeroEndpoint = parseEndpointOutput(parentnetEndpointOut)
@@ -118,23 +120,19 @@ function deployEndpoint(){
 
 function registerEndpoint(){
   console.log("writing network config")
-  writeEndpointNetworkJson()
+  u.writeNetworkJson(config)
   console.log("configuring PK")
-  u.writeEndpointEnv(config.subnetPK)
+  u.writeEnv(config.subnetPK, config.relativePath)
   console.log("register parentnet to subnet endpoint")
   subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcsubnet")
   if (!subnetEndpointOut.includes("success")) throw Error("failed to register parentnet endpoint to subnet")
 
   console.log("configuring PK")
-  u.writeEndpointEnv(config.parentnetPK)
+  u.writeEnv(config.parentnetPK, config.relativePath)
   console.log("register subnet to parentnet endpoint")
   parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcparentnet")
   if (!parentnetEndpointOut.includes("success")) throw Error("failed to register subnet endpoint to parentnet")
 
-}
-
-function writeEndpointNetworkJson(){
-  u.writeEndpointNetworkJson(config.subnetURL, config.parentnetURL)
 }
 
 function parseEndpointOutput(outString){
@@ -153,10 +151,4 @@ function parseEndpointOutput(outString){
   }
 }
 
-async function getNetworkID(){
-  [subID, parentID] = await u.getNetworkID(config.subnetURL, config.parentnetURL)
-  
-  config["subnetID"] = subID
-  config["parentnetID"] = parentID
-}
 

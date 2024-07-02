@@ -2,7 +2,9 @@ process.chdir(__dirname)
 const { execSync } = require("child_process");
 const fs = require('node:fs');
 const env = require("dotenv").config({path: 'mount/.env'});
-const config = {}
+const config = {
+  "relativePath": "../applications/subswap/contract/"
+}
 const endpointConfig = {}
 
 const { ethers } = require('ethers')
@@ -16,6 +18,7 @@ async function main(){
   deploySubswap()
   exportSubswap()
 }
+
 function checkEndpointConfig(){
   if (!fs.existsSync('./mount/endpointconfig.json')){
     if (process.env.SUBNET_ZERO_CONTRACT && process.env.PARENTNET_ZERO_CONTRACT){
@@ -69,18 +72,18 @@ function initSubswapDeploy(){
 
 function deploySubswap(){
   console.log("writing network config")
-  u.writeSubswapNetworkJson(config.subnetURL, config.parentnetURL)
+  u.writeNetworkJson(config)
   console.log("writing deploy.config.json")
   writeSubswapDeployJson()
 
   console.log("configuring PK")
-  u.writeSubswapEnv(config.subnetPK)
+  u.writeEnv(config.subnetPK, config.relativePath)
   console.log("deploying subswap on subnet")
   subnetEndpointOut = u.callExec("cd ../applications/subswap/contract; npx hardhat run scripts/subnettreasurydeploy.js --network xdcsubnet")
   subnetSubswapAddr = parseEndpointOutput(subnetEndpointOut)
 
   console.log("configuring PK")
-  u.writeSubswapEnv(config.parentnetPK)
+  u.writeEnv(config.parentnetPK, config.relativePath)
   console.log("deploying subswap on parentnet")
   parentnetEndpointOut = u.callExec("cd ../applications/subswap/contract; npx hardhat run scripts/subnettreasurydeploy.js --network xdcparentnet")
   parentnetSubswapAddr = parseEndpointOutput(parentnetEndpointOut)

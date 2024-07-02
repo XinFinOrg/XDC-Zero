@@ -2,7 +2,9 @@ process.chdir(__dirname)
 const { execSync } = require("child_process");
 const fs = require('node:fs');
 const env = require("dotenv").config({path: 'mount/.env'});
-const config = {}
+const config = {
+  "relativePath": "../endpoint/"
+}
 const endpointConfig = {}
 
 const { ethers } = require('ethers');
@@ -14,7 +16,7 @@ main()
 async function main(){
   importEndpointJson()
   initApplicationRegister()
-  await getNetworkID()
+  await u.getNetworkID(config)
   configureEndpointJson()
   registerApplication()
   exportEndpointJson()
@@ -88,16 +90,6 @@ function initApplicationRegister(){
 
 }
 
-async function getNetworkID(){
-  [subID, parentID] = await u.getNetworkID(config.subnetURL, config.parentnetURL)
-  
-  config["subnetID"] = subID
-  config["parentnetID"] = parentID
-}
-function writeEndpointNetworkJson(){
-  u.writeEndpointNetworkJson(config.subnetURL, config.parentnetURL)
-}
-
 function configureEndpointJson(){
   subApp = {
     "rid": config.parentnetID,
@@ -147,15 +139,15 @@ function configureEndpointJson(){
 
 function registerApplication(){
   console.log("writing network config")
-  writeEndpointNetworkJson()
+  u.writeNetworkJson(config)
   console.log("configuring PK")
-  u.writeEndpointEnv(config.subnetPK)
+  u.writeEnv(config.subnetPK, config.relativePath)
   console.log("register parentnet application to subnet")
   subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerapplications.js --network xdcsubnet")
   if (!subnetEndpointOut.includes("success")) throw Error("failed to register parentnet app to subnet")
 
   console.log("configuring PK")
-  u.writeEndpointEnv(config.parentnetPK)
+  u.writeEnv(config.parentnetPK, config.relativePath)
   console.log("register subnet application to parentnet endpoint")
   parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerapplications.js --network xdcparentnet")
   if (!parentnetEndpointOut.includes("success")) throw Error("failed to register subnet app to parentnet")
