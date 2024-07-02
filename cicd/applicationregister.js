@@ -1,0 +1,155 @@
+process.chdir(__dirname)
+const { execSync } = require("child_process");
+const fs = require('node:fs');
+const env = require("dotenv").config({path: 'mount/.env'});
+const config = {}
+const endpointConfig = {}
+
+const { ethers } = require('ethers');
+const u = require('./util.js')
+
+
+main()
+
+async function main(){
+  importEndpointJson()
+  initApplicationRegister()
+  await getNetworkID()
+  configureEndpointJson()
+  registerApplication()
+  exportEndpointJson()
+
+}
+
+
+function importEndpointJson(){
+  if (!fs.existsSync('./mount/endpointconfig.json')) throw Error("mount/endpointconfig.json not found")
+
+  const epjs = JSON.parse(fs.readFileSync('./mount/endpointconfig.json', 'utf8'));
+  if (epjs.xdcsubnet.endpoint && epjs.xdcparentnet.endpoint){
+    endpointConfig["xdcsubnet"] = epjs.xdcsubnet
+    endpointConfig["xdcparentnet"] = epjs.xdcparentnet
+  } else {
+    throw Error("incomplete endpoint config")
+  }
+}
+
+function initApplicationRegister(){
+  if (process.env.PARENTNET_URL){
+    parentnetURL = process.env.PARENTNET_URL
+  } else if (process.env.PARENTNET){
+    parentnet = process.env.PARENTNET
+    if (parentnet == "devnet") parentnetURL = "https://devnetstats.apothem.network/devnet";
+    if (parentnet == "testnet") parentnetURL = "https://devnetstats.apothem.network/testnet";
+    if (parentnet == "mainnet") parentnetURL = "https://devnetstats.apothem.network/mainnet";
+  } else {
+    throw Error("PARENTNET or PARENTNET_URL not found")
+  }
+
+  const reqENV = [
+    "SUBNET_PK",
+    "PARENTNET_PK",
+    "SUBNET_APP",
+    "PARENTNET_APP",
+    "SUBNET_URL",
+  ];
+  const isEnabled = reqENV.every(envVar => envVar in process.env)
+  if (!isEnabled){
+    throw Error("incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_APP, PARENTNET_APP, SUBNET_URL")
+  }
+  subnetPK = process.env.SUBNET_PK.startsWith("0x") ? process.env.SUBNET_PK : `0x${process.env.SUBNET_PK}`;
+  parentnetPK = process.env.PARENTNET_PK.startsWith("0x") ? process.env.PARENTNET_PK : `0x${process.env.PARENTNET_PK}`;
+  subnetApp = process.env.SUBNET_APP.startsWith("0x") ? process.env.SUBNET_APP : `0x${process.env.SUBNET_APP}`;
+  parentnetApp = process.env.PARENTNET_APP.startsWith("0x") ? process.env.PARENTNET_APP : `0x${process.env.PARENTNET_APP}`;
+  subnetURL = process.env.SUBNET_URL;
+
+  config["subnetPK"] = subnetPK
+  config["parentnetPK"] = parentnetPK
+  config["subnetURL"] = subnetURL
+  config["parentnetURL"] = parentnetURL
+  config["subnetApp"] = subnetApp
+  config["parentnetApp"] = parentnetApp
+
+}
+
+async function getNetworkID(){
+  [subID, parentID] = await u.getNetworkID(config.subnetURL, config.parentnetURL)
+  
+  config["subnetID"] = subID
+  config["parentnetID"] = parentID
+}
+function writeEndpointNetworkJson(){
+  u.writeEndpointNetworkJson(config.subnetURL, config.parentnetURL)
+}
+
+function configureEndpointJson(){
+  subApp = {
+    "rid": config.parentnetID,
+    "rua": config.parentnetApp,
+    "sua": config.subnetApp
+  }
+  parentApp = {
+    "rid": config.subnetID,
+    "rua": config.subnetApp,
+    "sua": config.parentnetApp,
+  }
+
+  existingSubApps = endpointConfig.xdcsubnet.applications
+  existingParentApps = endpointConfig.xdcparentnet.applications
+
+  if (!(Array.isArray(existingSubApps) && Array.isArray(existingParentApps))){ 
+    endpointConfig.xdcsubnet.applications = [subApp]
+    endpointConfig.xdcparentnet.applications = [parentApp]
+  } else{
+    subDupe = false
+    for (var i=0; i<existingSubApps.length; i++){
+      if (
+        existingSubApps[i].rid == subApp.rid &&
+        existingSubApps[i].rua == subApp.rua &&
+        existingSubApps[i].sua == subApp.sua 
+      ){ subDupe = true; break } //don't append if app already exists
+    }
+    if (!subDupe) endpointConfig.xdcsubnet.applications.push(subApp)
+
+    parentDupe = false;
+    for (var i=0; i<existingParentApps.length; i++){
+      if (
+        existingParentApps[i].rid == parentApp.rid &&
+        existingParentApps[i].rua == parentApp.rua &&
+        existingParentApps[i].sua == parentApp.sua 
+      ){ parentDupe = true; break } //don't append if app already exists
+    } 
+    if (!parentDupe) endpointConfig.xdcparentnet.applications.push(parentApp)
+  }
+  console.log("writing endpointconfig.json")
+  fs.writeFileSync('../endpoint/endpointconfig.json', JSON.stringify(endpointConfig, null, 2) , 'utf-8', err => {
+    if (err) {
+      throw Error("error writing endpointconfig.json, "+err)
+    } 
+  });
+}
+
+function registerApplication(){
+  console.log("writing network config")
+  writeEndpointNetworkJson()
+  console.log("configuring PK")
+  u.writeEndpointEnv(config.subnetPK)
+  console.log("register parentnet application to subnet")
+  subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerapplications.js --network xdcsubnet")
+  if (!subnetEndpointOut.includes("success")) throw Error("failed to register parentnet app to subnet")
+
+  console.log("configuring PK")
+  u.writeEndpointEnv(config.parentnetPK)
+  console.log("register subnet application to parentnet endpoint")
+  parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerapplications.js --network xdcparentnet")
+  if (!parentnetEndpointOut.includes("success")) throw Error("failed to register subnet app to parentnet")
+
+}
+
+
+function exportEndpointJson(){
+  fs.copyFileSync('../endpoint/endpointconfig.json', './mount/endpointconfig.json')
+  ep = fs.readFileSync('../endpoint/endpointconfig.json').toString()
+  console.log("SUCCESS register application, endpointconfig:")
+  console.log(ep)
+}

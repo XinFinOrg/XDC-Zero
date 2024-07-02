@@ -1,7 +1,7 @@
 {
   "name": "zero-cicd",
   "dependencies": {
-    "web3": "^4.10.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2"
   }
 }

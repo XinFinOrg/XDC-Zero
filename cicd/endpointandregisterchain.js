@@ -1,55 +1,25 @@
 process.chdir(__dirname)
 const { execSync } = require("child_process");
 const fs = require('node:fs');
-const env = require("dotenv").config();
+const env = require("dotenv").config({path: 'mount/.env'});
 const config = {}
 const endpointConfig = {}
 
-const { Web3 } = require('web3')
+const { ethers } = require('ethers')
+const u = require('./util.js')
 
 main()
 
 async function main(){
-  check()
-  // console.log(config)
+  initEndpointDeploy()
   await getNetworkID()
   deployEndpoint()
-  configureEndpoint()
+  configureEndpointJson()
   registerEndpoint()
-  // console.log(config) 
+  exportEndpointJson()
 }
 
-function configureEndpoint(){
-  endpointConfig["xdcsubnet"]={
-    "endpoint": config.subnetEndpoint,
-    "registers":[
-      {
-        "csc": config.reverseCSC,
-        "endpoint": config.parentnetEndpoint,
-        "chainId": config.parentnetID
-      }
-    ]
-  }
-  endpointConfig["xdcparentnet"]={
-    "endpoint": config.parentnetEndpoint,
-    "registers":[
-      {
-        "csc": config.csc,
-        "endpoint": config.subnetEndpoint,
-        "chainId": config.subnetID
-      }
-    ]
-  }
-  
-  console.log("writing endpointconfig.json")
-  fs.writeFileSync('../endpoint/endpointconfig.json', JSON.stringify(endpointConfig, null, 2) , 'utf-8', err => {
-    if (err) {
-      throw Error("error writing endpointconfig.json, "+err)
-    } 
-  });
-}
-
-function check(){
+function initEndpointDeploy(){
   if (process.env.PARENTNET_URL){
     parentnetURL = process.env.PARENTNET_URL
   } else if (process.env.PARENTNET){
@@ -85,31 +55,61 @@ function check(){
   config["parentnetURL"] = parentnetURL
   config["csc"] = csc
   config["reverseCSC"] = reverseCSC
-  return
+  
 }
 
-function writeEndpointEnv(key){
-  content = "PRIVATE_KEY="+key
-  fs.writeFileSync('../endpoint/.env', content, err => {
+function configureEndpointJson(){
+  endpointConfig["xdcsubnet"]={
+    "endpoint": config.subnetEndpoint,
+    "registers":[
+      {
+        "csc": config.reverseCSC,
+        "endpoint": config.parentnetEndpoint,
+        "chainId": config.parentnetID
+      }
+    ],
+    "applications":[]
+  }
+  endpointConfig["xdcparentnet"]={
+    "endpoint": config.parentnetEndpoint,
+    "registers":[
+      {
+        "csc": config.csc,
+        "endpoint": config.subnetEndpoint,
+        "chainId": config.subnetID
+      }
+    ],
+    "applications":[]
+  }
+  
+  console.log("writing endpointconfig.json")
+  fs.writeFileSync('../endpoint/endpointconfig.json', JSON.stringify(endpointConfig, null, 2) , 'utf-8', err => {
     if (err) {
-      throw Error("error writing endpoint env, "+err)
-    }
+      throw Error("error writing endpointconfig.json, "+err)
+    } 
   });
+}
+
+function exportEndpointJson(){
+  fs.copyFileSync('../endpoint/endpointconfig.json', './mount/endpointconfig.json')
+  ep = fs.readFileSync('../endpoint/endpointconfig.json').toString()
+  console.log("SUCCESS deploy endpoint and register chain, endpointconfig:")
+  console.log(ep)
 }
 
 function deployEndpoint(){
   console.log("writing network config")
   writeEndpointNetworkJson()
   console.log("configuring PK")
-  writeEndpointEnv(config.subnetPK)
+  u.writeEndpointEnv(config.subnetPK)
   console.log("deploying subnet endpoint")
-  subnetEndpointOut = callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcsubnet")
+  subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcsubnet")
   subnetZeroEndpoint = parseEndpointOutput(subnetEndpointOut)
 
   console.log("configuring PK")
-  writeEndpointEnv(config.parentnetPK)
+  u.writeEndpointEnv(config.parentnetPK)
   console.log("deploying parentnet endpoint")
-  parentnetEndpointOut = callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcparentnet")
+  parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcparentnet")
   parentnetZeroEndpoint = parseEndpointOutput(parentnetEndpointOut)
 
   // return subnetZeroEndpoint, parentnetZeroEndpoint
@@ -121,29 +121,21 @@ function registerEndpoint(){
   console.log("writing network config")
   writeEndpointNetworkJson()
   console.log("configuring PK")
-  writeEndpointEnv(config.subnetPK)
+  u.writeEndpointEnv(config.subnetPK)
   console.log("register parentnet to subnet endpoint")
-  subnetEndpointOut = callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcsubnet")
+  subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcsubnet")
   // subnetZeroEndpoint = parseEndpointOutput(subnetEndpointOut)
 
   console.log("configuring PK")
-  writeEndpointEnv(config.parentnetPK)
+  u.writeEndpointEnv(config.parentnetPK)
   console.log("register subnet to parentnet endpoint")
-  parentnetEndpointOut = callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcparentnet")
+  parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcparentnet")
   // parentnetZeroEndpoint = parseEndpointOutput(parentnetEndpointOut)
 
 }
 
 function writeEndpointNetworkJson(){
-  networkJson = {
-    "xdcparentnet": config.parentnetURL,
-    "xdcsubnet": config.subnetURL,
-  }
-  fs.writeFileSync('../endpoint/network.config.json', JSON.stringify(networkJson, null, 2) , 'utf-8', err => {
-    if (err) {
-      throw Error("error writing network.config.json, "+err)
-    } 
-  });
+  u.writeEndpointNetworkJson(config.subnetURL, config.parentnetURL)
 }
 
 function parseEndpointOutput(outString){
@@ -162,49 +154,10 @@ function parseEndpointOutput(outString){
   }
 }
 
-function callExec(command){
-  try{
-    // const stdout = execSync(command,{timeout: 12000})
-    const stdout = execSync(command)
-    output = stdout.toString()
-    // console.log(`${stdout}`);
-    console.log(output);
-    return output
-  } catch (error){
-    if (error.code) {
-      // Spawning child process failed
-      if (error.code == "ETIMEDOUT"){
-        throw Error("Timed out (120 seconds)")
-      } else {
-        throw Error(error)
-      }
-    } else {
-      // Child was spawned but exited with non-zero exit code
-      // Error contains any stdout and stderr from the child
-      // const { stdout, stderr } = error;
-      // console.error({ stdout, stderr });
-      throw Error(error)
-    }
-  }
-}
-
 async function getNetworkID(){
-  console.log("getting chainID")
-  const sub3 = new Web3(config.subnetURL)
-  subID = await sub3.eth.getChainId()
-  subID = subID.toString()
-  console.log("subnet chain ID:", subID)
-  const parent3 = new Web3(config.parentnetURL)
-  parentID = await parent3.eth.getChainId()
-  parentID = parentID.toString()
-  console.log("parentnet chain ID:", parentID)
-  console.log()
+  [subID, parentID] = await u.getNetworkID(config.subnetURL, config.parentnetURL)
   
-  // return subID.toString(), parentID.toString()
   config["subnetID"] = subID
   config["parentnetID"] = parentID
 }
 
-function clean(){
-
-}
