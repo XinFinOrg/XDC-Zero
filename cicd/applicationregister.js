@@ -23,14 +23,30 @@ async function main(){
 
 
 function importEndpointJson(){
-  if (!fs.existsSync('./mount/endpointconfig.json')) throw Error("mount/endpointconfig.json not found")
+  if (!fs.existsSync('./mount/endpointconfig.json')){
+    if (process.env.SUBNET_ZERO_CONTRACT && process.env.PARENTNET_ZERO_CONTRACT){
+      config.subnetEndpoint = process.env.SUBNET_ZERO_CONTRACT
+      config.parentnetEndpoint = process.env.PARENTNET_ZERO_CONTRACT
+    } else {
+      throw Error("mount/endpointconfig.json not found, and SUBNET_ZERO_CONTRACT and PARENTNET_ZERO_CONTRACT are not configured")
+    }
+    endpointConfig["xdcsubnet"]={
+      "endpoint": config.subnetEndpoint,
+      "applications":[]
+    }
+    endpointConfig["xdcparentnet"]={
+      "endpoint": config.parentnetEndpoint,
+      "applications":[]
+    }
+    return
+  } 
 
   const epjs = JSON.parse(fs.readFileSync('./mount/endpointconfig.json', 'utf8'));
   if (epjs.xdcsubnet.endpoint && epjs.xdcparentnet.endpoint){
     endpointConfig["xdcsubnet"] = epjs.xdcsubnet
     endpointConfig["xdcparentnet"] = epjs.xdcparentnet
   } else {
-    throw Error("incomplete endpoint config")
+    throw Error("incorrect endpointconfig.json format")
   }
 }
 
