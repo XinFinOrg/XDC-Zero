@@ -15,6 +15,15 @@ function writeEndpointEnv(key){
   });
 }
 
+function writeSubswapEnv(key){ //refactor
+  content = "PRIVATE_KEY="+key
+  fs.writeFileSync('../applications/subswap/contract/.env', content, err => {
+    if (err) {
+      throw Error("error writing endpoint env, "+err)
+    }
+  });
+}
+
 function writeEndpointNetworkJson(subnetURL, parentnetURL){
   networkJson = {
     "xdcsubnet": subnetURL,
@@ -26,6 +35,19 @@ function writeEndpointNetworkJson(subnetURL, parentnetURL){
     } 
   });
 }
+
+function writeSubswapNetworkJson(subnetURL, parentnetURL){ //refactor
+  networkJson = {
+    "xdcsubnet": subnetURL,
+    "xdcparentnet": parentnetURL,
+  }
+  fs.writeFileSync('../applications/subswap/contract/network.config.json', JSON.stringify(networkJson, null, 2) , 'utf-8', err => {
+    if (err) {
+      throw Error("error writing network.config.json, "+err)
+    } 
+  });
+}
+
 
 function callExec(command){
   try{
@@ -72,6 +94,8 @@ async function getNetworkID(subnetURL, parentnetURL){
 module.exports = {
   getNetworkID,
   writeEndpointEnv,
+  writeSubswapEnv,
   writeEndpointNetworkJson,
+  writeSubswapNetworkJson,
   callExec,
 }

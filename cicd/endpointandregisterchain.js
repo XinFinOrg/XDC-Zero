@@ -112,7 +112,6 @@ function deployEndpoint(){
   parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/endpointdeploy.js --network xdcparentnet")
   parentnetZeroEndpoint = parseEndpointOutput(parentnetEndpointOut)
 
-  // return subnetZeroEndpoint, parentnetZeroEndpoint
   config["subnetEndpoint"] = subnetZeroEndpoint
   config["parentnetEndpoint"] = parentnetZeroEndpoint
 }
@@ -124,13 +123,13 @@ function registerEndpoint(){
   u.writeEndpointEnv(config.subnetPK)
   console.log("register parentnet to subnet endpoint")
   subnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcsubnet")
-  // subnetZeroEndpoint = parseEndpointOutput(subnetEndpointOut)
+  if (!subnetEndpointOut.includes("success")) throw Error("failed to register parentnet endpoint to subnet")
 
   console.log("configuring PK")
   u.writeEndpointEnv(config.parentnetPK)
   console.log("register subnet to parentnet endpoint")
   parentnetEndpointOut = u.callExec("cd ../endpoint; npx hardhat run scripts/registerchain.js --network xdcparentnet")
-  // parentnetZeroEndpoint = parseEndpointOutput(parentnetEndpointOut)
+  if (!parentnetEndpointOut.includes("success")) throw Error("failed to register subnet endpoint to parentnet")
 
 }
 

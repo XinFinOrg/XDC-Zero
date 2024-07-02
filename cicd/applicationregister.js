@@ -46,7 +46,7 @@ function importEndpointJson(){
     endpointConfig["xdcsubnet"] = epjs.xdcsubnet
     endpointConfig["xdcparentnet"] = epjs.xdcparentnet
   } else {
-    throw Error("incorrect endpointconfig.json format")
+    throw Error("invalid endpointconfig.json format")
   }
 }
 
