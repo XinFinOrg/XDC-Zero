@@ -1,0 +1,41 @@
+name: Build and publish image 
+on:
+  push:
+    branches: 
+      - main
+    tags:
+      - '*'
+
+jobs:
+  test_build_and_push_to_docker_registry:
+    name: Test, build and publish image to docker hub
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    # - uses: actions/setup-node@v3
+    #   with:
+    #     node-version: '20.x'
+    # - name: Install dependencies
+    #   run: npm install && npm run postinstall
+    # - name: Unit tests
+    #   run: npm run test
+    - name: Docker login
+      env:
+        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_ACCESS_TOKEN}}
+      run: |
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+    - name: Determine Docker Image Name
+      id: image
+      run: |
+        if [[ "${{github.ref_name}}" == "master" ]]; then
+          echo "name=xinfinorg/xdc-zero:latest" >> $GITHUB_OUTPUT
+        else
+          echo "name=xinfinorg/xdc-zero:${{github.ref_name}}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Docker build and tag image
+      run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+    - name: Docker push
+      run: docker push ${{ steps.image.outputs.name }}

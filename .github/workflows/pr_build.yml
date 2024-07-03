@@ -1,0 +1,50 @@
+name: Build custom branch
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    if: |
+      ( startsWith(github.head_ref, 'feature') ||  
+        startsWith(github.head_ref, 'fix') ) 
+    name: Deploy on PR 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: check out trigger branch
+        run: |
+          git fetch origin $BRANCH
+          git checkout $BRANCH
+        env:
+          BRANCH: ${{ github.head_ref }}
+        
+      - name: Record branch env
+        id: branch
+        run: |
+          echo "repo=${{ github.repository }}" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+          echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          # echo $repo
+          # echo $branch
+          # echo $commit
+
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_ACCESS_TOKEN}}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Determine Docker Image Name
+        id: image
+        run: |
+            echo "name=xinfinorg/xdc-zero:${{ steps.branch.outputs.branch }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        run: |
+          docker build . --file docker/Dockerfile --tag ${{ steps.image.outputs.name }}
+          docker push ${{ steps.image.outputs.name }}
