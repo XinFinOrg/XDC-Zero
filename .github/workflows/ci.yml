@@ -36,7 +36,6 @@ jobs:
         fi
 
     - name: Docker build and tag image
-      run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+      run: docker build . --file cicd/Dockerfile --tag ${{ steps.image.outputs.name }}
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
-      
