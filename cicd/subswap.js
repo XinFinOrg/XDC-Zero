@@ -13,6 +13,7 @@ const u = require('./util.js')
 main()
 
 async function main(){
+  console.log("start subswap deploy")
   checkEndpointConfig()
   initSubswapDeploy()
   deploySubswap()

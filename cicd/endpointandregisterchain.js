@@ -13,6 +13,7 @@ const u = require('./util.js')
 main()
 
 async function main(){
+  console.log("start endpoint deploy and register chain")
   initEndpointDeploy()
   await u.getNetworkID(config)
   deployEndpoint()
@@ -97,6 +98,10 @@ function exportEndpointJson(){
   ep = fs.readFileSync('../endpoint/endpointconfig.json').toString()
   console.log("SUCCESS deploy endpoint and register chain, endpointconfig:")
   console.log(ep)
+  console.log()
+  console.log("SUCCESS deploy endpoint and register chain, env:")
+  console.log("SUBNET_ZERO_CONTRACT="+config.subnetEndpoint)
+  console.log("PARENTNET_ZERO_CONTRACT="+config.parentnetEndpoint)
 }
 
 function deployEndpoint(){

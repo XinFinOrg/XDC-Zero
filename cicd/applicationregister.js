@@ -14,6 +14,7 @@ const u = require('./util.js')
 main()
 
 async function main(){
+  console.log("start application register")
   importEndpointJson()
   initApplicationRegister()
   await u.getNetworkID(config)
