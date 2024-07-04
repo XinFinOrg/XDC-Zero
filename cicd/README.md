@@ -1,3 +1,4 @@
+## Deploy XDC Zero
 1. create a .env like the following example
 ```
 PARENTNET=devnet
@@ -12,6 +13,9 @@ REVERSE_CSC=0x4444444444444444444444444444444444444444
 ```
 docker run --env-file .env xinfinorg/xdc-zero:latest endpointandregisterchain.js
 ```
+
+## Regist Application to XDC Zero
+
 - add the output to .env
 ```
 SUBNET_ZERO_CONTRACT=0x5555555555555555555555555555555555555555
