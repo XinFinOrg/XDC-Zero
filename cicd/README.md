@@ -1,6 +1,6 @@
 # Deploy with Docker
 ## Deploy XDC Zero
-1. create a .env like the following example
+1. Create a .env as the below example PARENTNET can be devnet,testnet,mainnet. For custom url PARENTNET_URL will override PARENTNET.
 ```
 PARENTNET=devnet
 SUBNET_URL=
@@ -54,7 +54,7 @@ cd cicd
 yarn
 ```
 
-2. Configure .env at cicd/mount/.env
+2. Configure .env at cicd/mount/.env. PARENTNET can be devnet,testnet,mainnet. For custom url PARENTNET_URL will override PARENTNET.
 ```
 PARENTNET=devnet
 SUBNET_URL=
