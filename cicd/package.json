@@ -1,0 +1,7 @@
+{
+  "name": "zero-cicd",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2"
+  }
+}
