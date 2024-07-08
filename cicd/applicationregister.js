@@ -64,8 +64,6 @@ function initApplicationRegister() {
       parentnetURL = "https://devnetstats.apothem.network/devnet";
     if (parentnetURL == "testnet")
       parentnetURL = "https://devnetstats.apothem.network/testnet";
-    if (parentnetURL == "mainnet")
-      parentnetURL = "https://devnetstats.apothem.network/mainnet";
   } else {
     throw Error("PARENTNET_URL not found");
   }
