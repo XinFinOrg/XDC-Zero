@@ -25,17 +25,16 @@ async function main() {
 function initEndpointDeploy() {
   if (process.env.PARENTNET_URL) {
     parentnetURL = process.env.PARENTNET_URL;
-  } else if (process.env.PARENTNET) {
-    parentnet = process.env.PARENTNET;
-    if (parentnet == "devnet")
+    if (parentnetURL == "devnet")
       parentnetURL = "https://devnetstats.apothem.network/devnet";
-    if (parentnet == "testnet")
+    if (parentnetURL == "testnet")
       parentnetURL = "https://devnetstats.apothem.network/testnet";
-    if (parentnet == "mainnet")
+    if (parentnetURL == "mainnet")
       parentnetURL = "https://devnetstats.apothem.network/mainnet";
   } else {
-    throw Error("PARENTNET or PARENTNET_URL not found");
+    throw Error("PARENTNET_URL not found");
   }
+
 
   const reqENV = [
     "SUBNET_PK",
