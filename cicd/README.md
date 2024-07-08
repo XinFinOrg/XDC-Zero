@@ -1,51 +1,54 @@
-# Deploy with Docker
-## Deploy XDC Zero
-1. Create a .env as the below example PARENTNET can be devnet,testnet,mainnet. For custom url PARENTNET_URL will override PARENTNET.
-```
-PARENTNET=devnet
-SUBNET_URL=
-SUBNET_PK=0x1111111111111111111111111111111111111111111111111111111111111111
-PARENTNET_PK=0x2222222222222222222222222222222222222222222222222222222222222222
-CSC=0x3333333333333333333333333333333333333333
-REVERSE_CSC=0x4444444444444444444444444444444444444444
-```
+# XDC ZERO CICD
 
-2. Deploy XDC-Zero endpoints and register chain
-```
+## Deploy with Docker
+
+### 1. Deploy XDC Zero
+
+#### Step 1: Create a `.env` File
+
+Based on the provided `.env.example`, create your own `.env` file with the following details:
+
+- **`PARENTNET_URL`**: RPC URL for the parentnet endpoint.
+- **`SUBNET_URL`**: RPC URL for the subnet.
+- **`SUBNET_PK`**: Private key for the deploy subnet XDC Zero wallet.
+- **`CSC`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
+- **`REVERSE_CSC`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
+
+#### Step 2: Deploy Endpoints and Register Chain
+
+Run the following command to deploy the endpoints and register the chain:
+
+```sh
 docker run --env-file .env xinfinorg/xdc-zero:latest endpointandregisterchain.js
 ```
 
-- add the output to .env
-```
-SUBNET_ZERO_CONTRACT=0x5555555555555555555555555555555555555555
-PARENTNET_ZERO_CONTRACT=0x6666666666666666666666666666666666666666
-```
+Add the output to your `.env` file:
 
-## Deploy Subswap
-3. Deploy Subswap
-```
-docker run --env-file .env xinfinorg/xdc-zero:latest subswap.js
-```
-- add the output to .env
-```
-SUBNET_APP=0x7777777777777777777777777777777777777777
-PARENTNET_APP=0x8888888888888888888888888888888888888888
-```
+- **`SUBNET_ZERO_CONTRACT`**: XDC ZERO contract address for subnet.
+- **`PARENTNET_ZERO_CONTRACT`**: XDC ZERO contract address for parentnet.
 
+### 2. Register Application to XDC Zero
 
-## Register Application to XDC Zero
-4. Register Subswap to XDC-Zero
-```
+Add the user application contract address to your `.env` file:
+
+- **`SUBNET_APP`**: Subnet user application address.
+- **`PARENTNET_APP`**: Parentnet user application address.
+
+Run the following command:
+
+```sh
 docker run --env-file .env xinfinorg/xdc-zero:latest applicationregister.js
 ```
 
-<br/>
-<br/>
+---
 
-# Deploy using this repository
+## Deploy with Repository
 
-1. Install packages
-```
+### Step 1: Install Packages
+
+Run the following commands to install the necessary packages:
+
+```sh
 cd ../endpoint
 yarn
 cd ../applications/subswap/contract
@@ -54,34 +57,49 @@ cd cicd
 yarn
 ```
 
-2. Configure .env at cicd/mount/.env. PARENTNET can be devnet,testnet,mainnet. For custom url PARENTNET_URL will override PARENTNET.
-```
-PARENTNET=devnet
-SUBNET_URL=
-SUBNET_PK=0x1111111111111111111111111111111111111111111111111111111111111111
-PARENTNET_PK=0x2222222222222222222222222222222222222222222222222222222222222222
-CSC=0x3333333333333333333333333333333333333333
-REVERSE_CSC=0x4444444444444444444444444444444444444444
-```
 
-3. Deploy endpoint and register chain
-```
+### Step 2: Create a `.env` File to `cicd/mount`
+
+Based on the provided `.env.example`, create your own `.env` file with the following details:
+
+- **`PARENTNET_URL`**: RPC URL for the parentnet endpoint.
+- **`SUBNET_URL`**: RPC URL for the subnet.
+- **`SUBNET_PK`**: Private key for the deploy subnet XDC Zero wallet.
+- **`CSC`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
+- **`REVERSE_CSC`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
+
+### Step 3: Deploy Endpoint and Register Chain
+
+Navigate to the `cicd` directory and run the following command:
+
+```sh
 cd cicd
 node endpointandregisterchain.js
 ```
 
-4. Deploy Subswap
-```
-node subswap.js
-```
-- add the output to cicd/mount/.env
-```
-SUBNET_APP=0x7777777777777777777777777777777777777777
-PARENTNET_APP=0x8888888888888888888888888888888888888888
-```
+Add the output to your `.env` file:
 
+- **`SUBNET_ZERO_CONTRACT`**: XDC ZERO contract address for subnet.
+- **`PARENTNET_ZERO_CONTRACT`**: XDC ZERO contract address for parentnet.
 
-5. Register Application
-```
+### Step 4: Register Application
+
+Add the user application contract address to `cicd/mount/.env`:
+
+- **`SUBNET_APP`**: Subnet user application address.
+- **`PARENTNET_APP`**: Parentnet user application address.
+
+Run the following command:
+
+```sh
 node applicationregister.js
 ```
+
+
+### There are some application example , you can feel free to deploy 
+
+- [Sample](../applications/sample/) 
+
+- [Subswap](../applications/subswap/)
+
+
