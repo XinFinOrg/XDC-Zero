@@ -91,7 +91,7 @@ Add the output to your `.env` file:
 ### Step 4: Deploy Subswap 
 Here Subswap is our default provided application, you can also deploy your own custom app.
 ```sh
-docker run --env-file .env xinfinorg/xdc-zero:latest subswap.js
+node subswap.js
 ```
 
 ### Step 5: Register Application
