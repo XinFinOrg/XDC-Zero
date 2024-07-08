@@ -29,7 +29,7 @@ jobs:
     - name: Determine Docker Image Name
       id: image
       run: |
-        if [[ "${{github.ref_name}}" == "master" ]]; then
+        if [[ "${{github.ref_name}}" == "main" ]]; then
           echo "name=xinfinorg/xdc-zero:latest" >> $GITHUB_OUTPUT
         else
           echo "name=xinfinorg/xdc-zero:${{github.ref_name}}" >> $GITHUB_OUTPUT
