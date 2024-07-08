@@ -109,7 +109,7 @@ There are some application example , you can feel free to deploy
 node subswap.js
 ```
 
-### Step 5: Register Applicationc
+### Step 5: Register Application
 
 Add the user application contract address to `cicd/mount/.env`:
 
