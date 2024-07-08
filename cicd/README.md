@@ -27,8 +27,16 @@ Add the output to your `.env` file:
 - **`SUBNET_ZERO_CONTRACT`**: XDC ZERO contract address for subnet.
 - **`PARENTNET_ZERO_CONTRACT`**: XDC ZERO contract address for parentnet.
 
-### 2. Deploy Application 
-Here Subswap is our default provided application, you can also deploy your own custom app.
+### 2. Deploy Application
+
+There are some application example , you can feel free to deploy
+
+- [Sample](../applications/sample/)
+
+- [Subswap](../applications/subswap/)
+
+(Optional)Here Subswap is our default provided application, you can also deploy your own custom app.
+
 ```sh
 docker run --env-file .env xinfinorg/xdc-zero:latest subswap.js
 ```
@@ -63,7 +71,6 @@ cd cicd
 yarn
 ```
 
-
 ### Step 2: Create a `.env` File to `cicd/mount`
 
 Based on the provided `.env.example`, create your own `.env` file with the following details:
@@ -88,8 +95,16 @@ Add the output to your `.env` file:
 - **`SUBNET_ZERO_CONTRACT`**: XDC ZERO contract address for subnet.
 - **`PARENTNET_ZERO_CONTRACT`**: XDC ZERO contract address for parentnet.
 
-### Step 4: Deploy Application 
-Here Subswap is our default provided application, you can also deploy your own custom app.
+### Step 4: Deploy Application
+
+There are some application example , you can feel free to deploy
+
+- [Sample](../applications/sample/)
+
+- [Subswap](../applications/subswap/)
+
+(Optional)Here Subswap is our default provided application, you can also deploy your own custom app.
+
 ```sh
 node subswap.js
 ```
@@ -106,12 +121,3 @@ Run the following command:
 ```sh
 node applicationregister.js
 ```
-
-
-## There are some application example , you can feel free to deploy 
-
-- [Sample](../applications/sample/) 
-
-- [Subswap](../applications/subswap/)
-
-
