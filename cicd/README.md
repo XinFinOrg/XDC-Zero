@@ -19,7 +19,7 @@ Based on the provided `.env.example`, create your own `.env` file with the follo
 Run the following command to deploy the endpoints and register the chain:
 
 ```sh
-docker run --env-file .env xinfinorg/xdc-zero:v0.1.0 endpointandregisterchain.js
+docker run --env-file .env xinfinorg/xdc-zero:v0.1.1 endpointandregisterchain.js
 ```
 
 Add the output to your `.env` file:
@@ -38,7 +38,7 @@ There are some application example , you can feel free to deploy
 (Optional)Here Subswap is our default provided application, you can also deploy your own custom app.
 
 ```sh
-docker run --env-file .env xinfinorg/xdc-zero:v0.1.0 subswap.js
+docker run --env-file .env xinfinorg/xdc-zero:v0.1.1 subswap.js
 ```
 
 ### 3. Register Application to XDC Zero
@@ -51,7 +51,7 @@ Add the user application contract address to your `.env` file:
 Run the following command:
 
 ```sh
-docker run --env-file .env xinfinorg/xdc-zero:v0.1.0 applicationregister.js
+docker run --env-file .env xinfinorg/xdc-zero:v0.1.1 applicationregister.js
 ```
 
 ---
