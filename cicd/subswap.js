@@ -94,7 +94,7 @@ function deploySubswap() {
   u.writeEnv(config.parentnetPK, config.relativePath);
   console.log("deploying subswap on parentnet");
   parentnetEndpointOut = u.callExec(
-    "cd ../applications/subswap/contract; npx hardhat run scripts/subnettreasurydeploy.js --network xdcparentnet"
+    "cd ../applications/subswap/contract; npx hardhat run scripts/parentnettreasurydeploy.js --network xdcparentnet"
   );
   parentnetSubswapAddr = parseEndpointOutput(parentnetEndpointOut);
 
