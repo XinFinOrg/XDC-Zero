@@ -14,15 +14,15 @@ async function main() {
 
   console.log(token);
 
-  const treasuryToken = await factory.deploy(
+  const simpleToken = await factory.deploy(
     token.name,
     token.symbol,
     token.initSupply
   );
 
-  await treasuryToken.deployed();
+  await simpleToken.deployed();
 
-  console.log("ERC20 " + token.name + " deploy to ", treasuryToken.address);
+  console.log("ERC20 " + token.name + " deploy to ", simpleToken.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
