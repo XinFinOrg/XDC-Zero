@@ -1,5 +1,5 @@
-#Subswap 
+#Subswap
 
-How to deploy a new token 
+Contract Deploy doc in [contract](contract/)
 
-you can use any simple erc20 token code 
+
