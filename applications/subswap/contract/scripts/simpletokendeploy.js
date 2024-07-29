@@ -10,6 +10,11 @@ const deploy = require("../deploy.config.json");
 async function main() {
   const factory = await hre.ethers.getContractFactory("SimpleToken");
 
+  if (!deploy.subnettoken) {
+    console.error("Please set the token config in deploy.config.json");
+    return;
+  }
+
   const token = deploy.subnettoken;
 
   const simpleToken = await factory.deploy(
