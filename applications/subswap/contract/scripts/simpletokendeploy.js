@@ -12,8 +12,6 @@ async function main() {
 
   const token = deploy.subnettoken;
 
-  console.log(token);
-
   const simpleToken = await factory.deploy(
     token.name,
     token.symbol,
