@@ -1,5 +1,8 @@
 # Subswap Contract Deployment Guide
 
+This guide provides the steps to check and configure necessary values in the `deploy.config.json` file, and then deploy Subswap and the Subnet Token using Hardhat scripts.
+
+
 ## Configuration: `deploy.config.json`
 
 1. **Open the `deploy.config.json` File**
@@ -39,4 +42,3 @@
 npx hardhat run scripts/simpletokendeploy.js --network xdcsubnet
 ```
 
-This guide provides the steps to check and configure necessary values in the `deploy.config.json` file, and then deploy Subswap and the Subnet Token using Hardhat scripts.
