@@ -5,15 +5,27 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const deploy = require("../deploy.config.json");
 
 async function main() {
-  const factory = await hre.ethers.getContractFactory("TreasuryToken");
+  const factory = await hre.ethers.getContractFactory("SimpleToken");
 
-  const treasuryToken = await factory.deploy("test", "test");
+  if (!deploy.subnettoken) {
+    console.error("Please set the token config in deploy.config.json");
+    return;
+  }
 
-  await treasuryToken.deployed();
+  const token = deploy.subnettoken;
 
-  console.log("TreasuryToken deploy to ", treasuryToken.address);
+  const simpleToken = await factory.deploy(
+    token.name,
+    token.symbol,
+    token.initSupply
+  );
+
+  await simpleToken.deployed();
+
+  console.log("ERC20 " + token.name + " deploy to ", simpleToken.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

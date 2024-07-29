@@ -1,4 +1,5 @@
 {
   "parentnetendpoint": "0x89D933dFBd879DA78643530Bf413c81F94A73c31",
-  "subnetendpoint": "0x0B1795ccA8E4eC4df02346a082df54D437F8D9aF"
+  "subnetendpoint": "0x0B1795ccA8E4eC4df02346a082df54D437F8D9aF",
+  "subnettoken": { "name": "test", "symbol": "test", "initSupply": "1000" }
 }
