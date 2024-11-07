@@ -1,5 +1,37 @@
 [
   {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -22,6 +54,49 @@
       }
     ],
     "name": "ChainRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "FailureData",
     "type": "event"
   },
   {
@@ -110,6 +185,49 @@
         "internalType": "address",
         "name": "rua",
         "type": "address"
+      }
+    ],
+    "name": "allowanceRua",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sua",
+        "type": "address"
+      }
+    ],
+    "name": "allowanceSua",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rua",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -157,56 +275,21 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "chainId",
+        "name": "",
         "type": "uint256"
       },
-      {
-        "internalType": "contract IFullCheckpoint",
-        "name": "csc",
-        "type": "address"
-      },
-      {
-        "internalType": "contract Endpoint",
-        "name": "endpoint",
-        "type": "address"
-      }
-    ],
-    "name": "editChain",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "uint256",
-        "name": "chainId",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "getChain",
+    "name": "failureData",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "contract IFullCheckpoint",
-            "name": "csc",
-            "type": "address"
-          },
-          {
-            "internalType": "contract Endpoint",
-            "name": "endpoint",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lastIndex",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct Endpoint.Chain",
-        "name": "chain",
-        "type": "tuple"
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
@@ -226,27 +309,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getChainIds",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_chainId",
+        "name": "rid",
         "type": "uint256"
       }
     ],
-    "name": "getChainIndex",
+    "name": "getFailureDataLength",
     "outputs": [
       {
         "internalType": "uint256",
@@ -362,6 +432,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_chainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReceiveChainLastIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes",
         "name": "key",
         "type": "bytes"
@@ -386,6 +475,69 @@
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSendChain",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract IFullCheckpoint",
+            "name": "csc",
+            "type": "address"
+          },
+          {
+            "internalType": "contract Endpoint",
+            "name": "endpoint",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Endpoint.Chain",
+        "name": "chain",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSendChainIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "sid",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSendChainLastIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -564,7 +716,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "cid",
+        "name": "csid",
         "type": "uint256"
       },
       {

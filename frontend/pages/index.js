@@ -52,10 +52,12 @@ export default function Home() {
   const { data: reads0 } = useContractReads({
     contracts: [
       { ...endpointContract, functionName: "getChainId" },
-      { ...endpointContract, functionName: "getChainIds" },
+      { ...endpointContract, functionName: "getSendChainIds" },
     ],
     scopeKey: rerender,
   });
+
+  console.log(reads0);
 
   const eChainId = reads0?.[0]?.result;
 
@@ -63,7 +65,7 @@ export default function Home() {
 
   const { data: reads1 } = useContractReads({
     contracts: eChainIds?.map((key) => {
-      return { ...endpointContract, functionName: "getChain", args: [key] };
+      return { ...endpointContract, functionName: "getSendChain", args: [key] };
     }),
     scopeKey: rerender,
   });
@@ -71,8 +73,6 @@ export default function Home() {
   const eChains = reads1?.map((read) => {
     return read.result;
   });
-
-  console.log(eChains);
 
   const registerChain = {
     buttonName: "Register a Chain",
@@ -162,12 +162,6 @@ export default function Home() {
 
   return mount ? (
     <>
-      {/* <div className="text-center">
-          <label className="btn btn-success" htmlFor="oracle">
-            oracle
-          </label>
-        </div> */}
-
       <div className="card shadow-2xl lg:w-[1000px] m-auto mt-8 whitespace-normal break-words">
         <div className="card-body">
           <div className="font-black">
@@ -212,10 +206,10 @@ export default function Home() {
                     Remote ChainId : {key?.toString()}
                   </div>
                   <div className="font-black">
-                    Local CSC : {eChains?.[index].csc}
+                    Local CSC : {eChains?.[index]?.csc}
                   </div>
                   <div className="font-black">
-                    Remote Enpoint : {eChains?.[index].endpoint}
+                    Remote Enpoint : {eChains?.[index]?.endpoint}
                   </div>
                   <div className="card-actions justify-end">
                     <label

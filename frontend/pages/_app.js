@@ -6,7 +6,7 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 
 const xdcdevnet = {
-  id: 551,
+  id: 51,
   name: "XDC Devnet",
   network: "XDC Devnet",
   nativeCurrency: {
@@ -15,13 +15,13 @@ const xdcdevnet = {
     symbol: "XDC",
   },
   rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/devnet"] },
-    default: { http: ["https://devnetstats.apothem.network/devnet"] },
+    public: { http: ["https://erpc.apothem.network/"] },
+    default: { http: ["https://erpc.apothem.network/"] },
   },
 };
 
 const xdcsubnet = {
-  id: 953,
+  id: 25087,
   name: "XDC Subnet",
   network: "XDC Subnet",
   nativeCurrency: {
@@ -30,8 +30,8 @@ const xdcsubnet = {
     symbol: "XDC",
   },
   rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/subnet"] },
-    default: { http: ["https://devnetstats.apothem.network/subnet"] },
+    public: { http: ["http://194.163.167.177:8545"] },
+    default: { http: ["http://194.163.167.177:8545"] },
   },
 };
 
