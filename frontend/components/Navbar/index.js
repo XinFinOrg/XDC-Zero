@@ -11,9 +11,7 @@ const Navbar = () => {
           </div>
         </Link>
       </div>
-      <div className="navbar-center">
-        <Link href="/sample">Sample application</Link>
-      </div>
+
       <div className="navbar-end gap-2">
         <ConnectButton />
         <label className="cursor-pointer grid place-items-center m-2">
