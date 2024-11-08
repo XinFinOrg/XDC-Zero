@@ -10,6 +10,8 @@ const deploy = require("../deploy.config.json");
 async function main() {
   const factory = await hre.ethers.getContractFactory("SubnetTreasury");
 
+  console.log("subnetTreasury use " + deploy.subnetendpoint + " as endpoint");
+
   const subnetTreasury = await factory.deploy(deploy.subnetendpoint);
 
   await subnetTreasury.deployed();

@@ -14,6 +14,10 @@ async function main() {
 
   await parentnetTreasury.deployed();
 
+  console.log(
+    "parentnetTreasury use " + deploy.parentnetendpoint + " as endpoint"
+  );
+
   console.log("parentnetTreasury deploy to ", parentnetTreasury.address);
 }
 
