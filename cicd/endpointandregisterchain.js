@@ -38,13 +38,13 @@ function initEndpointDeploy() {
     "SUBNET_PK",
     "PARENTNET_PK",
     "SUBNET_URL",
-    "CSC",
-    "REVERSE_CSC",
+    "CHECKPOINT_CONTRACT",
+    "REVERSE_CHECKPOINT_CONTRACT",
   ];
   const isEnabled = reqENV.every((envVar) => envVar in process.env);
   if (!isEnabled) {
     throw Error(
-      "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_URL, CSC, REVERSE_CSC"
+      "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_URL, CHECKPOINT_CONTRACT, REVERSE_CHECKPOINT_CONTRACT"
     );
   }
   subnetPK = process.env.SUBNET_PK.startsWith("0x")
@@ -53,12 +53,12 @@ function initEndpointDeploy() {
   parentnetPK = process.env.PARENTNET_PK.startsWith("0x")
     ? process.env.PARENTNET_PK
     : `0x${process.env.PARENTNET_PK}`;
-  csc = process.env.CSC.startsWith("0x")
-    ? process.env.CSC
-    : `0x${process.env.CSC}`;
-  reverseCSC = process.env.REVERSE_CSC.startsWith("0x")
-    ? process.env.REVERSE_CSC
-    : `0x${process.env.REVERSE_CSC}`;
+  csc = process.env.CHECKPOINT_CONTRACT.startsWith("0x")
+    ? process.env.CHECKPOINT_CONTRACT
+    : `0x${process.env.CHECKPOINT_CONTRACT}`;
+  reverseCSC = process.env.REVERSE_CHECKPOINT_CONTRACT.startsWith("0x")
+    ? process.env.REVERSE_CHECKPOINT_CONTRACT
+    : `0x${process.env.REVERSE_CHECKPOINT_CONTRACT}`;
   subnetURL = process.env.SUBNET_URL;
 
   // return subnetURL, parentnetURL, subnetPK, parentnetPK, csc, reverseCSC
