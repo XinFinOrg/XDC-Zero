@@ -1,25 +1,28 @@
 process.chdir(__dirname);
-const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-const config = {
-  relativePath: "../endpoint/",
-};
+const config = {relativePath: "../endpoint/"};
 const endpointConfig = {};
-
-const { ethers } = require("ethers");
 const u = require("./util.js");
+u.loadContractENV()
 
-main();
+if (require.main === module) {
+  const newENV = await e.endpointAndRegisterChain()
+    for (const [key, value] of Object.entries(newENV)) {
+      u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
+      u.replaceOrAddENV('./mount/common.env', key, value)
+    }
+    u.loadContractENV()
+}
 
-async function main() {
+async function endpointAndRegisterChain() {
   console.log("start endpoint deploy and register chain");
   initEndpointDeploy();
   await u.getNetworkID(config);
   deployEndpoint();
   configureEndpointJson();
   registerEndpoint();
-  exportEndpointJson();
+  const newENV = exportEndpointJson();
+  return newENV
 }
 
 function initEndpointDeploy() {
@@ -119,6 +122,11 @@ function exportEndpointJson() {
   console.log("SUCCESS deploy endpoint and register chain, env:");
   console.log("SUBNET_ZERO_CONTRACT=" + config.subnetEndpoint);
   console.log("PARENTNET_ZERO_CONTRACT=" + config.parentnetEndpoint);
+
+  return {
+    'SUBNET_ZERO_CONTRACT': config.subnetEndpoint,
+    'PARENTNET_ZERO_CONTRACT': config.parentnetEndpoint
+  }
 }
 
 function deployEndpoint() {
@@ -181,3 +189,8 @@ function parseEndpointOutput(outString) {
     throw Error("invalid output string: " + outString);
   }
 }
+
+
+module.exports = {
+  endpointAndRegisterChain,
+};

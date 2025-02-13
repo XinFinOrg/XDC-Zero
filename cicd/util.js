@@ -1,7 +1,7 @@
 process.chdir(__dirname);
 const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
+const dotenv = require("dotenv")
 
 const { ethers } = require("ethers");
 
@@ -76,9 +76,74 @@ async function getNetworkID(config) {
   config["parentnetID"] = parentID;
 }
 
+function loadContractENV(){
+  dotenv.config({ path: "mount/contract_deploy.env" });
+}
+function loadCommonENV(){
+  dotenv.config({ path: "mount/common.env" });
+}
+
+function replaceENV(filepath, replaceENV, replaceValue){
+  //check files mounted
+  if (!fs.existsSync(filepath)) {
+    throw Error(`could not modify ${filepath}, file not mounted`)
+  } 
+  const envFileContent = fs.readFileSync(filepath, 'utf8');
+  const regex = new RegExp(`^${replaceENV}=.*`, 'gm');
+  let matches = envFileContent.match(regex);
+  matches = (matches === null) ? [] : matches
+  
+  if (matches.length > 1){
+    console.log('Warning: found more than one instance of', replaceENV, 'in', filepath)
+    console.log(matches)
+  }
+  let matchesCount = 0
+  const updatedContent = envFileContent.replace(regex, (match) => {
+    let replaceString=
+`# Commented old value by deployer
+# ${matches[matchesCount]}`
+
+    if (matchesCount == matches.length-1) { 
+      replaceString+=`\n${replaceENV}=${replaceValue}`
+    }
+    matchesCount++
+    console.log(`Updated ${filepath} file: \n${replaceString}`);
+    return replaceString
+    });
+
+  fs.writeFileSync(filepath, updatedContent);
+  return (updatedContent !== envFileContent)
+}
+
+function addENV(filepath, envName, envValue){
+  //check files mounted
+  if (!fs.existsSync(filepath)) {
+    throw Error(`could not modify ${filepath}, file not mounted`)
+  } 
+  const envFileContent = fs.readFileSync(filepath, 'utf8');
+  const appendString = `${envName}=${envValue}`
+  const updatedContent = envFileContent+'\n'+appendString
+  
+  fs.writeFileSync(filepath, updatedContent);
+}
+
+function replaceOrAddENV(filepath, envKey, envValue){
+  replaced = replaceENV(filepath, envKey, envValue)
+  !replaced && addENV(filepath, envKey, envValue)
+}
+
+function transferTokens(url, fromAddress, toAddress, amount){
+
+}
+
 module.exports = {
   getNetworkID,
   callExec,
   writeEnv,
   writeNetworkJson,
+  loadContractENV,
+  loadCommonENV,
+  replaceENV,
+  addENV,
+  replaceOrAddENV,
 };

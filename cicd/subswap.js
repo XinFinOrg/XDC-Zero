@@ -1,23 +1,25 @@
 process.chdir(__dirname);
-const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-const config = {
-  relativePath: "../applications/subswap/contract/",
-};
-const endpointConfig = {};
-
-const { ethers } = require("ethers");
+const config = {relativePath: "../applications/subswap/contract/"};
 const u = require("./util.js");
+u.loadContractENV()
 
-main();
+if (require.main === module) {
+  const newENV = await s.subswap()
+  for (const [key, value] of Object.entries(newENV)) {
+    u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
+    u.replaceOrAddENV('./mount/common.env', key, value)
+  }
+  u.loadContractENV()
+}
 
-async function main() {
+async function subswap() {
   console.log("start subswap deploy");
   checkEndpointConfig();
   initSubswapDeploy();
   deploySubswap();
-  exportSubswap();
+  const newENV = exportSubswap();
+  return newENV
 }
 
 function checkEndpointConfig() {
@@ -111,7 +113,13 @@ function exportSubswap() {
   );
   console.log(finalSubnet);
   console.log(finalParentnet);
+
+  return {
+    'SUBNET_APP': config.subnetSubswap,
+    'PARENTNET_APP': config.parentnetSubswap
+  }
 }
+
 function writeSubswapDeployJson() {
   deployJson = {
     subnetendpoint: config.subnetEndpoint,
@@ -144,3 +152,7 @@ function parseEndpointOutput(outString) {
     throw Error("invalid output string: " + outString);
   }
 }
+
+module.exports = {
+  subswap,
+};
