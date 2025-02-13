@@ -6,7 +6,11 @@ const u = require("./util.js");
 u.loadContractENV()
 
 if (require.main === module) {
-  applicationRegister();
+  main()
+}
+
+async function main(){
+  await applicationRegister();
 }
 
 async function applicationRegister() {

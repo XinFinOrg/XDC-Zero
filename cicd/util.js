@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const dotenv = require("dotenv")
 
 const { ethers } = require("ethers");
+const { stringify } = require("node:querystring");
 
 function writeEnv(key, path) {
   content = "PRIVATE_KEY=" + key;
@@ -132,8 +133,58 @@ function replaceOrAddENV(filepath, envKey, envValue){
   !replaced && addENV(filepath, envKey, envValue)
 }
 
-function transferTokens(url, fromAddress, toAddress, amount){
+async function transferTokens(url, fromPK, toPK, amount) {
+  console.log(url)
+  const provider = new ethers.providers.JsonRpcProvider(url);
+  const fromWallet = new ethers.Wallet(fromPK, provider);
+  const toWallet = new ethers.Wallet(toPK, provider);
+  let tx = {
+    to: toWallet.address,
+    value: ethers.utils.parseEther(amount.toString()),
+  };
 
+  try{
+    await provider.detectNetwork();
+  } catch (error){
+    throw Error("Cannot connect to RPC")
+  }
+
+  let sendPromise = fromWallet.sendTransaction(tx);
+  txHash = await sendPromise.then((tx) => {
+    return tx.hash;
+  });
+  console.log("TX submitted, confirming TX execution, txhash:", txHash);
+
+  let receipt;
+  let count = 0;
+  while (!receipt) {
+    count++;
+    // console.log("tx receipt check loop", count);
+    if (count > 60) {
+      throw Error("Timeout: transaction did not execute after 60 seconds");
+    }
+    await sleep(1000);
+    let receipt = await provider.getTransactionReceipt(txHash);
+    if (receipt && receipt.status == 1) {
+      console.log("Successfully transferred", amount, "subnet token");
+      let fromBalance = await provider.getBalance(fromWallet.address);
+      fromBalance = ethers.utils.formatEther(fromBalance);
+      let toBalance = await provider.getBalance(toWallet.address);
+      toBalance = ethers.utils.formatEther(toBalance);
+      console.log("Current balance");
+      console.log(`${fromWallet.address}: ${fromBalance}`);
+      console.log(`${toWallet.address}: ${toBalance}`);
+      return {
+        fromBalance: fromBalance,
+        toBalance: toBalance,
+        txHash: txHash
+      }
+    }
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = {
@@ -146,4 +197,5 @@ module.exports = {
   replaceENV,
   addENV,
   replaceOrAddENV,
+  transferTokens,
 };

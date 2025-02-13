@@ -5,7 +5,11 @@ const u = require("./util.js");
 u.loadContractENV()
 
 if (require.main === module) {
-  const newENV = await s.subswap()
+  main()
+}
+
+async function main(){
+  const newENV = await subswap()
   for (const [key, value] of Object.entries(newENV)) {
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
