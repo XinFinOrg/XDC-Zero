@@ -1,29 +1,30 @@
 process.chdir(__dirname);
 const fs = require("node:fs");
-const config = {relativePath: "../applications/subswap/contract/"};
+const config = { relativePath: "../applications/subswap/contract/" };
 const u = require("./util.js");
-u.loadContractENV()
+u.loadContractENV();
 
 if (require.main === module) {
-  main()
+  main();
 }
 
-async function main(){
-  const newENV = await subswap()
+async function main() {
+  const newENV = await subswap();
   for (const [key, value] of Object.entries(newENV)) {
-    u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
-    u.replaceOrAddENV('./mount/common.env', key, value)
+    u.replaceOrAddENV("./mount/contract_deploy.env", key, value);
+    u.replaceOrAddENV("./mount/common.env", key, value);
   }
-  u.loadContractENV()
+  u.loadContractENV();
 }
 
 async function subswap() {
   console.log("start subswap deploy");
   checkEndpointConfig();
-  initSubswapDeploy();
+  await initSubswapDeploy();
   deploySubswap();
+  writeSubswapConfigJson();
   const newENV = exportSubswap();
-  return newENV
+  return newENV;
 }
 
 function checkEndpointConfig() {
@@ -52,7 +53,7 @@ function checkEndpointConfig() {
   throw Error("endpoints not found in mount/endpointconfig.json");
 }
 
-function initSubswapDeploy() {
+async function initSubswapDeploy() {
   if (process.env.PARENTNET_URL) {
     parentnetURL = process.env.PARENTNET_URL;
     if (parentnetURL == "devnet")
@@ -80,6 +81,7 @@ function initSubswapDeploy() {
   config["parentnetPK"] = parentnetPK;
   config["subnetURL"] = subnetURL;
   config["parentnetURL"] = parentnetURL;
+  await u.getNetworkID(config);
 }
 
 function deploySubswap() {
@@ -119,9 +121,9 @@ function exportSubswap() {
   console.log(finalParentnet);
 
   return {
-    'SUBNET_APP': config.subnetSubswap,
-    'PARENTNET_APP': config.parentnetSubswap
-  }
+    SUBNET_APP: config.subnetSubswap,
+    PARENTNET_APP: config.parentnetSubswap,
+  };
 }
 
 function writeSubswapDeployJson() {
@@ -155,6 +157,39 @@ function parseEndpointOutput(outString) {
   } else {
     throw Error("invalid output string: " + outString);
   }
+}
+
+function writeSubswapConfigJson() {
+  // {
+  //   "parentnetUrl":"https://erpc.apothem.network/",
+  //   "parentnetChainId":"51",
+  //   "subnetUrl":"http://localhost:8545",
+  //   "subnetChainId":"999",
+  //   "subnetApp": "0x9777050a8402ac5958aA87631B15e98e26610EB5",
+  //   "parentnetApp": "0xC355520747171Bd75f505E8cd12f935944bD783b",
+  //   "tokens" : [
+  //     {
+  //       "name": "Token A",
+  //       "address": "0x103BAA273da5C2FEF2d1B8f839044A9bd07Bc1A1"
+  //     }
+  //   ]
+  // }
+  const obj = {
+    parentnetUrl: config["parentnetURL"],
+    parentnetChainId: config["parentnetID"],
+    parentnetApp: config["parentnetSubswap"],
+    subnetUrl: config["subnetURL"],
+    subnetChainId: config["subnetID"],
+    subnetApp: config["subnetSubswap"],
+    tokens: [
+      {
+        name: "Example Token",
+        address: "0x1111111111111111111111111111111111111111",
+      },
+    ],
+  };
+
+  fs.writeFileSync("./mount/subswap-frontend.config.json", JSON.stringify(obj, null, 2))
 }
 
 module.exports = {
