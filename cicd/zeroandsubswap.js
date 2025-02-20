@@ -46,7 +46,7 @@ async function setupSubnetWallets(){
     process.exit()
   }
  
-  await u.transferTokens(process.env.SUBNET_URL, grandmasterPK, process.env.SUBNET_WALLET_PK, 10000)  
+  await u.transferTokens(process.env.SUBNET_URL, grandmasterPK, process.env.SUBNET_WALLET_PK, 1000000)  
   await u.transferTokens(process.env.SUBNET_URL, grandmasterPK, process.env.SUBNET_ZERO_WALLET_PK, 10000)  
 
 }

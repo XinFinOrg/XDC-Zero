@@ -2,9 +2,7 @@ process.chdir(__dirname);
 const { execSync } = require("child_process");
 const fs = require("node:fs");
 const dotenv = require("dotenv")
-
 const { ethers } = require("ethers");
-const { stringify } = require("node:querystring");
 
 function writeEnv(key, path) {
   content = "PRIVATE_KEY=" + key;
