@@ -15,25 +15,18 @@ async function main(){
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
   }
-  await delay(2000)
-  u.loadContractENV()
 
   const step2ENV = await s.subswap()
   for (const [key, value] of Object.entries(step2ENV)) {
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
   }
-  await delay(2000)
-  u.loadContractENV()
 
   await a.applicationRegister()
   
   await setupSubnetWallets()
 }
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function setupSubnetWallets(){
   u.loadCommonENV()

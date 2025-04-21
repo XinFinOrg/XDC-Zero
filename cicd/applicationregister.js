@@ -15,6 +15,7 @@ async function main(){
 
 async function applicationRegister() {
   console.log("start application register");
+  u.loadContractENV()
   importEndpointJson();
   initApplicationRegister();
   await u.getNetworkID(config);

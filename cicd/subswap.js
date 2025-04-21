@@ -19,6 +19,7 @@ async function main() {
 
 async function subswap() {
   console.log("start subswap deploy");
+  u.loadContractENV()
   checkEndpointConfig();
   await initSubswapDeploy();
   deploySubswap();
