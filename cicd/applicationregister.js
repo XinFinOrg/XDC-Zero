@@ -83,6 +83,9 @@ function initApplicationRegister() {
       "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_APP, PARENTNET_APP, SUBNET_URL"
     );
   }
+
+  
+
   subnetPK = process.env.SUBNET_PK.startsWith("0x")
     ? process.env.SUBNET_PK
     : `0x${process.env.SUBNET_PK}`;
