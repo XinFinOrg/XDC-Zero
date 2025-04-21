@@ -76,6 +76,9 @@ async function getNetworkID(config) {
 }
 
 function loadContractENV(){
+  console.log('debug show contract_deploy.env contents')
+  const envFileContent = fs.readFileSync("mount/contract_deploy.env", 'utf8'); 
+  console.log(envFileContent)
   dotenv.config({ path: "mount/contract_deploy.env" });
 }
 function loadCommonENV(){
