@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const config = {relativePath: "../endpoint/"};
 const endpointConfig = {};
 const u = require("./util.js");
-u.loadContractENV()
+await u.loadContractENV()
 
 if (require.main === module) {
   main()

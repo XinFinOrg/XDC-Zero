@@ -75,11 +75,16 @@ async function getNetworkID(config) {
   config["parentnetID"] = parentID;
 }
 
-function loadContractENV(){
+async function loadContractENV(){
+  await delay(2000);
   dotenv.config({ path: "mount/contract_deploy.env" });
 }
-function loadCommonENV(){
+async function loadCommonENV(){
+  await delay(2000);
   dotenv.config({ path: "mount/common.env" });
+}
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function replaceENV(filepath, replaceENV, replaceValue){

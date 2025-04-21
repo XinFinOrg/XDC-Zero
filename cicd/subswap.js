@@ -2,7 +2,7 @@ process.chdir(__dirname);
 const fs = require("node:fs");
 const config = { relativePath: "../applications/subswap/contract/" };
 const u = require("./util.js");
-u.loadContractENV();
+await u.loadContractENV();
 
 if (require.main === module) {
   main();
@@ -14,15 +14,15 @@ async function main() {
     u.replaceOrAddENV("./mount/contract_deploy.env", key, value);
     u.replaceOrAddENV("./mount/common.env", key, value);
   }
-  u.loadContractENV();
+  await u.loadContractENV();
 }
 
 async function subswap() {
   console.log("start subswap deploy");
   checkEndpointConfig();
   await initSubswapDeploy();
-  deploySubswap();
-  deploySampleToken();
+  await deploySubswap();
+  await deploySampleToken();
   writeSubswapConfigJson();
   const newENV = exportSubswap();
   return newENV;
@@ -85,7 +85,7 @@ async function initSubswapDeploy() {
   await u.getNetworkID(config);
 }
 
-function deploySubswap() {
+async function deploySubswap() {
   console.log("writing network config");
   u.writeNetworkJson(config);
   console.log("writing deploy.config.json");
@@ -127,7 +127,7 @@ function exportSubswap() {
   };
 }
 
-function deploySampleToken() {
+async function deploySampleToken() {
   console.log("writing deploy.config.json");
   writeSubswapDeployJson();
   console.log("configuring PK");

@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const config = {relativePath: "../endpoint/"};
 const endpointConfig = {};
 const u = require("./util.js");
-u.loadContractENV()
+await u.loadContractENV()
 
 if (require.main === module) {
   main()
@@ -14,7 +14,7 @@ async function main(){
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
   }
-  u.loadContractENV()
+  await u.loadContractENV()
 }
 
 async function endpointAndRegisterChain() {
