@@ -23,8 +23,9 @@ async function main() {
     token.initSupply
   );
 
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("SimpleToken deploy start, deployer address:", deployer.address)
   await simpleToken.deployed();
-
   console.log("ERC20 " + token.name + " deploy to ", simpleToken.address);
 }
 
