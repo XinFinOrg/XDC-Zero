@@ -2,7 +2,7 @@ process.chdir(__dirname);
 const { ethers } = require("ethers");
 const fs = require("node:fs");
 const u = require("./util.js");
-await u.loadContractENV()
+u.loadContractENV()
 const e = require("./endpointandregisterchain.js")
 const s = require("./subswap.js")
 const a = require("./applicationregister.js")
@@ -15,15 +15,14 @@ async function main(){
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
   }
-  await u.loadContractENV()
+  u.loadContractENV()
 
   const step2ENV = await s.subswap()
   for (const [key, value] of Object.entries(step2ENV)) {
     u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
     u.replaceOrAddENV('./mount/common.env', key, value)
   }
-
-  await u.loadContractENV()
+  u.loadContractENV()
 
   await a.applicationRegister()
   
@@ -31,7 +30,7 @@ async function main(){
 }
 
 async function setupSubnetWallets(){
-  await u.loadCommonENV()
+  u.loadCommonENV()
   if (!fs.existsSync('./mount/keys.json')) {
     throw Error(`could not modify ${filepath}, file not mounted`)
   } 
