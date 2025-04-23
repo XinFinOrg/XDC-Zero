@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.23;
 
+import {RLPReader} from "./libraries/RLPReader.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {MerklePatricia} from "@polytope-labs/solidity-merkle-trees/src/MerklePatricia.sol";
 import {IFullCheckpoint} from "./interfaces/IFullCheckpoint.sol";
-import {RLPReader} from "./libraries/RLPReader.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -319,7 +319,8 @@ contract Endpoint is Ownable, ReentrancyGuard {
     function getReceipt(
         bytes memory receiptRlp
     ) public pure returns (Receipt memory) {
-        RLPReader.RLPItem[] memory items = receiptRlp.toRlpItem().toList();
+        RLPReader.RLPItem[] memory items;
+        items = receiptRlp.toRlpItem().toList();
 
         Receipt memory receipt;
         receipt.postStateOrStatus = items[0].toBytes();
