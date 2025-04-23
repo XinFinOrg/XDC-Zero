@@ -99,14 +99,9 @@ library RLPReader {
         return len;
     }
 
-    /*
-     * @param the RLP item containing the encoded list.
-     */
-    function toList(
+    function toLegacyList(
         RLPItem memory item
     ) internal pure returns (RLPItem[] memory) {
-        require(isList(item));
-
         uint256 items = numItems(item);
         RLPItem[] memory result = new RLPItem[](items);
 
@@ -119,6 +114,23 @@ library RLPReader {
         }
 
         return result;
+    }
+
+    function toEip2718List(
+        RLPItem memory item
+    ) internal pure returns (RLPItem[] memory) {
+        RLPItem[] memory items = toLegacyList(item);
+        return toLegacyList(items[1]);
+    }
+
+    function toList(
+        RLPItem memory item
+    ) internal pure returns (RLPItem[] memory) {
+        if (isList(item)) {
+            return toLegacyList(item);
+        } else {
+            return toEip2718List(item);
+        }
     }
 
     // @return indicator whether encoded payload is a list. negate this function call for isData.
