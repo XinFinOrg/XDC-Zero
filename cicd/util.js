@@ -1,7 +1,7 @@
 process.chdir(__dirname);
 const { execSync } = require("child_process");
 const fs = require("node:fs");
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 const { ethers } = require("ethers");
 
 function writeEnv(key, path) {
@@ -75,64 +75,68 @@ async function getNetworkID(config) {
   config["parentnetID"] = parentID;
 }
 
-function loadContractENV(){
-  dotenv.config({ path: "mount/contract_deploy.env", override: true});
+function loadContractENV() {
+  dotenv.config({ path: "mount/contract_deploy.env", override: true });
 }
-function loadCommonENV(){
-  dotenv.config({ path: "mount/common.env", override: true});
+function loadCommonENV() {
+  dotenv.config({ path: "mount/common.env", override: true });
 }
 
-function replaceENV(filepath, replaceENV, replaceValue){
+function replaceENV(filepath, replaceENV, replaceValue) {
   //check files mounted
   if (!fs.existsSync(filepath)) {
-    throw Error(`could not modify ${filepath}, file not mounted`)
-  } 
-  const envFileContent = fs.readFileSync(filepath, 'utf8');
-  const regex = new RegExp(`^${replaceENV}=.*`, 'gm');
-  let matches = envFileContent.match(regex);
-  matches = (matches === null) ? [] : matches
-  
-  if (matches.length > 1){
-    console.log('Warning: found more than one instance of', replaceENV, 'in', filepath)
-    console.log(matches)
+    throw Error(`could not modify ${filepath}, file not mounted`);
   }
-  let matchesCount = 0
-  const updatedContent = envFileContent.replace(regex, (match) => {
-    let replaceString=
-`# Commented old value by deployer
-# ${matches[matchesCount]}`
+  const envFileContent = fs.readFileSync(filepath, "utf8");
+  const regex = new RegExp(`^${replaceENV}=.*`, "gm");
+  let matches = envFileContent.match(regex);
+  matches = matches === null ? [] : matches;
 
-    if (matchesCount == matches.length-1) { 
-      replaceString+=`\n${replaceENV}=${replaceValue}`
+  if (matches.length > 1) {
+    console.log(
+      "Warning: found more than one instance of",
+      replaceENV,
+      "in",
+      filepath
+    );
+    console.log(matches);
+  }
+  let matchesCount = 0;
+  const updatedContent = envFileContent.replace(regex, (match) => {
+    let replaceString = `# Commented old value by deployer
+# ${matches[matchesCount]}`;
+
+    if (matchesCount == matches.length - 1) {
+      replaceString += `\n${replaceENV}=${replaceValue}`;
     }
-    matchesCount++
+    matchesCount++;
     console.log(`Updated ${filepath} file: \n${replaceString}`);
-    return replaceString
-    });
+    return replaceString;
+  });
 
   fs.writeFileSync(filepath, updatedContent);
-  return (updatedContent !== envFileContent)
+  return updatedContent !== envFileContent;
 }
 
-function addENV(filepath, envName, envValue){
+function addENV(filepath, envName, envValue) {
   //check files mounted
   if (!fs.existsSync(filepath)) {
-    throw Error(`could not modify ${filepath}, file not mounted`)
-  } 
-  const envFileContent = fs.readFileSync(filepath, 'utf8');
-  const appendString = `${envName}=${envValue}`
-  const updatedContent = envFileContent+'\n'+appendString
-  
+    throw Error(`could not modify ${filepath}, file not mounted`);
+  }
+  const envFileContent = fs.readFileSync(filepath, "utf8");
+  const appendString = `${envName}=${envValue}`;
+  const updatedContent = envFileContent + "\n" + appendString;
+
   fs.writeFileSync(filepath, updatedContent);
 }
 
-function replaceOrAddENV(filepath, envKey, envValue){
-  replaced = replaceENV(filepath, envKey, envValue)
-  !replaced && addENV(filepath, envKey, envValue)
+function replaceOrAddENV(filepath, envKey, envValue) {
+  replaced = replaceENV(filepath, envKey, envValue);
+  !replaced && addENV(filepath, envKey, envValue);
 }
 
 async function transferTokens(url, fromPK, toPK, amount) {
-  console.log(url)
+  console.log(url);
   const provider = new ethers.providers.JsonRpcProvider(url);
   const fromWallet = new ethers.Wallet(fromPK, provider);
   const toWallet = new ethers.Wallet(toPK, provider);
@@ -141,10 +145,10 @@ async function transferTokens(url, fromPK, toPK, amount) {
     value: ethers.utils.parseEther(amount.toString()),
   };
 
-  try{
+  try {
     await provider.detectNetwork();
-  } catch (error){
-    throw Error("Cannot connect to RPC")
+  } catch (error) {
+    throw Error("Cannot connect to RPC");
   }
 
   let sendPromise = fromWallet.sendTransaction(tx);
@@ -175,8 +179,8 @@ async function transferTokens(url, fromPK, toPK, amount) {
       return {
         fromBalance: fromBalance,
         toBalance: toBalance,
-        txHash: txHash
-      }
+        txHash: txHash,
+      };
     }
   }
 }
