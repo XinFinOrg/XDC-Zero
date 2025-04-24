@@ -306,9 +306,14 @@ contract Endpoint is Ownable, ReentrancyGuard {
         bytes memory transactionRlp
     ) public pure returns (Transaction memory) {
         RLPReader.RLPItem[] memory items = transactionRlp.toRlpItem().toList();
-
         Transaction memory transaction;
-        transaction.to = items[3].toAddress();
+
+        if (items[3].len == 21) {
+            transaction.to = items[3].toAddress();
+        } else {
+            transaction.to = items[5].toAddress();
+        }
+
         return transaction;
     }
 
@@ -344,7 +349,7 @@ contract Endpoint is Ownable, ReentrancyGuard {
         return receipt;
     }
 
-    function sliceBytes(bytes memory data) private pure returns (bytes memory) {
+    function sliceBytes(bytes memory data) public pure returns (bytes memory) {
         require(data.length >= 64, "Data must be at least 64 bytes long");
 
         bytes memory slicedData = new bytes(data.length - 64);
