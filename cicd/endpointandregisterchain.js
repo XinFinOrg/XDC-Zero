@@ -1,25 +1,31 @@
 process.chdir(__dirname);
-const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-const config = {
-  relativePath: "../endpoint/",
-};
+const config = { relativePath: "../endpoint/" };
 const endpointConfig = {};
-
-const { ethers } = require("ethers");
 const u = require("./util.js");
+u.loadContractENV();
 
-main();
-
+if (require.main === module) {
+  main();
+}
 async function main() {
+  const newENV = await endpointAndRegisterChain();
+  for (const [key, value] of Object.entries(newENV)) {
+    u.replaceOrAddENV("./mount/contract_deploy.env", key, value);
+    u.replaceOrAddENV("./mount/common.env", key, value);
+  }
+  u.loadContractENV();
+}
+
+async function endpointAndRegisterChain() {
   console.log("start endpoint deploy and register chain");
   initEndpointDeploy();
   await u.getNetworkID(config);
   deployEndpoint();
   configureEndpointJson();
   registerEndpoint();
-  exportEndpointJson();
+  const newENV = exportEndpointJson();
+  return newENV;
 }
 
 function initEndpointDeploy() {
@@ -33,18 +39,17 @@ function initEndpointDeploy() {
     throw Error("PARENTNET_URL not found");
   }
 
-
   const reqENV = [
     "SUBNET_PK",
     "PARENTNET_PK",
     "SUBNET_URL",
-    "CSC",
-    "REVERSE_CSC",
+    "CHECKPOINT_CONTRACT",
+    "REVERSE_CHECKPOINT_CONTRACT",
   ];
   const isEnabled = reqENV.every((envVar) => envVar in process.env);
   if (!isEnabled) {
     throw Error(
-      "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_URL, CSC, REVERSE_CSC"
+      "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_URL, CHECKPOINT_CONTRACT, REVERSE_CHECKPOINT_CONTRACT"
     );
   }
   subnetPK = process.env.SUBNET_PK.startsWith("0x")
@@ -53,12 +58,12 @@ function initEndpointDeploy() {
   parentnetPK = process.env.PARENTNET_PK.startsWith("0x")
     ? process.env.PARENTNET_PK
     : `0x${process.env.PARENTNET_PK}`;
-  csc = process.env.CSC.startsWith("0x")
-    ? process.env.CSC
-    : `0x${process.env.CSC}`;
-  reverseCSC = process.env.REVERSE_CSC.startsWith("0x")
-    ? process.env.REVERSE_CSC
-    : `0x${process.env.REVERSE_CSC}`;
+  csc = process.env.CHECKPOINT_CONTRACT.startsWith("0x")
+    ? process.env.CHECKPOINT_CONTRACT
+    : `0x${process.env.CHECKPOINT_CONTRACT}`;
+  reverseCSC = process.env.REVERSE_CHECKPOINT_CONTRACT.startsWith("0x")
+    ? process.env.REVERSE_CHECKPOINT_CONTRACT
+    : `0x${process.env.REVERSE_CHECKPOINT_CONTRACT}`;
   subnetURL = process.env.SUBNET_URL;
 
   // return subnetURL, parentnetURL, subnetPK, parentnetPK, csc, reverseCSC
@@ -119,6 +124,11 @@ function exportEndpointJson() {
   console.log("SUCCESS deploy endpoint and register chain, env:");
   console.log("SUBNET_ZERO_CONTRACT=" + config.subnetEndpoint);
   console.log("PARENTNET_ZERO_CONTRACT=" + config.parentnetEndpoint);
+
+  return {
+    SUBNET_ZERO_CONTRACT: config.subnetEndpoint,
+    PARENTNET_ZERO_CONTRACT: config.parentnetEndpoint,
+  };
 }
 
 function deployEndpoint() {
@@ -181,3 +191,7 @@ function parseEndpointOutput(outString) {
     throw Error("invalid output string: " + outString);
   }
 }
+
+module.exports = {
+  endpointAndRegisterChain,
+};

@@ -1,23 +1,32 @@
 process.chdir(__dirname);
-const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-const config = {
-  relativePath: "../applications/subswap/contract/",
-};
-const endpointConfig = {};
-
-const { ethers } = require("ethers");
+const config = { relativePath: "../applications/subswap/contract/" };
 const u = require("./util.js");
+u.loadContractENV();
 
-main();
+if (require.main === module) {
+  main();
+}
 
 async function main() {
+  const newENV = await subswap();
+  for (const [key, value] of Object.entries(newENV)) {
+    u.replaceOrAddENV("./mount/contract_deploy.env", key, value);
+    u.replaceOrAddENV("./mount/common.env", key, value);
+  }
+  u.loadContractENV();
+}
+
+async function subswap() {
   console.log("start subswap deploy");
+  u.loadContractENV();
   checkEndpointConfig();
-  initSubswapDeploy();
+  await initSubswapDeploy();
   deploySubswap();
-  exportSubswap();
+  deploySampleToken();
+  writeSubswapConfigJson();
+  const newENV = exportSubswap();
+  return newENV;
 }
 
 function checkEndpointConfig() {
@@ -46,7 +55,7 @@ function checkEndpointConfig() {
   throw Error("endpoints not found in mount/endpointconfig.json");
 }
 
-function initSubswapDeploy() {
+async function initSubswapDeploy() {
   if (process.env.PARENTNET_URL) {
     parentnetURL = process.env.PARENTNET_URL;
     if (parentnetURL == "devnet")
@@ -74,6 +83,7 @@ function initSubswapDeploy() {
   config["parentnetPK"] = parentnetPK;
   config["subnetURL"] = subnetURL;
   config["parentnetURL"] = parentnetURL;
+  await u.getNetworkID(config);
 }
 
 function deploySubswap() {
@@ -111,11 +121,35 @@ function exportSubswap() {
   );
   console.log(finalSubnet);
   console.log(finalParentnet);
+
+  return {
+    SUBNET_APP: config.subnetSubswap,
+    PARENTNET_APP: config.parentnetSubswap,
+  };
 }
+
+function deploySampleToken() {
+  console.log("writing deploy.config.json");
+  writeSubswapDeployJson();
+  console.log("configuring PK");
+  u.writeEnv(config.subnetPK, config.relativePath);
+  console.log("deploying subnet sample token on subnet");
+  tokenDeployOut = u.callExec(
+    "cd ../applications/subswap/contract; npx hardhat run scripts/simpletokendeploy.js --network xdcsubnet"
+  );
+  tokenAddr = parseEndpointOutput(tokenDeployOut);
+  config["subnetSampleTokenAddress"] = tokenAddr;
+}
+
 function writeSubswapDeployJson() {
   deployJson = {
     subnetendpoint: config.subnetEndpoint,
     parentnetendpoint: config.parentnetEndpoint,
+    subnettoken: {
+      name: "Subnet Sample Token",
+      symbol: "SST",
+      initSupply: 1_000_000,
+    },
   };
   fs.writeFileSync(
     "../applications/subswap/contract/deploy.config.json",
@@ -144,3 +178,45 @@ function parseEndpointOutput(outString) {
     throw Error("invalid output string: " + outString);
   }
 }
+
+function writeSubswapConfigJson() {
+  // {
+  //   "parentnetUrl":"https://erpc.apothem.network/",
+  //   "parentnetChainId":"51",
+  //   "subnetUrl":"http://localhost:8545",
+  //   "subnetChainId":"999",
+  //   "subnetApp": "0x9777050a8402ac5958aA87631B15e98e26610EB5",
+  //   "parentnetApp": "0xC355520747171Bd75f505E8cd12f935944bD783b",
+  //   "tokens" : [
+  //     {
+  //       "name": "Token A",
+  //       "address": "0x103BAA273da5C2FEF2d1B8f839044A9bd07Bc1A1"
+  //     }
+  //   ]
+  // }
+  const obj = {
+    parentnetUrl: config["parentnetURL"],
+    parentnetChainId: config["parentnetID"],
+    parentnetApp: config["parentnetSubswap"],
+    subnetUrl: config["subnetURL"],
+    subnetChainId: config["subnetID"],
+    subnetApp: config["subnetSubswap"],
+    tokens: [
+      {
+        name: "Subnet Sample Token",
+        address:
+          config["subnetSampleTokenAddress"] ||
+          "0x1111111111111111111111111111111111111111",
+      },
+    ],
+  };
+
+  fs.writeFileSync(
+    "./mount/subswap-frontend.config.json",
+    JSON.stringify(obj, null, 2)
+  );
+}
+
+module.exports = {
+  subswap,
+};

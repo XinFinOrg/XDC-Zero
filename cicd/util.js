@@ -1,8 +1,7 @@
 process.chdir(__dirname);
 const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-
+const dotenv = require("dotenv");
 const { ethers } = require("ethers");
 
 function writeEnv(key, path) {
@@ -76,9 +75,129 @@ async function getNetworkID(config) {
   config["parentnetID"] = parentID;
 }
 
+function loadContractENV() {
+  dotenv.config({ path: "mount/contract_deploy.env", override: true });
+}
+function loadCommonENV() {
+  dotenv.config({ path: "mount/common.env", override: true });
+}
+
+function replaceENV(filepath, replaceENV, replaceValue) {
+  //check files mounted
+  if (!fs.existsSync(filepath)) {
+    throw Error(`could not modify ${filepath}, file not mounted`);
+  }
+  const envFileContent = fs.readFileSync(filepath, "utf8");
+  const regex = new RegExp(`^${replaceENV}=.*`, "gm");
+  let matches = envFileContent.match(regex);
+  matches = matches === null ? [] : matches;
+
+  if (matches.length > 1) {
+    console.log(
+      "Warning: found more than one instance of",
+      replaceENV,
+      "in",
+      filepath
+    );
+    console.log(matches);
+  }
+  let matchesCount = 0;
+  const updatedContent = envFileContent.replace(regex, (match) => {
+    let replaceString = `# Commented old value by deployer
+# ${matches[matchesCount]}`;
+
+    if (matchesCount == matches.length - 1) {
+      replaceString += `\n${replaceENV}=${replaceValue}`;
+    }
+    matchesCount++;
+    console.log(`Updated ${filepath} file: \n${replaceString}`);
+    return replaceString;
+  });
+
+  fs.writeFileSync(filepath, updatedContent);
+  return updatedContent !== envFileContent;
+}
+
+function addENV(filepath, envName, envValue) {
+  //check files mounted
+  if (!fs.existsSync(filepath)) {
+    throw Error(`could not modify ${filepath}, file not mounted`);
+  }
+  const envFileContent = fs.readFileSync(filepath, "utf8");
+  const appendString = `${envName}=${envValue}`;
+  const updatedContent = envFileContent + "\n" + appendString;
+
+  fs.writeFileSync(filepath, updatedContent);
+}
+
+function replaceOrAddENV(filepath, envKey, envValue) {
+  replaced = replaceENV(filepath, envKey, envValue);
+  !replaced && addENV(filepath, envKey, envValue);
+}
+
+async function transferTokens(url, fromPK, toPK, amount) {
+  console.log(url);
+  const provider = new ethers.providers.JsonRpcProvider(url);
+  const fromWallet = new ethers.Wallet(fromPK, provider);
+  const toWallet = new ethers.Wallet(toPK, provider);
+  let tx = {
+    to: toWallet.address,
+    value: ethers.utils.parseEther(amount.toString()),
+  };
+
+  try {
+    await provider.detectNetwork();
+  } catch (error) {
+    throw Error("Cannot connect to RPC");
+  }
+
+  let sendPromise = fromWallet.sendTransaction(tx);
+  txHash = await sendPromise.then((tx) => {
+    return tx.hash;
+  });
+  console.log("TX submitted, confirming TX execution, txhash:", txHash);
+
+  let receipt;
+  let count = 0;
+  while (!receipt) {
+    count++;
+    // console.log("tx receipt check loop", count);
+    if (count > 60) {
+      throw Error("Timeout: transaction did not execute after 60 seconds");
+    }
+    await sleep(1000);
+    let receipt = await provider.getTransactionReceipt(txHash);
+    if (receipt && receipt.status == 1) {
+      console.log("Successfully transferred", amount, "subnet token");
+      let fromBalance = await provider.getBalance(fromWallet.address);
+      fromBalance = ethers.utils.formatEther(fromBalance);
+      let toBalance = await provider.getBalance(toWallet.address);
+      toBalance = ethers.utils.formatEther(toBalance);
+      console.log("Current balance");
+      console.log(`${fromWallet.address}: ${fromBalance}`);
+      console.log(`${toWallet.address}: ${toBalance}`);
+      return {
+        fromBalance: fromBalance,
+        toBalance: toBalance,
+        txHash: txHash,
+      };
+    }
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 module.exports = {
   getNetworkID,
   callExec,
   writeEnv,
   writeNetworkJson,
+  loadContractENV,
+  loadCommonENV,
+  replaceENV,
+  addENV,
+  replaceOrAddENV,
+  transferTokens,
 };

@@ -11,8 +11,8 @@ Based on the provided `.env.example`, create your own `.env` file with the follo
 - **`PARENTNET_URL`**: RPC URL for the parentnet endpoint.
 - **`SUBNET_URL`**: RPC URL for the subnet.
 - **`SUBNET_PK`**: Private key for the deploy subnet XDC Zero wallet.
-- **`CSC`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
-- **`REVERSE_CSC`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
+- **`CHECKPOINT_CONTRACT`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
+- **`REVERSE_CHECKPOINT_CONTRACT`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
 
 #### Step 2: Deploy Endpoints and Register Chain
 
@@ -78,8 +78,8 @@ Based on the provided `.env.example`, create your own `.env` file with the follo
 - **`PARENTNET_URL`**: RPC URL for the parentnet endpoint.
 - **`SUBNET_URL`**: RPC URL for the subnet.
 - **`SUBNET_PK`**: Private key for the deploy subnet XDC Zero wallet.
-- **`CSC`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
-- **`REVERSE_CSC`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
+- **`CHECKPOINT_CONTRACT`**: Checkpoint smart contract address within the subnet chain (deployed to parentnet).
+- **`REVERSE_CHECKPOINT_CONTRACT`**: Checkpoint smart contract address within the parentnet chain (deployed to subnet).
 
 ### Step 3: Deploy Endpoint and Register Chain
 

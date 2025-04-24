@@ -1,19 +1,21 @@
 process.chdir(__dirname);
-const { execSync } = require("child_process");
 const fs = require("node:fs");
-const env = require("dotenv").config({ path: "mount/.env" });
-const config = {
-  relativePath: "../endpoint/",
-};
+const config = { relativePath: "../endpoint/" };
 const endpointConfig = {};
-
-const { ethers } = require("ethers");
 const u = require("./util.js");
+u.loadContractENV();
 
-main();
+if (require.main === module) {
+  main();
+}
 
 async function main() {
+  await applicationRegister();
+}
+
+async function applicationRegister() {
   console.log("start application register");
+  u.loadContractENV();
   importEndpointJson();
   initApplicationRegister();
   await u.getNetworkID(config);
@@ -81,6 +83,7 @@ function initApplicationRegister() {
       "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_APP, PARENTNET_APP, SUBNET_URL"
     );
   }
+
   subnetPK = process.env.SUBNET_PK.startsWith("0x")
     ? process.env.SUBNET_PK
     : `0x${process.env.SUBNET_PK}`;
@@ -192,3 +195,7 @@ function exportEndpointJson() {
   console.log("SUCCESS register application, endpointconfig:");
   console.log(ep);
 }
+
+module.exports = {
+  applicationRegister,
+};
