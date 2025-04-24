@@ -1,21 +1,21 @@
 process.chdir(__dirname);
 const fs = require("node:fs");
-const config = {relativePath: "../endpoint/"};
+const config = { relativePath: "../endpoint/" };
 const endpointConfig = {};
 const u = require("./util.js");
-u.loadContractENV()
+u.loadContractENV();
 
 if (require.main === module) {
-  main()
+  main();
 }
 
-async function main(){
+async function main() {
   await applicationRegister();
 }
 
 async function applicationRegister() {
   console.log("start application register");
-  u.loadContractENV()
+  u.loadContractENV();
   importEndpointJson();
   initApplicationRegister();
   await u.getNetworkID(config);
@@ -83,8 +83,6 @@ function initApplicationRegister() {
       "incomplete ENVs, require SUBNET_PK, PARENTNET_PK, SUBNET_APP, PARENTNET_APP, SUBNET_URL"
     );
   }
-
-  
 
   subnetPK = process.env.SUBNET_PK.startsWith("0x")
     ? process.env.SUBNET_PK

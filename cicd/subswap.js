@@ -19,7 +19,7 @@ async function main() {
 
 async function subswap() {
   console.log("start subswap deploy");
-  u.loadContractENV()
+  u.loadContractENV();
   checkEndpointConfig();
   await initSubswapDeploy();
   deploySubswap();
@@ -138,18 +138,18 @@ function deploySampleToken() {
     "cd ../applications/subswap/contract; npx hardhat run scripts/simpletokendeploy.js --network xdcsubnet"
   );
   tokenAddr = parseEndpointOutput(tokenDeployOut);
-  config["subnetSampleTokenAddress"] = tokenAddr
+  config["subnetSampleTokenAddress"] = tokenAddr;
 }
 
 function writeSubswapDeployJson() {
   deployJson = {
     subnetendpoint: config.subnetEndpoint,
     parentnetendpoint: config.parentnetEndpoint,
-    "subnettoken": {
-      "name": "Subnet Sample Token",
-      "symbol": "SST",
-      "initSupply": 1_000_000
-    }
+    subnettoken: {
+      name: "Subnet Sample Token",
+      symbol: "SST",
+      initSupply: 1_000_000,
+    },
   };
   fs.writeFileSync(
     "../applications/subswap/contract/deploy.config.json",
@@ -204,12 +204,17 @@ function writeSubswapConfigJson() {
     tokens: [
       {
         name: "Subnet Sample Token",
-        address: config["subnetSampleTokenAddress"] || "0x1111111111111111111111111111111111111111",
+        address:
+          config["subnetSampleTokenAddress"] ||
+          "0x1111111111111111111111111111111111111111",
       },
     ],
   };
 
-  fs.writeFileSync("./mount/subswap-frontend.config.json", JSON.stringify(obj, null, 2))
+  fs.writeFileSync(
+    "./mount/subswap-frontend.config.json",
+    JSON.stringify(obj, null, 2)
+  );
 }
 
 module.exports = {

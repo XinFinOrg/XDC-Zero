@@ -1,20 +1,20 @@
 process.chdir(__dirname);
 const fs = require("node:fs");
-const config = {relativePath: "../endpoint/"};
+const config = { relativePath: "../endpoint/" };
 const endpointConfig = {};
 const u = require("./util.js");
-u.loadContractENV()
+u.loadContractENV();
 
 if (require.main === module) {
-  main()
+  main();
 }
-async function main(){
-  const newENV = await endpointAndRegisterChain()
+async function main() {
+  const newENV = await endpointAndRegisterChain();
   for (const [key, value] of Object.entries(newENV)) {
-    u.replaceOrAddENV('./mount/contract_deploy.env', key, value)
-    u.replaceOrAddENV('./mount/common.env', key, value)
+    u.replaceOrAddENV("./mount/contract_deploy.env", key, value);
+    u.replaceOrAddENV("./mount/common.env", key, value);
   }
-  u.loadContractENV()
+  u.loadContractENV();
 }
 
 async function endpointAndRegisterChain() {
@@ -25,7 +25,7 @@ async function endpointAndRegisterChain() {
   configureEndpointJson();
   registerEndpoint();
   const newENV = exportEndpointJson();
-  return newENV
+  return newENV;
 }
 
 function initEndpointDeploy() {
@@ -38,7 +38,6 @@ function initEndpointDeploy() {
   } else {
     throw Error("PARENTNET_URL not found");
   }
-
 
   const reqENV = [
     "SUBNET_PK",
@@ -127,9 +126,9 @@ function exportEndpointJson() {
   console.log("PARENTNET_ZERO_CONTRACT=" + config.parentnetEndpoint);
 
   return {
-    'SUBNET_ZERO_CONTRACT': config.subnetEndpoint,
-    'PARENTNET_ZERO_CONTRACT': config.parentnetEndpoint
-  }
+    SUBNET_ZERO_CONTRACT: config.subnetEndpoint,
+    PARENTNET_ZERO_CONTRACT: config.parentnetEndpoint,
+  };
 }
 
 function deployEndpoint() {
@@ -192,7 +191,6 @@ function parseEndpointOutput(outString) {
     throw Error("invalid output string: " + outString);
   }
 }
-
 
 module.exports = {
   endpointAndRegisterChain,
